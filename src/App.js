@@ -1,33 +1,81 @@
 import React from 'react'
-import { DataQuery } from '@dhis2/app-runtime'
-import i18n from '@dhis2/d2-i18n'
+import { mockSourceDs, mockTargetDs } from './tests/mockData/mockDataSets'
+import useSelects from './hooks/useSelects'
+import {
+  DataTable,
+  DataTableHead,
+  DataTableRow,
+  DataTableColumnHeader,
+  DataTableBody,
+  DataTableCell,
+  MultiSelectField,
+  MultiSelectOption,
+} from '@dhis2/ui'
 import classes from './App.module.css'
+import { flattenDataSets } from './utils/mappingUtils'
 
-const query = {
-  me: {
-    resource: 'me',
-  },
+const App = () => {
+  const sourceDes = flattenDataSets(mockSourceDs)
+  const targetDes = flattenDataSets(mockTargetDs)
+  const sourceDeIds = sourceDes.map(({ id }) => id)
+  const initSource = sourceDeIds.reduce(
+    (acc, deId) => ({ ...acc, [deId]: [deId] }),
+    {}
+  )
+  const initTarget = sourceDeIds.reduce(
+    (acc, deId) => ({ ...acc, [deId]: [] }),
+    {}
+  )
+  const [deSources, setSources] = useSelects(initSource)
+  const [deTargets, setTargets] = useSelects(initTarget)
+  return (
+    <div className={classes.container}>
+      <DataTable className={classes.dataTable}>
+        <DataTableHead>
+          <DataTableRow>
+            <DataTableColumnHeader>Source</DataTableColumnHeader>
+            <DataTableColumnHeader>Target</DataTableColumnHeader>
+          </DataTableRow>
+        </DataTableHead>
+        <DataTableBody>
+          {sourceDes.map(({ id: rowSourceDeId }) => (
+            <DataTableRow key={`${rowSourceDeId}-row`}>
+              <DataTableCell>
+                <MultiSelectField
+                  selected={deSources[rowSourceDeId]}
+                  onChange={(e) => setSources[rowSourceDeId](e.selected)}
+                  key={`${rowSourceDeId}-source-select`}
+                >
+                  {sourceDes.map(({ name: sourceDeName, id: sourceDeId }) => (
+                    <MultiSelectOption
+                      label={sourceDeName}
+                      value={sourceDeId}
+                      key={`${rowSourceDeId}-${sourceDeId}-row`}
+                    />
+                  ))}
+                </MultiSelectField>
+              </DataTableCell>
+              <DataTableCell>
+                <MultiSelectField
+                  selected={deTargets[rowSourceDeId]}
+                  onChange={(e) => setTargets[rowSourceDeId](e.selected)}
+                  key={`${rowSourceDeId}-target-select`}
+                >
+                  {targetDes.map(({ name: targetDeName, id: targetDeId }) => (
+                    <MultiSelectOption
+                      label={targetDeName}
+                      value={targetDeId}
+                      key={`${targetDeId}-${targetDeId}-row`}
+                    />
+                  ))}
+                </MultiSelectField>
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTable>
+    </div>
+  )
 }
 
-const MyApp = () => (
-  <div className={classes.container}>
-    <DataQuery query={query}>
-      {({ error, loading, data }) => {
-        if (error) {
-          return <span>ERROR</span>
-        }
-        if (loading) {
-          return <span>...</span>
-        }
-        return (
-          <>
-            <h1>{i18n.t('Hello {{name}}', { name: data.me.name })}</h1>
-            <h3>{i18n.t('Welcome to DHIS2!')}</h3>
-          </>
-        )
-      }}
-    </DataQuery>
-  </div>
-)
-
-export default MyApp
+export default App
