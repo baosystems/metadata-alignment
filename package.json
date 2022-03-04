@@ -1,0 +1,22 @@
+{
+  "name": "metadata-alignment",
+  "version": "1.0.0",
+  "description": "",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "scripts": {
+    "lint": "d2-style check",
+    "format": "d2-style apply",
+    "build": "d2-app-scripts build",
+    "start": "d2-app-scripts start",
+    "test": "d2-app-scripts test",
+    "deploy": "d2-app-scripts deploy"
+  },
+  "devDependencies": {
+    "@dhis2/cli-app-scripts": "^8.3.3",
+    "@dhis2/cli-style": "^10.1.2"
+  },
+  "dependencies": {
+    "@dhis2/app-runtime": "^3.3.0"
+  }
+}
