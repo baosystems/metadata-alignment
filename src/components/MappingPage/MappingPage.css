@@ -1,0 +1,25 @@
+.dataTable {
+  table-layout: fixed !important;
+}
+
+.withSubMaps > thead > tr > th:nth-child(1) {
+  width: 37px;
+}
+
+.withSubMaps > thead > tr > th:nth-child(2),
+.withSubMaps > thead > tr > th:nth-child(3) {
+  width: calc(50% - 30px);
+}
+
+.noSubMaps > thead > tr > th:nth-child(1),
+.noSubMaps > thead > tr > th:nth-child(2) {
+  width: 50%;
+}
+
+.mappingMultiSelect {
+  color: black;
+}
+
+.mappingMultiSelect span.overflow {
+  max-width: fit-content !important;
+}

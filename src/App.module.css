@@ -6,15 +6,3 @@
   align-items: top;
   font-size: 1rem;
 }
-
-.dataTable {
-  table-layout: fixed !important;
-}
-
-.dataTable th:nth-child(1) {
-  width: 50%;
-}
-
-.dataTable th:nth-child(2) {
-  width: 50%;
-}

@@ -14,6 +14,7 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'react/sort-prop-types': ['off'],
   },
   parserOptions: {
     sourceType: 'module',
