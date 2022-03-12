@@ -6,29 +6,10 @@ export function flattenDataSets(dSets) {
   return des
 }
 
-function getDeCoMap(deIds, dSets) {
-  if (deIds === undefined) {
-    return []
+export function getCocs(deIds, deCocMap) {
+  const cocs = []
+  for (const deId of deIds) {
+    cocs.push(...deCocMap[deId])
   }
-  const result = []
-  for (const ds of dSets) {
-    for (const { dataElement } of ds.dataSetElements) {
-      const deId = dataElement.id
-      if (deIds.includes(deId)) {
-        const cocs = dataElement?.categoryCombo?.categoryOptionCombos
-        if (cocs) {
-          result.push(...cocs)
-        }
-      }
-    }
-  }
-  return result
-}
-
-export function getCos(sourceDeIds, targetDeIds, dsConfig) {
-  const { sourceDSets, targetDSets } = dsConfig
-  return {
-    sourceCos: getDeCoMap(sourceDeIds, sourceDSets),
-    targetCos: getDeCoMap(targetDeIds, targetDSets),
-  }
+  return cocs
 }

@@ -13,9 +13,7 @@ function makeDeCocMap(deArr) {
   return result
 }
 
-function initaliseMap(srcDeArr, tgtDeArr) {
-  const deCocMap = makeDeCocMap([...srcDeArr, ...tgtDeArr])
-  console.log(deCocMap)
+function initaliseMap(srcDeArr, deCocMap) {
   const result = []
   for (const de of srcDeArr) {
     const srcCocs = deCocMap[de.id]
@@ -32,7 +30,8 @@ function initaliseMap(srcDeArr, tgtDeArr) {
 }
 
 export const useMappingState = (sourceDes, targetDes) => {
-  const initVal = initaliseMap(sourceDes, targetDes)
+  const deCocMap = makeDeCocMap([...sourceDes, ...targetDes])
+  const initVal = initaliseMap(sourceDes, deCocMap)
   const [mappings, setMappingsInternal] = useState(initVal)
   const setMappings = []
   for (let i = 0; i < mappings.length; i++) {
@@ -48,22 +47,22 @@ export const useMappingState = (sourceDes, targetDes) => {
         setMappingsInternal(newMappings)
       }),
     }
-    const coSetters = []
+    const cocSetters = []
     for (let j = 0; j < mappings[i].cocMappings.length; j++) {
-      coSetters.push({
+      cocSetters.push({
         sourceCocs: useCallback((v) => {
           const newMappings = [...mappings]
-          newMappings[i].coMappings[j].sourceCocs = v
+          newMappings[i].cocMappings[j].sourceCocs = v
           setMappingsInternal(newMappings)
         }),
-        targetCos: useCallback((v) => {
+        targetCocs: useCallback((v) => {
           const newMappings = [...mappings]
-          newMappings[i].coMappings[j].targetCocs = v
+          newMappings[i].cocMappings[j].targetCocs = v
           setMappingsInternal(newMappings)
         }),
       })
     }
-    setMappings.push({ ...rowSetter, coSetters: coSetters })
+    setMappings.push({ ...rowSetter, cocSetters: cocSetters })
   }
-  return { mappings, setMappings }
+  return { mappings, setMappings, deCocMap }
 }

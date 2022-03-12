@@ -11,9 +11,16 @@ import {
 import './MappingPage.css'
 import { tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
+import MappingRowCoc from './MappingRowCoc'
 
 const MappingTable = ({ sourceOpts, targetOpts, tableState, tableType }) => {
-  const { mappings, setMappings } = tableState
+  const { mappings, setMappings, deCocMap } = tableState
+  if (tableType === tableTypes.COC) {
+    console.log('Rendering COC mapping table')
+    console.log('Source opts: ', sourceOpts)
+    console.log('Target opts: ', targetOpts)
+    console.log('Table state: ', tableState)
+  }
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const options = { sourceOpts, targetOpts }
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
@@ -34,14 +41,17 @@ const MappingTable = ({ sourceOpts, targetOpts, tableState, tableType }) => {
             stateControl: {
               mapping: mappings[idx],
               setMapping: setMappings[idx],
+              deCocMap,
             },
             options: options,
           }
           switch (tableType) {
             case tableTypes.DE:
               return <MappingRowDe {...rowProps} />
-            // case tableTypes.CO:
-            //   return <MappingRowCo {...rowProps} />
+            case tableTypes.COC:
+              return <MappingRowCoc {...rowProps} />
+            default:
+              return <p>No mapping found for table type {tableType}</p>
           }
         })}
       </DataTableBody>
@@ -55,6 +65,7 @@ MappingTable.propTypes = {
   tableState: PropTypes.shape({
     mappings: PropTypes.array,
     setMappings: PropTypes.array,
+    deCocMap: PropTypes.object,
   }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
 }
