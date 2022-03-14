@@ -1,0 +1,66 @@
+.setupPage {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  row-gap: 32px;
+  background-color: #eee;
+}
+
+.dsSelectSetup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: 16px;
+  align-self: flex-end;
+}
+
+.configBtnWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-self: flex-start;
+}
+
+button.configMap {
+  width: 300px;
+}
+
+.cardContent {
+  padding: 32px;
+}
+
+.cardContent > h2 {
+  margin-top: 0px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 32px;
+}
+
+.cardContent > p {
+  font-size: 14px;
+  padding-bottom: 12px;
+}
+
+.locationSelect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.locationSelect > label {
+  font-size: 13px;
+}
+
+.externalConnect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.externalConnect > div {
+  width: 100%;
+}
