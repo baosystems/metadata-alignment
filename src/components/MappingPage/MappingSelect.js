@@ -9,6 +9,8 @@ const MappingSelect = ({ rowId, selected, onChange, options }) => (
     className="mappingMultiSelect"
     selected={selected}
     onChange={(e) => onChange(e)}
+    clearable
+    filterable
   >
     {options.map(({ name, id }) => (
       <MultiSelectOption label={name} value={id} key={`${rowId}-${id}-row`} />

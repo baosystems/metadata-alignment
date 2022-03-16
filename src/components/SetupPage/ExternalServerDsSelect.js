@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useAlert } from '@dhis2/app-runtime'
-import { formatParams } from '../../utils/apiUtils'
+import { useAlert, useConfig, useDataEngine } from '@dhis2/app-runtime'
+import { formatParams, savePat } from '../../utils/apiUtils'
 import {
   MultiSelectField,
   MultiSelectOption,
@@ -9,11 +9,21 @@ import {
   Button,
 } from '@dhis2/ui'
 
-const ExternalServerDsSelect = ({ selectedDs, setSelectedDs }) => {
-  const [serverUrl, setServerUrl] = useState('')
-  const [paToken, setPaToken] = useState('')
+const ExternalServerDsSelect = ({
+  selectedDs,
+  setSelectedDs,
+  config,
+  setConfig,
+}) => {
+  const { baseUrl } = useConfig()
+  const { baseUrl: targetUrl } = config
+  console.log('targetUrl: ', targetUrl)
+  const [paToken, setPaToken] = useState(
+    'd2pat_TxMOWxILdLLMGehs1CYBr0suDi3S3zNL1317041250'
+  )
+  const engine = useDataEngine()
   const [dsOptions, setDsOptions] = useState(null)
-  const { show } = useAlert(`Error connecting to ${serverUrl}`, {
+  const { show } = useAlert(`Error connecting to ${targetUrl}`, {
     critical: true,
   })
 
@@ -21,7 +31,7 @@ const ExternalServerDsSelect = ({ selectedDs, setSelectedDs }) => {
     const params = { fields: 'id,displayName~rename(name)', paging: 'false' }
     try {
       const req = await fetch(
-        `${serverUrl}/api/dataSets?${formatParams(params)}`,
+        `${targetUrl}/api/dataSets?${formatParams(params)}`,
         {
           method: 'GET',
           headers: {
@@ -32,6 +42,8 @@ const ExternalServerDsSelect = ({ selectedDs, setSelectedDs }) => {
       const res = await req.json()
       if ('dataSets' in res) {
         setDsOptions(res.dataSets)
+        savePat(engine, { baseUrl, targetUrl }, paToken)
+        setPaToken(null)
       } else {
         show()
       }
@@ -58,8 +70,8 @@ const ExternalServerDsSelect = ({ selectedDs, setSelectedDs }) => {
     <div className="externalConnect">
       <InputField
         label="External server url"
-        value={serverUrl}
-        onChange={(e) => setServerUrl(e.value)}
+        value={targetUrl}
+        onChange={(e) => setConfig({ ...config, baseUrl: e.value })}
       />
       <InputField
         label="Personal access token (not password)"
@@ -76,6 +88,11 @@ const ExternalServerDsSelect = ({ selectedDs, setSelectedDs }) => {
 ExternalServerDsSelect.propTypes = {
   selectedDs: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedDs: PropTypes.func.isRequired,
+  config: PropTypes.shape({
+    dsLocation: PropTypes.string.isRequired,
+    baseUrl: PropTypes.string,
+  }).isRequired,
+  setConfig: PropTypes.func.isRequired,
 }
 
 export default ExternalServerDsSelect

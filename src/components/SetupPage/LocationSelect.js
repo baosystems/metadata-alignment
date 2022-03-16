@@ -24,7 +24,7 @@ const LocationSelect = ({ dsLocation, setDsLocation }) => {
 }
 
 LocationSelect.propTypes = {
-  dsLocation: PropTypes.string.isRequired,
+  dsLocation: PropTypes.string,
   setDsLocation: PropTypes.func.isRequired,
 }
 

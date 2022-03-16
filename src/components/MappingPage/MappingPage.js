@@ -1,13 +1,12 @@
 import React from 'react'
 import MappingTable from './MappingTable'
-import { mockSourceDs, mockTargetDs } from '../../tests/mockData/mockDataSets'
 import { flattenDataSets } from '../../utils/mappingUtils'
-import { tableTypes } from './MappingConsts'
+import { dsPropType, tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 
-const MappingPage = () => {
-  const sourceDes = flattenDataSets(mockSourceDs)
-  const targetDes = flattenDataSets(mockTargetDs)
+const MappingPage = ({ sourceDs, targetDs }) => {
+  const sourceDes = flattenDataSets(sourceDs)
+  const targetDes = flattenDataSets(targetDs)
   const mappingState = useMappingState(sourceDes, targetDes)
   return (
     <div>
@@ -22,6 +21,11 @@ const MappingPage = () => {
       </MappingContext.Provider>
     </div>
   )
+}
+
+MappingPage.propTypes = {
+  sourceDs: dsPropType,
+  targetDs: dsPropType,
 }
 
 export default MappingPage
