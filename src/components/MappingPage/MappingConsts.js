@@ -18,10 +18,12 @@ export const dsPropType = PropTypes.arrayOf(
     name: PropTypes.string.isRequired,
     dataSetElements: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        categoryCombo: PropTypes.shape({
-          categoryOptionCombo: idNameArray,
+        dataElement: PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          categoryCombo: PropTypes.shape({
+            categoryOptionCombo: idNameArray,
+          }),
         }),
       })
     ),

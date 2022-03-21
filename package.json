@@ -17,6 +17,7 @@
     "@dhis2/cli-style": "^10.1.2"
   },
   "dependencies": {
-    "@dhis2/app-runtime": "^3.3.0"
+    "@dhis2/app-runtime": "^3.3.0",
+    "fuse.js": "^6.5.3"
   }
 }

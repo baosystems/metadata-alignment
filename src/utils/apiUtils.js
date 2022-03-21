@@ -34,10 +34,8 @@ const makeMutation = (type, urlKey, pat) => ({
   data: { pat },
 })
 
-export async function savePat(engine, urls, pat) {
-  const { baseUrl, targetUrl } = urls
+export async function savePat(engine, targetUrl, pat) {
   const urlKey = targetUrl.replace('https://', '').replace('http://', '')
-  console.log(baseUrl, targetUrl, pat)
   try {
     const { namespaces } = await engine.query(udsQuery)
     if (namespaces.includes(dataStoreKey)) {
@@ -72,7 +70,6 @@ async function getExternalDs(dsIds, engine, baseUrl) {
     },
   })
   const res = await req.json()
-  console.log(res)
   return res.dataSets
 }
 

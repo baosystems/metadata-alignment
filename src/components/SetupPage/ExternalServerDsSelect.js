@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useAlert, useConfig, useDataEngine } from '@dhis2/app-runtime'
+import { useAlert, useDataEngine } from '@dhis2/app-runtime'
 import { formatParams, savePat } from '../../utils/apiUtils'
 import {
   MultiSelectField,
@@ -15,9 +15,7 @@ const ExternalServerDsSelect = ({
   config,
   setConfig,
 }) => {
-  const { baseUrl } = useConfig()
   const { baseUrl: targetUrl } = config
-  console.log('targetUrl: ', targetUrl)
   const [paToken, setPaToken] = useState(
     'd2pat_TxMOWxILdLLMGehs1CYBr0suDi3S3zNL1317041250'
   )
@@ -42,7 +40,7 @@ const ExternalServerDsSelect = ({
       const res = await req.json()
       if ('dataSets' in res) {
         setDsOptions(res.dataSets)
-        savePat(engine, { baseUrl, targetUrl }, paToken)
+        savePat(engine, targetUrl, paToken)
         setPaToken(null)
       } else {
         show()

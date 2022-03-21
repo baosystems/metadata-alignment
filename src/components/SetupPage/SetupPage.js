@@ -12,7 +12,10 @@ const SetupPage = ({ setSourceDs, setTargetDs }) => {
   const [sourceDsIds, setSourceDsIds] = useState([])
   const [sourceConfig, setSourceConfig] = useState({ ...initConfig })
   const [targetDsIds, setTargetDsIds] = useState([])
-  const [targetConfig, setTargetConfig] = useState({ ...initConfig })
+  const [targetConfig, setTargetConfig] = useState({
+    ...initConfig,
+    baseUrl: 'http://localhost:8080',
+  })
   const [loadingDs, setLoadingDs] = useState(false)
   const disableContinue = sourceDsIds.length < 1 || targetDsIds.length < 1
   const engine = useDataEngine()

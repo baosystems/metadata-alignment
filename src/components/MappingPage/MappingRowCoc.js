@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 
-const MappingRowCoc = ({ rowId, stateControl, options }) => {
+const MappingRowCoc = ({ rowId, stateControl, options, matchThreshold }) => {
   const { mapping, setMapping } = stateControl
-  const { sourceOpts, targetOpts } = options
+  const { sourceOpts, rankedTgtOpts } = options
+  console.log('Row props: ', rowId, stateControl, options, matchThreshold)
+  // Make suggestions on first render
+  useEffect(() => {
+    console.log('Initial mapping...')
+    const bestMatch = rankedTgtOpts[0]
+    if (bestMatch.score < matchThreshold) {
+      setMapping.targetCocs([bestMatch.id])
+    }
+  }, [])
 
   return (
     <DataTableRow key={`${rowId}-row`}>
@@ -23,7 +32,7 @@ const MappingRowCoc = ({ rowId, stateControl, options }) => {
           rowId={rowId}
           selected={mapping.targetCocs}
           onChange={(e) => setMapping.targetCocs(e.selected)}
-          options={targetOpts}
+          options={rankedTgtOpts}
         />
       </DataTableCell>
     </DataTableRow>
@@ -44,8 +53,15 @@ MappingRowCoc.propTypes = {
   }).isRequired,
   options: PropTypes.shape({
     sourceOpts: idNameArray.isRequired,
-    targetOpts: idNameArray.isRequired,
+    rankedTgtOpts: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        score: PropTypes.number.isRequired,
+      })
+    ),
   }).isRequired,
+  matchThreshold: PropTypes.number.isRequired,
 }
 
 export default MappingRowCoc

@@ -13,16 +13,14 @@ import { tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
 import MappingRowCoc from './MappingRowCoc'
 
-const MappingTable = ({ sourceOpts, targetOpts, tableState, tableType }) => {
-  const { mappings, setMappings, deCocMap } = tableState
-  if (tableType === tableTypes.COC) {
-    console.log('Rendering COC mapping table')
-    console.log('Source opts: ', sourceOpts)
-    console.log('Target opts: ', targetOpts)
-    console.log('Table state: ', tableState)
-  }
+const MappingTable = ({
+  sourceOpts,
+  tableState,
+  tableType,
+  matchThreshold,
+}) => {
+  const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
-  const options = { sourceOpts, targetOpts }
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
   return (
     <DataTable className={`dataTable ${styles}`}>
@@ -43,11 +41,17 @@ const MappingTable = ({ sourceOpts, targetOpts, tableState, tableType }) => {
               setMapping: setMappings[idx],
               deCocMap,
             },
-            options: options,
+            options: { sourceOpts, rankedTgtOpts: rankedSuggestions[id] },
+            matchThreshold,
           }
           switch (tableType) {
             case tableTypes.DE:
-              return <MappingRowDe {...rowProps} />
+              return (
+                <MappingRowDe
+                  {...rowProps}
+                  rankedSuggestions={rankedSuggestions}
+                />
+              )
             case tableTypes.COC:
               return <MappingRowCoc {...rowProps} />
             default:
@@ -61,13 +65,22 @@ const MappingTable = ({ sourceOpts, targetOpts, tableState, tableType }) => {
 
 MappingTable.propTypes = {
   sourceOpts: idNameArray.isRequired,
-  targetOpts: idNameArray.isRequired,
   tableState: PropTypes.shape({
     mappings: PropTypes.array,
     setMappings: PropTypes.array,
     deCocMap: PropTypes.object,
+    rankedSuggestions: PropTypes.shape({
+      [PropTypes.string]: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          score: PropTypes.number.isRequired,
+        })
+      ),
+    }),
   }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
+  matchThreshold: PropTypes.number.isRequired,
 }
 
 export default MappingTable

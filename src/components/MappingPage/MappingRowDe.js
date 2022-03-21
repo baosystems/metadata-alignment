@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
@@ -7,15 +7,29 @@ import MappingTable from './MappingTable'
 import { getCocs } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 
-const MappingRowDe = ({ rowId, stateControl, options }) => {
-  console.log('stateControl: ', stateControl)
+const MappingRowDe = ({
+  rowId,
+  stateControl,
+  options,
+  rankedSuggestions,
+  matchThreshold,
+}) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
   const { mapping, setMapping, deCocMap } = stateControl
-  console.log('mapping.sourceDes: ', mapping.sourceDes)
-  const { sourceOpts, targetOpts } = options
+  const { sourceOpts, rankedTgtOpts } = options
   const srcCount = mapping?.sourceDes?.length || 0
   const tgtCount = mapping?.targetDes?.length || 0
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
+
+  // Make suggestions on first render
+  useEffect(() => {
+    console.log('Initial mapping...')
+    const bestMatch = rankedTgtOpts[0]
+    if (bestMatch.score < matchThreshold) {
+      setMapping.targetDes([bestMatch.id])
+    }
+  }, [])
+
   let expandableContent
   if (sourceAndTarget) {
     const cocMappings = mapping.cocMappings
@@ -24,6 +38,7 @@ const MappingRowDe = ({ rowId, stateControl, options }) => {
       mappings: cocMappings,
       setMappings: setCocMappings,
       deCocMap,
+      rankedSuggestions,
     }
     const sourceCocs = getCocs(mapping.sourceDes, deCocMap)
     const targetCocs = getCocs(mapping.targetDes, deCocMap)
@@ -33,6 +48,7 @@ const MappingRowDe = ({ rowId, stateControl, options }) => {
         targetOpts={targetCocs}
         tableState={cocTableState}
         tableType={tableTypes.COC}
+        matchThreshold={matchThreshold}
       />
     )
   } else {
@@ -60,7 +76,7 @@ const MappingRowDe = ({ rowId, stateControl, options }) => {
           rowId={rowId}
           selected={mapping.targetDes}
           onChange={(e) => setMapping.targetDes(e.selected)}
-          options={targetOpts}
+          options={rankedTgtOpts}
         />
       </DataTableCell>
     </DataTableRow>
@@ -94,8 +110,24 @@ MappingRowDe.propTypes = {
   }).isRequired,
   options: PropTypes.shape({
     sourceOpts: idNameArray.isRequired,
-    targetOpts: idNameArray.isRequired,
+    rankedTgtOpts: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        score: PropTypes.number.isRequired,
+      })
+    ),
   }).isRequired,
+  rankedSuggestions: PropTypes.shape({
+    [PropTypes.string]: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        score: PropTypes.number.isRequired,
+      })
+    ),
+  }),
+  matchThreshold: PropTypes.number.isRequired,
 }
 
 export default MappingRowDe

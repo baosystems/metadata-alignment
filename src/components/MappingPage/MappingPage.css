@@ -1,5 +1,10 @@
+.mappingPage {
+  justify-content: center;
+}
+
 .dataTable {
   table-layout: fixed !important;
+  width: 80%;
 }
 
 .withSubMaps > thead > tr > th:nth-child(1) {
