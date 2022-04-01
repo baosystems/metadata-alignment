@@ -6,10 +6,13 @@ export const MappingContext = createContext({
   setMapping: () => {},
 })
 
-function makeDeCocMap(deArr) {
-  const result = {}
-  for (const de of deArr) {
-    result[de.id] = de.categoryCombo.categoryOptionCombos
+function makeDeCocMap(sourceDeArr, targetDeArr) {
+  const result = { source: {}, target: {} }
+  for (const de of sourceDeArr) {
+    result.source[de.id] = de.categoryCombo.categoryOptionCombos
+  }
+  for (const de of targetDeArr) {
+    result.target[de.id] = de.categoryCombo.categoryOptionCombos
   }
   return result
 }
@@ -17,7 +20,7 @@ function makeDeCocMap(deArr) {
 function initaliseMap(srcDeArr, deCocMap) {
   const result = []
   for (const de of srcDeArr) {
-    const srcCocs = deCocMap[de.id]
+    const srcCocs = deCocMap.source[de.id]
     result.push({
       sourceDes: [de.id],
       targetDes: [],
@@ -54,24 +57,67 @@ function createIdNmMap(sourceDes, targetDes) {
   return { sourceDesMap, targetDesMap, sourceCocsMap, targetCocsMap }
 }
 
+const nonLetterMap = {
+  0: 'aaaaa',
+  1: 'bbbbb',
+  2: 'ccccc',
+  3: 'ddddd',
+  4: 'eeeee',
+  5: 'fffff',
+  6: 'ggggg',
+  7: 'hhhhh',
+  8: 'iiiii',
+  9: 'jjjjj',
+  '-': 'kkkkk',
+  '+': 'lllll',
+  '<': 'mmmmm',
+  '>': 'nnnnn',
+  ',': 'ooooo',
+}
+// Replace numbers and special characters with letters to help
+// the fuse module match mostly numeric fields better
+function letterifyString(s) {
+  // Make male and female disaggregations more divergent
+  const diverged = s.replace('Female', 'XXXXX')
+  return diverged
+    .split('')
+    .map((c) => nonLetterMap[c] || c)
+    .join('')
+}
+
+function letterifyObjValues(obj) {
+  const result = {}
+  for (const key in obj) {
+    result[key] = letterifyString(obj[key])
+  }
+  return result
+}
+
 function makeRankedSuggestions(sourceIdNmArr, targetIdNmArr, srcIdNmMap) {
   const fuseOpts = {
     includeScore: true,
     shouldSort: true,
+    isCaseSensitive: true,
     threshold: 1.0,
     findAllMatches: true,
     ignoreLocation: true,
-    keys: ['name'],
+    keys: ['abcName'],
   }
+  const srcIdLetterifiedNmMap = letterifyObjValues(srcIdNmMap)
   const sourceIds = sourceIdNmArr.map(({ id }) => id)
-  const tgtIdNms = targetIdNmArr.map(({ id, name }) => ({ id, name }))
+  const tgtIdNms = targetIdNmArr.map(({ id, name }) => ({
+    id,
+    name,
+    abcName: letterifyString(name),
+  }))
   const fuseMatcher = new Fuse(tgtIdNms, fuseOpts)
   const simtrix = {}
   for (const id of sourceIds) {
-    const orderedSimilarities = fuseMatcher.search(srcIdNmMap[id])
+    const orderedSimilarities = fuseMatcher.search(srcIdLetterifiedNmMap[id])
     simtrix[id] = orderedSimilarities.map((deMatch) => ({
       id: deMatch.item.id,
       name: deMatch.item.name,
+      abcName: deMatch.item.abcName,
       score: deMatch.score,
     }))
   }
@@ -100,7 +146,7 @@ function createSimilarityMatrix(sourceDes, targetDes) {
 }
 
 export const useMappingState = (sourceDes, targetDes) => {
-  const deCocMap = makeDeCocMap([...sourceDes, ...targetDes])
+  const deCocMap = makeDeCocMap(sourceDes, targetDes)
   const initVal = initaliseMap(sourceDes, deCocMap)
   const [mappings, setMappingsInternal] = useState(initVal)
   const rankedSuggestions = useMemo(

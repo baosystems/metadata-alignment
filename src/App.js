@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import classes from './App.module.css'
 import MappingPage from './components/MappingPage/MappingPage'
 import SetupPage from './components/SetupPage/SetupPage'
+import { mockSourceDs, mockTargetDs } from './tests/mockData/mockDataSets'
 
 const App = () => {
-  const [sourceDs, setSourceDs] = useState([])
-  const [targetDs, setTargetDs] = useState([])
+  const [sourceDs, setSourceDs] = useState(mockSourceDs)
+  const [targetDs, setTargetDs] = useState(mockTargetDs)
 
   return (
     <div className={classes.container}>

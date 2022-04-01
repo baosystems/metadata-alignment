@@ -3,7 +3,7 @@ import MappingTable from './MappingTable'
 import { flattenDataSets } from '../../utils/mappingUtils'
 import { dsPropType, tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
-import { InputField } from '@dhis2/ui'
+import ThresholdInput from './ThresholdInput'
 
 const MappingPage = ({ sourceDs, targetDs }) => {
   const sourceDes = flattenDataSets(sourceDs)
@@ -13,20 +13,17 @@ const MappingPage = ({ sourceDs, targetDs }) => {
   return (
     <div className="mappingPage">
       <h1>Configure Data set mapping</h1>
-      <InputField
-        label="Match threshold"
-        name="matchThreshold"
-        value={matchThreshold}
-        onChange={(e) => setMatchThreshold(e.value)}
-        inputWidth="50px"
-        helpText="Value between 0 and 1 to autofill mappings, lower values match more strictly"
+      <ThresholdInput
+        extMatchThresh={matchThreshold}
+        extSetMatchThresh={setMatchThreshold}
       />
       <MappingContext.Provider value={mappingState}>
         <MappingTable
           sourceOpts={sourceDes}
+          targetOpts={targetDes}
           tableState={mappingState}
           tableType={tableTypes.DE}
-          matchThreshold={matchThreshold}
+          matchThreshold={Number(matchThreshold)}
         />
       </MappingContext.Provider>
     </div>

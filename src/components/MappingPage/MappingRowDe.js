@@ -4,7 +4,7 @@ import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import MappingTable from './MappingTable'
-import { getCocs } from '../../utils/mappingUtils'
+import { autoFill, getCocs, getSourceNames } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 
 const MappingRowDe = ({
@@ -13,22 +13,23 @@ const MappingRowDe = ({
   options,
   rankedSuggestions,
   matchThreshold,
+  deCocMap,
 }) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
-  const { mapping, setMapping, deCocMap } = stateControl
+  const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
   const srcCount = mapping?.sourceDes?.length || 0
   const tgtCount = mapping?.targetDes?.length || 0
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
-
   // Make suggestions on first render
   useEffect(() => {
-    console.log('Initial mapping...')
-    const bestMatch = rankedTgtOpts[0]
-    if (bestMatch.score < matchThreshold) {
-      setMapping.targetDes([bestMatch.id])
-    }
-  }, [])
+    autoFill({
+      rankedTgtOpts,
+      matchThreshold,
+      sourceItems: getSourceNames(sourceOpts, mapping.sourceDes),
+      setMapping: setMapping.targetDes,
+    })
+  }, [matchThreshold])
 
   let expandableContent
   if (sourceAndTarget) {
@@ -37,11 +38,11 @@ const MappingRowDe = ({
     const cocTableState = {
       mappings: cocMappings,
       setMappings: setCocMappings,
-      deCocMap,
       rankedSuggestions,
     }
-    const sourceCocs = getCocs(mapping.sourceDes, deCocMap)
-    const targetCocs = getCocs(mapping.targetDes, deCocMap)
+    const sourceCocs = getCocs(mapping.sourceDes, deCocMap.source)
+    const targetCocs = getCocs(mapping.targetDes, deCocMap.target)
+
     expandableContent = (
       <MappingTable
         sourceOpts={sourceCocs}
@@ -106,7 +107,6 @@ MappingRowDe.propTypes = {
         })
       ).isRequired,
     }).isRequired,
-    deCocMap: PropTypes.object,
   }).isRequired,
   options: PropTypes.shape({
     sourceOpts: idNameArray.isRequired,
@@ -128,6 +128,7 @@ MappingRowDe.propTypes = {
     ),
   }),
   matchThreshold: PropTypes.number.isRequired,
+  deCocMap: PropTypes.object,
 }
 
 export default MappingRowDe

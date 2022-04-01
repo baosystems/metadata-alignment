@@ -4,13 +4,13 @@ const tstMapping = {
     {
       sourceDes: [{ id: 'srcDeUid1', nm: 'Source DE1' }],
       targetDes: [{ id: 'tgtDeUid1', nm: 'Target DE1' }],
-      coMappings: [
+      cocMappings: [
         {
-          sourceCos: [
-            { id: 'srcDe1Co1', nm: 'Source DE1-CO1' },
-            { id: 'srcDe1Co2', nm: 'Source DE1-CO2' },
+          sourceCocs: [
+            { id: 'srcDe1Coc1', nm: 'Source DE1-COC1' },
+            { id: 'srcDe1Coc2', nm: 'Source DE1-COC2' },
           ],
-          targetCos: [{ id: 'tgtDe1Co1', nm: 'Target DE1-CO1' }],
+          targetCocs: [{ id: 'tgtDe1Coc1', nm: 'Target DE1-COC1' }],
         },
       ],
     },

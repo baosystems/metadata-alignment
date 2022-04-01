@@ -15,6 +15,7 @@ import MappingRowCoc from './MappingRowCoc'
 
 const MappingTable = ({
   sourceOpts,
+  targetOpts,
   tableState,
   tableType,
   matchThreshold,
@@ -22,6 +23,11 @@ const MappingTable = ({
   const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
+  const rankOpts = (tgtOpts, allOptsRanked) => {
+    const tgtOptIds = tgtOpts.map(({ id }) => id)
+    return allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
+  }
+
   return (
     <DataTable className={`dataTable ${styles}`}>
       <DataTableHead>
@@ -33,15 +39,15 @@ const MappingTable = ({
       </DataTableHead>
       <DataTableBody>
         {sourceOpts.map(({ id }, idx) => {
+          const rankedTgtOpts = rankOpts(targetOpts, rankedSuggestions[id])
           const rowProps = {
             key: id,
             rowId: id,
             stateControl: {
               mapping: mappings[idx],
               setMapping: setMappings[idx],
-              deCocMap,
             },
-            options: { sourceOpts, rankedTgtOpts: rankedSuggestions[id] },
+            options: { sourceOpts, rankedTgtOpts },
             matchThreshold,
           }
           switch (tableType) {
@@ -50,6 +56,7 @@ const MappingTable = ({
                 <MappingRowDe
                   {...rowProps}
                   rankedSuggestions={rankedSuggestions}
+                  deCocMap={deCocMap}
                 />
               )
             case tableTypes.COC:
@@ -65,6 +72,7 @@ const MappingTable = ({
 
 MappingTable.propTypes = {
   sourceOpts: idNameArray.isRequired,
+  targetOpts: idNameArray.isRequired,
   tableState: PropTypes.shape({
     mappings: PropTypes.array,
     setMappings: PropTypes.array,

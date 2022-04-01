@@ -3,19 +3,20 @@ import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
+import { autoFill, getSourceNames } from '../../utils/mappingUtils'
 
 const MappingRowCoc = ({ rowId, stateControl, options, matchThreshold }) => {
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
-  console.log('Row props: ', rowId, stateControl, options, matchThreshold)
   // Make suggestions on first render
   useEffect(() => {
-    console.log('Initial mapping...')
-    const bestMatch = rankedTgtOpts[0]
-    if (bestMatch.score < matchThreshold) {
-      setMapping.targetCocs([bestMatch.id])
-    }
-  }, [])
+    autoFill({
+      rankedTgtOpts,
+      matchThreshold,
+      sourceItems: getSourceNames(sourceOpts, mapping.sourceCocs),
+      setMapping: setMapping.targetCocs,
+    })
+  }, [matchThreshold])
 
   return (
     <DataTableRow key={`${rowId}-row`}>
