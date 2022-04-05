@@ -1,6 +1,6 @@
 const config = {
   type: 'app',
-  title: 'Metadata Alignment',
+  title: 'Dataset Alignment',
   entryPoints: {
     app: './src/App.js',
   },

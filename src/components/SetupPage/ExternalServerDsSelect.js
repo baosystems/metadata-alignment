@@ -16,9 +16,7 @@ const ExternalServerDsSelect = ({
   setConfig,
 }) => {
   const { baseUrl: targetUrl } = config
-  const [paToken, setPaToken] = useState(
-    'd2pat_TxMOWxILdLLMGehs1CYBr0suDi3S3zNL1317041250'
-  )
+  const [paToken, setPaToken] = useState('')
   const engine = useDataEngine()
   const [dsOptions, setDsOptions] = useState(null)
   const { show } = useAlert(`Error connecting to ${targetUrl}`, {
@@ -74,6 +72,7 @@ const ExternalServerDsSelect = ({
       <InputField
         label="Personal access token (not password)"
         value={paToken}
+        placeholder="d2pat_xxx"
         onChange={(e) => setPaToken(e.value)}
       />
       <Button primary onClick={connect}>
