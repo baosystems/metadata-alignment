@@ -7,15 +7,17 @@ import { IconArrowRight24 } from '@dhis2/ui-icons'
 import './SetupPage.css'
 import { getDsData } from '../../utils/apiUtils'
 
-const SetupPage = ({ setSourceDs, setTargetDs }) => {
+const SetupPage = ({
+  setSourceDs,
+  setTargetDs,
+  setSourceUrl,
+  setTargetUrl,
+}) => {
   const initConfig = { dsLocation: null, baseUrl: null }
   const [sourceDsIds, setSourceDsIds] = useState([])
   const [sourceConfig, setSourceConfig] = useState({ ...initConfig })
   const [targetDsIds, setTargetDsIds] = useState([])
-  const [targetConfig, setTargetConfig] = useState({
-    ...initConfig,
-    baseUrl: 'http://localhost:8080',
-  })
+  const [targetConfig, setTargetConfig] = useState({ ...initConfig })
   const [loadingDs, setLoadingDs] = useState(false)
   const disableContinue = sourceDsIds.length < 1 || targetDsIds.length < 1
   const engine = useDataEngine()
@@ -24,6 +26,8 @@ const SetupPage = ({ setSourceDs, setTargetDs }) => {
     setLoadingDs(true)
     const sourceDs = await getDsData(engine, sourceDsIds, sourceConfig)
     const targetDs = await getDsData(engine, targetDsIds, targetConfig)
+    setSourceUrl(sourceConfig.baseUrl)
+    setTargetUrl(targetConfig.baseUrl)
     setSourceDs(sourceDs)
     setTargetDs(targetDs)
   }
@@ -66,6 +70,8 @@ const SetupPage = ({ setSourceDs, setTargetDs }) => {
 SetupPage.propTypes = {
   setSourceDs: PropTypes.func.isRequired,
   setTargetDs: PropTypes.func.isRequired,
+  setSourceUrl: PropTypes.func.isRequired,
+  setTargetUrl: PropTypes.func.isRequired,
 }
 
 export default SetupPage

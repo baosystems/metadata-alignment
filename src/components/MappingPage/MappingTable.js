@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useConfig } from '@dhis2/app-runtime'
 import MappingRowDe from './MappingRowDe'
 import {
   DataTable,
@@ -17,15 +18,26 @@ const MappingTable = ({
   sourceOpts,
   targetOpts,
   tableState,
+  urlParams,
   tableType,
   matchThreshold,
 }) => {
+  const { baseUrl } = useConfig()
   const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
+
   const rankOpts = (tgtOpts, allOptsRanked) => {
     const tgtOptIds = tgtOpts.map(({ id }) => id)
     return allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
+  }
+
+  const getUrl = (configUrl, baseUrl) => {
+    if (configUrl) {
+      return ` (${configUrl.replace('https://', '').replace('http://', '')})`
+    } else {
+      return ` (${baseUrl.replace('https://', '').replace('http://', '')})`
+    }
   }
 
   return (
@@ -33,8 +45,16 @@ const MappingTable = ({
       <DataTableHead>
         <DataTableRow>
           {hasSubMaps && <DataTableColumnHeader />}
-          <DataTableColumnHeader>Source</DataTableColumnHeader>
-          <DataTableColumnHeader>Target</DataTableColumnHeader>
+          <DataTableColumnHeader>
+            Source
+            {tableType === tableTypes.DE &&
+              getUrl(urlParams.sourceUrl, baseUrl)}
+          </DataTableColumnHeader>
+          <DataTableColumnHeader>
+            Target
+            {tableType === tableTypes.DE &&
+              getUrl(urlParams.targetUrl, baseUrl)}
+          </DataTableColumnHeader>
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
@@ -86,6 +106,10 @@ MappingTable.propTypes = {
         })
       ),
     }),
+  }),
+  urlParams: PropTypes.shape({
+    sourceUrl: PropTypes.string,
+    targetUrl: PropTypes.string,
   }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
   matchThreshold: PropTypes.number.isRequired,

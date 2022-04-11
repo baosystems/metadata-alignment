@@ -28,22 +28,43 @@ const udsQuery = {
   },
 }
 
+const keysQuery = {
+  nameSpaceKeys: {
+    resource: `userDataStore/${dataStoreKey}`,
+  },
+}
+
+const urlToKey = (url) => {
+  const noHttp = url.replace('https://', '').replace('http://', '')
+  return noHttp.replaceAll('.', '-')
+}
+
 const makeMutation = (type, urlKey, pat) => ({
   type,
   resource: `userDataStore/${dataStoreKey}/${urlKey}?encrypt=true`,
   data: { pat },
 })
 
+const saveToDs = async (engine, type, dataStoreInfo) => {
+  const { urlKey, pat } = dataStoreInfo
+  const dsChange = await engine.mutate(makeMutation(type, urlKey, pat))
+  console.log(`PAT saved in the data store (${dsChange.httpStatusCode})`)
+}
+
 export async function savePat(engine, targetUrl, pat) {
-  const urlKey = targetUrl.replace('https://', '').replace('http://', '')
+  const urlKey = urlToKey(targetUrl)
+  const dataStoreInfo = { urlKey, pat }
   try {
     const { namespaces } = await engine.query(udsQuery)
     if (namespaces.includes(dataStoreKey)) {
-      const updateDs = await engine.mutate(makeMutation('update', urlKey, pat))
-      console.log(`Updated user data store (${updateDs.httpStatusCode})`)
+      const { nameSpaceKeys } = await engine.query(keysQuery)
+      if (nameSpaceKeys.includes(urlKey)) {
+        saveToDs(engine, 'update', dataStoreInfo)
+      } else {
+        saveToDs(engine, 'create', dataStoreInfo)
+      }
     } else {
-      const updateDs = await engine.mutate(makeMutation('create', urlKey, pat))
-      console.log(`Added to user data store (${updateDs.httpStatusCode})`)
+      saveToDs('create', urlKey, pat)
     }
   } catch (e) {
     console.log('Error saving personal access token: ', e)
@@ -51,7 +72,7 @@ export async function savePat(engine, targetUrl, pat) {
 }
 
 async function getExternalDs(dsIds, engine, baseUrl) {
-  const urlKey = baseUrl.replace('https://', '').replace('http://', '')
+  const urlKey = urlToKey(baseUrl)
   const patRes = await engine.query({
     pat: {
       resource: `userDataStore/${dataStoreKey}/${urlKey}`,

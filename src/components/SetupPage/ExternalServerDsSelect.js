@@ -67,11 +67,13 @@ const ExternalServerDsSelect = ({
       <InputField
         label="External server url"
         value={targetUrl}
+        placeholder="https://"
         onChange={(e) => setConfig({ ...config, baseUrl: e.value })}
       />
       <InputField
         label="Personal access token (not password)"
         value={paToken}
+        type="password"
         placeholder="d2pat_xxx"
         onChange={(e) => setPaToken(e.value)}
       />
