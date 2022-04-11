@@ -64,7 +64,7 @@ export async function savePat(engine, targetUrl, pat) {
         saveToDs(engine, 'create', dataStoreInfo)
       }
     } else {
-      saveToDs('create', urlKey, pat)
+      saveToDs(engine, 'create', dataStoreInfo)
     }
   } catch (e) {
     console.log('Error saving personal access token: ', e)
