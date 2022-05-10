@@ -5,6 +5,8 @@ export const tableTypes = {
   COC: 'coc',
 }
 
+export const mappingsKey = 'mappings'
+
 const idNameArray = PropTypes.arrayOf(
   PropTypes.shape({
     id: PropTypes.string.isRequired,

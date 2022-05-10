@@ -5,19 +5,26 @@ import { flattenDataSets } from '../../utils/mappingUtils'
 import { dsPropType, tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
+import SaveMapping from './SaveMapping'
 
 const MappingPage = ({ sourceDs, targetDs, urlParams }) => {
   const sourceDes = flattenDataSets(sourceDs)
   const targetDes = flattenDataSets(targetDs)
   const mappingState = useMappingState(sourceDes, targetDes)
+  const { sourceUrl, targetUrl } = urlParams
+  const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   return (
     <div className="mappingPage">
       <h1>Configure Data set mapping</h1>
-      <ThresholdInput
-        extMatchThresh={matchThreshold}
-        extSetMatchThresh={setMatchThreshold}
-      />
+      <div className="tableControls">
+        <ThresholdInput
+          extMatchThresh={matchThreshold}
+          extSetMatchThresh={setMatchThreshold}
+        />
+        <SaveMapping mapConfig={mapConfig} mappings={mappingState.mappings} />
+      </div>
+
       <MappingContext.Provider value={mappingState}>
         <MappingTable
           sourceOpts={sourceDes}

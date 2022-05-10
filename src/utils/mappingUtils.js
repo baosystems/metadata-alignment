@@ -32,17 +32,12 @@ export function getSourceNames(opts, ids) {
 
 export function autoFill(config) {
   const { rankedTgtOpts, matchThreshold, sourceItems, setMapping } = config
-  console.log('Initial mapping...')
   const bestMatch = rankedTgtOpts[0]
   if (matchThreshold === 0.0) {
-    console.log('Perfect matches only')
     const hasSource = sourceItems.length > 0
     if (hasSource && bestMatch.name === sourceItems[0].name) {
       setMapping([bestMatch.id])
     } else {
-      console.log(
-        `'${bestMatch.name}' does not perfectly match '${sourceItems[0].name}'`
-      )
       setMapping([])
     }
   }

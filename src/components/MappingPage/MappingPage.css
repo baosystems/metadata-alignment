@@ -4,6 +4,13 @@
   background-color: #efefef;
 }
 
+.tableControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
 .dataTable {
   table-layout: fixed !important;
   width: 80%;
@@ -45,5 +52,5 @@
 .threshDescription {
   font-size: 12px;
   color: #666;
-  margin: 8px 0 32px 0;
+  margin: 8px 0 0 0;
 }

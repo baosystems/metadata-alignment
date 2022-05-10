@@ -3,4 +3,4 @@ export const dsLocations = {
   externalServer: 'externalServer',
 }
 
-export const dataStoreKey = 'patKey'
+export const dataStoreKey = 'metadataAlignment'
