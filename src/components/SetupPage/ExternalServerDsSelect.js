@@ -54,6 +54,8 @@ const ExternalServerDsSelect = ({
         label="Select data sets"
         onChange={(e) => setSelectedDs(e.selected)}
         selected={selectedDs}
+        clearable
+        filterable
       >
         {dsOptions.map(({ id, name }) => (
           <MultiSelectOption label={name} key={id} value={id} />

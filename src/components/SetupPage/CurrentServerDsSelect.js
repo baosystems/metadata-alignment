@@ -16,6 +16,8 @@ const CurrentServerDsSelect = ({ selectedDs, setSelectedDs }) => {
       loadingText="Loading data sets"
       error={error}
       validationText={error ? 'Error loading data sets' : ''}
+      clearable
+      filterable
     >
       {data?.allDataSets?.dataSets &&
         data.allDataSets.dataSets.map(({ id, name }) => (

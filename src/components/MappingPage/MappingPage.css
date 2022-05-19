@@ -35,7 +35,7 @@
 }
 
 .mappingMultiSelect span.overflow {
-  max-width: fit-content !important;
+  max-width: 590px !important;
 }
 
 .matchThreshold {
