@@ -11,7 +11,7 @@ const DsSelect = ({ selectedDs, setSelectedDs, config, setConfig, type }) => {
   const sharedProps = { selectedDs, setSelectedDs }
   const { dsLocation } = config
   return (
-    <Box height="400px" width="500px">
+    <Box height="420px" width="500px">
       <Card className="cardContent">
         <h2>Select {type}</h2>
         <p>Select the location of the {type} data sets:</p>

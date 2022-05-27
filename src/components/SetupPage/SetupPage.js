@@ -13,7 +13,7 @@ const SetupPage = ({
   setSourceUrl,
   setTargetUrl,
 }) => {
-  const initConfig = { dsLocation: null, baseUrl: null }
+  const initConfig = { dsLocation: null, baseUrl: 'https://', urlValid: true }
   const [sourceDsIds, setSourceDsIds] = useState([])
   const [sourceConfig, setSourceConfig] = useState({ ...initConfig })
   const [targetDsIds, setTargetDsIds] = useState([])
