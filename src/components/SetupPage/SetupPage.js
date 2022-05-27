@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useDataEngine, useConfig } from '@dhis2/app-runtime'
+import { useDataEngine } from '@dhis2/app-runtime'
 import DsSelect from './DsSelect'
 import { Button } from '@dhis2/ui'
 import { IconArrowRight24 } from '@dhis2/ui-icons'
@@ -21,10 +21,9 @@ const SetupPage = ({
   const [loadingDs, setLoadingDs] = useState(false)
   const disableContinue = sourceDsIds.length < 1 || targetDsIds.length < 1
   const engine = useDataEngine()
-  const { baseUrl: appBaseUrl } = useConfig()
 
   const formatUrl = (url) => {
-    const baseUrl = url || appBaseUrl
+    const baseUrl = url === 'https://' ? window.location.origin : url
     return baseUrl.replace('https://', '').replace('http://', '')
   }
 

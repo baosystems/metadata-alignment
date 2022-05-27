@@ -37,11 +37,11 @@ const MappingTable = ({
           {hasSubMaps && <DataTableColumnHeader />}
           <DataTableColumnHeader>
             Source
-            {tableType === tableTypes.DE && `(${urlParams.sourceUrl})`}
+            {tableType === tableTypes.DE && ` (${urlParams.sourceUrl})`}
           </DataTableColumnHeader>
           <DataTableColumnHeader>
             Target
-            {tableType === tableTypes.DE && `(${urlParams.targetUrl})`}
+            {tableType === tableTypes.DE && ` (${urlParams.targetUrl})`}
           </DataTableColumnHeader>
         </DataTableRow>
       </DataTableHead>
