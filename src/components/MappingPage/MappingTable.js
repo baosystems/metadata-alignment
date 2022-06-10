@@ -12,6 +12,7 @@ import './MappingPage.css'
 import { tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
 import MappingRowCoc from './MappingRowCoc'
+import { getUniqueOpts } from '../../utils/mappingUtils'
 
 const MappingTable = ({
   sourceOpts,
@@ -21,6 +22,8 @@ const MappingTable = ({
   tableType,
   matchThreshold,
 }) => {
+  const uniqueSrcOpts = getUniqueOpts(sourceOpts)
+  const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
@@ -46,8 +49,8 @@ const MappingTable = ({
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
-        {sourceOpts.map(({ id }, idx) => {
-          const rankedTgtOpts = rankOpts(targetOpts, rankedSuggestions[id])
+        {uniqueSrcOpts.map(({ id }, idx) => {
+          const rankedTgtOpts = rankOpts(uniqueTgtOpts, rankedSuggestions[id])
           const rowProps = {
             key: id,
             rowId: id,
@@ -55,7 +58,7 @@ const MappingTable = ({
               mapping: mappings[idx],
               setMapping: setMappings[idx],
             },
-            options: { sourceOpts, rankedTgtOpts },
+            options: { sourceOpts: uniqueSrcOpts, rankedTgtOpts },
             matchThreshold,
           }
           switch (tableType) {

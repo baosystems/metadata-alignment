@@ -47,3 +47,13 @@ export function autoFill(config) {
     setMapping([])
   }
 }
+
+export function getUniqueOpts(optArray) {
+  const uidSet = new Set()
+  return optArray.filter(({ id }) => {
+    if (!uidSet.has(id)) {
+      uidSet.add(id)
+      return true
+    }
+  })
+}
