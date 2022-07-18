@@ -23,12 +23,15 @@ const MappingRowDe = ({
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
   // Make suggestions on first render
   useEffect(() => {
-    autoFill({
+    const suggestedMapping = autoFill({
       rankedTgtOpts,
       matchThreshold,
       sourceItems: getSourceNames(sourceOpts, mapping.sourceDes),
-      setMapping: setMapping.targetDes,
     })
+    if (suggestedMapping.length > 0) {
+      setMapping.targetDes(suggestedMapping)
+      setShowSubMaps(true)
+    }
   }, [matchThreshold])
 
   let expandableContent

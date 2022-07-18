@@ -31,20 +31,20 @@ export function getSourceNames(opts, ids) {
 }
 
 export function autoFill(config) {
-  const { rankedTgtOpts, matchThreshold, sourceItems, setMapping } = config
+  const { rankedTgtOpts, matchThreshold, sourceItems } = config
   const bestMatch = rankedTgtOpts[0]
   if (matchThreshold === 0.0) {
     const hasSource = sourceItems.length > 0
     if (hasSource && bestMatch.name === sourceItems[0].name) {
-      setMapping([bestMatch.id])
+      return [bestMatch.id]
     } else {
-      setMapping([])
+      return []
     }
   }
   if (bestMatch.score < matchThreshold) {
-    setMapping([bestMatch.id])
+    return [bestMatch.id]
   } else {
-    setMapping([])
+    return []
   }
 }
 

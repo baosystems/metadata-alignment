@@ -10,12 +10,14 @@ const MappingRowCoc = ({ rowId, stateControl, options, matchThreshold }) => {
   const { sourceOpts, rankedTgtOpts } = options
   // Make suggestions on first render
   useEffect(() => {
-    autoFill({
+    const suggestedMapping = autoFill({
       rankedTgtOpts,
       matchThreshold,
       sourceItems: getSourceNames(sourceOpts, mapping.sourceCocs),
-      setMapping: setMapping.targetCocs,
     })
+    if (suggestedMapping.length > 0) {
+      setMapping.targetCocs(suggestedMapping)
+    }
   }, [matchThreshold])
 
   return (
