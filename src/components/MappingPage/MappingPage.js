@@ -5,6 +5,7 @@ import { flattenDataSets } from '../../utils/mappingUtils'
 import { dsPropType, tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
+import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
 
 const MappingPage = ({ sourceDs, targetDs, urlParams }) => {
@@ -22,6 +23,7 @@ const MappingPage = ({ sourceDs, targetDs, urlParams }) => {
           extMatchThresh={matchThreshold}
           extSetMatchThresh={setMatchThreshold}
         />
+        <ExportMapping mapConfig={mapConfig} mappings={mappingState.mappings} />
         <SaveMapping mapConfig={mapConfig} mappings={mappingState.mappings} />
       </div>
 

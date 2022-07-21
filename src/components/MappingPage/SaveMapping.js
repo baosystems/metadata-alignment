@@ -4,6 +4,7 @@ import { Button } from '@dhis2/ui'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { dsPropType, mappingsKey } from './MappingConsts'
 import { dataStoreKey } from '../SetupPage/SetupPageConsts'
+import { getMapInfo } from '../../utils/mappingUtils'
 
 export const dsQuery = {
   namespaces: {
@@ -51,15 +52,6 @@ function mapsMatch(map1, map2) {
   return srcDSetsMatch && tgtDSetsMatch && srcUrlMatch && tgtUrlMatch
 }
 
-function getMapInfo(dSets) {
-  const result = { ids: [], names: [] }
-  for (const ds of dSets) {
-    result.ids.push(ds.id)
-    result.names.push(ds.name)
-  }
-  return result
-}
-
 const SaveMapping = ({ mapConfig, mappings }) => {
   const engine = useDataEngine()
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
@@ -101,7 +93,7 @@ const SaveMapping = ({ mapConfig, mappings }) => {
   }
 
   return (
-    <Button onClick={handleSave} primary>
+    <Button className="saveButton" onClick={handleSave} primary>
       Save mapping
     </Button>
   )

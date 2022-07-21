@@ -5,7 +5,7 @@ import { Button, InputField } from '@dhis2/ui'
 const ThresholdInput = ({ extMatchThresh, extSetMatchThresh }) => {
   const [matchThreshold, setMatchThreshold] = useState(extMatchThresh)
   return (
-    <div>
+    <div className="thresholdSection">
       <label htmlFor="matchThreshold" className="threshLabel">
         Match threshold
       </label>

@@ -57,3 +57,12 @@ export function getUniqueOpts(optArray) {
     }
   })
 }
+
+export function getMapInfo(dSets) {
+  const result = { ids: [], names: [] }
+  for (const ds of dSets) {
+    result.ids.push(ds.id)
+    result.names.push(ds.name)
+  }
+  return result
+}

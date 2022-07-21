@@ -31,3 +31,10 @@ export const dsPropType = PropTypes.arrayOf(
     ),
   })
 )
+
+export const csvExportHeaders = [
+  'dataitemid_src',
+  'catoptcomboid_src',
+  'dataitemid_tgt',
+  'catoptcomboid_tgt',
+]
