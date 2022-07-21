@@ -34,6 +34,22 @@ const MappingRowDe = ({
     }
   }, [matchThreshold])
 
+  const handleSourceChange = (selected) => {
+    if (selected.length === 0) {
+      setMapping.cocSetters.sourceCocs([])
+    }
+    setMapping.sourceDes(selected)
+  }
+
+  const handleTargetChange = (selected) => {
+    if (selected.length === 0) {
+      for (const { targetCocs } of setMapping.cocSetters) {
+        targetCocs([])
+      }
+    }
+    setMapping.targetDes(selected)
+  }
+
   let expandableContent
   if (sourceAndTarget) {
     const cocMappings = mapping.cocMappings
@@ -71,7 +87,7 @@ const MappingRowDe = ({
         <MappingSelect
           rowId={rowId}
           selected={mapping.sourceDes}
-          onChange={(e) => setMapping.sourceDes(e.selected)}
+          onChange={(e) => handleSourceChange(e.selected)}
           options={sourceOpts}
         />
       </DataTableCell>
@@ -79,7 +95,7 @@ const MappingRowDe = ({
         <MappingSelect
           rowId={rowId}
           selected={mapping.targetDes}
-          onChange={(e) => setMapping.targetDes(e.selected)}
+          onChange={(e) => handleTargetChange(e.selected)}
           options={rankedTgtOpts}
         />
       </DataTableCell>
