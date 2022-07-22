@@ -1,0 +1,49 @@
+.barContents {
+  display: flex;
+  width: calc(100% - 66px);
+  font-size: var(--td14);
+}
+
+.barItem {
+  border: 1px solid #d5dde5;
+  background-color: #fff;
+  width: calc(33.3% - var(--spacers-dp24));
+  text-align: center;
+  padding: var(--spacers-dp12) 0;
+  margin-left: -1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacers-dp16);
+  fill: currentColor;
+  cursor: pointer;
+}
+
+.barItem:hover {
+  background-color: var(--colors-grey200);
+}
+
+.selected,
+.selected:hover {
+  background-color: #c5e3fc;
+  color: #1565c0;
+}
+
+.barTitle {
+  font-weight: 500;
+  margin: 10px 0px;
+  min-width: 300px;
+  text-align: center;
+  left: 0;
+  cursor: pointer;
+}
+
+.pageContent {
+  --left-margin: 300px;
+  --top-margin: 140px;
+}
+
+.routeContent {
+  height: 100%;
+  width: 100%;
+}

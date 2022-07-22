@@ -145,9 +145,15 @@ function createSimilarityMatrix(sourceDes, targetDes) {
   }
 }
 
-export const useMappingState = (sourceDes, targetDes) => {
+export const useMappingState = (sourceDes, targetDes, initMapping) => {
+  let initVal = []
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
-  const initVal = initaliseMap(sourceDes, deCocMap)
+  const existingMapping = initMapping && initMapping.length > 0
+  if (existingMapping) {
+    initVal = initMapping
+  } else {
+    initVal = initaliseMap(sourceDes, deCocMap)
+  }
   const [mappings, setMappingsInternal] = useState(initVal)
   const rankedSuggestions = useMemo(
     () => createSimilarityMatrix(sourceDes, targetDes),

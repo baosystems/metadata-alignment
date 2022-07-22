@@ -1,24 +1,37 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import { autoFill, getSourceNames } from '../../utils/mappingUtils'
 
-const MappingRowCoc = ({ rowId, stateControl, options, matchThreshold }) => {
+const MappingRowCoc = ({
+  rowId,
+  stateControl,
+  options,
+  matchThreshold,
+  makeInitialSuggestions,
+}) => {
+  const [firstRender, setFirstRender] = useState(true)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
   // Make suggestions on first render
   useEffect(() => {
-    const suggestedMapping = autoFill({
-      rankedTgtOpts,
-      matchThreshold,
-      sourceItems: getSourceNames(sourceOpts, mapping.sourceCocs),
-    })
-    if (suggestedMapping.length > 0) {
-      setMapping.targetCocs(suggestedMapping)
+    if (makeInitialSuggestions || (!makeInitialSuggestions && !firstRender)) {
+      const suggestedMapping = autoFill({
+        rankedTgtOpts,
+        matchThreshold,
+        sourceItems: getSourceNames(sourceOpts, mapping.sourceCocs),
+      })
+      if (suggestedMapping.length > 0) {
+        setMapping.targetCocs(suggestedMapping)
+      }
     }
   }, [matchThreshold])
+
+  useEffect(() => {
+    setFirstRender(false)
+  }, [])
 
   return (
     <DataTableRow key={`${rowId}-row`}>
@@ -65,6 +78,7 @@ MappingRowCoc.propTypes = {
     ),
   }).isRequired,
   matchThreshold: PropTypes.number.isRequired,
+  makeInitialSuggestions: PropTypes.bool,
 }
 
 export default MappingRowCoc

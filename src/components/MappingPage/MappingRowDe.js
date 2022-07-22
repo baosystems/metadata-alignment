@@ -14,25 +14,33 @@ const MappingRowDe = ({
   rankedSuggestions,
   matchThreshold,
   deCocMap,
+  makeInitialSuggestions,
 }) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
+  const [firstRender, setFirstRender] = useState(true)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
   const srcCount = mapping?.sourceDes?.length || 0
   const tgtCount = mapping?.targetDes?.length || 0
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
-  // Make suggestions on first render
+  // Make suggestions
   useEffect(() => {
-    const suggestedMapping = autoFill({
-      rankedTgtOpts,
-      matchThreshold,
-      sourceItems: getSourceNames(sourceOpts, mapping.sourceDes),
-    })
-    if (suggestedMapping.length > 0) {
-      setMapping.targetDes(suggestedMapping)
-      setShowSubMaps(true)
+    if (makeInitialSuggestions || (!makeInitialSuggestions && !firstRender)) {
+      const suggestedMapping = autoFill({
+        rankedTgtOpts,
+        matchThreshold,
+        sourceItems: getSourceNames(sourceOpts, mapping.sourceDes),
+      })
+      if (suggestedMapping.length > 0) {
+        setMapping.targetDes(suggestedMapping)
+        setShowSubMaps(true)
+      }
     }
   }, [matchThreshold])
+
+  useEffect(() => {
+    setFirstRender(false)
+  }, [])
 
   const handleSourceChange = (selected) => {
     if (selected.length === 0) {
@@ -69,6 +77,7 @@ const MappingRowDe = ({
         tableState={cocTableState}
         tableType={tableTypes.COC}
         matchThreshold={matchThreshold}
+        makeInitialSuggestions={makeInitialSuggestions}
       />
     )
   } else {
@@ -148,6 +157,7 @@ MappingRowDe.propTypes = {
   }),
   matchThreshold: PropTypes.number.isRequired,
   deCocMap: PropTypes.object,
+  makeInitialSuggestions: PropTypes.bool,
 }
 
 export default MappingRowDe

@@ -1,18 +1,23 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useContext } from 'react'
 import MappingTable from './MappingTable'
 import { flattenDataSets } from '../../utils/mappingUtils'
-import { dsPropType, tableTypes } from './MappingConsts'
+import { tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
 import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
+import { SharedStateContext } from '../../sharedStateContext'
 
-const MappingPage = ({ sourceDs, targetDs, urlParams }) => {
+const MappingPage = () => {
+  const sharedState = useContext(SharedStateContext)
+  const { sourceDs, targetDs, sourceUrl, targetUrl, currentMapping } =
+    sharedState
+  if (!sourceDs.length > 0 || !targetDs.length > 0) {
+    return <p>Please setup or load a mapping via the other pages</p>
+  }
   const sourceDes = flattenDataSets(sourceDs)
   const targetDes = flattenDataSets(targetDs)
-  const mappingState = useMappingState(sourceDes, targetDes)
-  const { sourceUrl, targetUrl } = urlParams
+  const mappingState = useMappingState(sourceDes, targetDes, currentMapping)
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   return (
@@ -31,23 +36,15 @@ const MappingPage = ({ sourceDs, targetDs, urlParams }) => {
         <MappingTable
           sourceOpts={sourceDes}
           targetOpts={targetDes}
-          urlParams={urlParams}
+          urlParams={{ sourceUrl, targetUrl }}
           tableState={mappingState}
           tableType={tableTypes.DE}
           matchThreshold={Number(matchThreshold)}
+          makeInitialSuggestions={currentMapping.length === 0}
         />
       </MappingContext.Provider>
     </div>
   )
-}
-
-MappingPage.propTypes = {
-  sourceDs: dsPropType,
-  targetDs: dsPropType,
-  urlParams: PropTypes.shape({
-    sourceUrl: PropTypes.string.isRequired,
-    targetUrl: PropTypes.string.isRequired,
-  }),
 }
 
 export default MappingPage

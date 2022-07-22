@@ -1,18 +1,15 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useContext } from 'react'
 import { useDataEngine } from '@dhis2/app-runtime'
 import DsSelect from './DsSelect'
 import { Button } from '@dhis2/ui'
 import { IconArrowRight24 } from '@dhis2/ui-icons'
 import './SetupPage.css'
 import { getDsData } from '../../utils/apiUtils'
+import { SharedStateContext } from '../../sharedStateContext'
+import { useHistory } from 'react-router-dom'
 
-const SetupPage = ({
-  setSourceDs,
-  setTargetDs,
-  setSourceUrl,
-  setTargetUrl,
-}) => {
+const SetupPage = () => {
+  const sharedState = useContext(SharedStateContext)
   const initConfig = { dsLocation: null, baseUrl: 'https://', urlValid: true }
   const [sourceDsIds, setSourceDsIds] = useState([])
   const [sourceConfig, setSourceConfig] = useState({ ...initConfig })
@@ -21,6 +18,7 @@ const SetupPage = ({
   const [loadingDs, setLoadingDs] = useState(false)
   const disableContinue = sourceDsIds.length < 1 || targetDsIds.length < 1
   const engine = useDataEngine()
+  const history = useHistory()
 
   const formatUrl = (url) => {
     const baseUrl = url === 'https://' ? window.location.origin : url
@@ -31,10 +29,12 @@ const SetupPage = ({
     setLoadingDs(true)
     const sourceDs = await getDsData(engine, sourceDsIds, sourceConfig)
     const targetDs = await getDsData(engine, targetDsIds, targetConfig)
-    setSourceUrl(formatUrl(sourceConfig.baseUrl))
-    setTargetUrl(formatUrl(targetConfig.baseUrl))
-    setSourceDs(sourceDs)
-    setTargetDs(targetDs)
+    sharedState.setSourceUrl(formatUrl(sourceConfig.baseUrl))
+    sharedState.setTargetUrl(formatUrl(targetConfig.baseUrl))
+    sharedState.setSourceDs(sourceDs)
+    sharedState.setTargetDs(targetDs)
+    sharedState.setCurrentMapping([])
+    history.push('/edit')
   }
 
   return (
@@ -70,13 +70,6 @@ const SetupPage = ({
       </div>
     </div>
   )
-}
-
-SetupPage.propTypes = {
-  setSourceDs: PropTypes.func.isRequired,
-  setTargetDs: PropTypes.func.isRequired,
-  setSourceUrl: PropTypes.func.isRequired,
-  setTargetUrl: PropTypes.func.isRequired,
 }
 
 export default SetupPage

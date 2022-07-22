@@ -21,13 +21,13 @@ const MappingTable = ({
   urlParams,
   tableType,
   matchThreshold,
+  makeInitialSuggestions,
 }) => {
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
-
   const rankOpts = (tgtOpts, allOptsRanked) => {
     const tgtOptIds = tgtOpts.map(({ id }) => id)
     return allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
@@ -60,6 +60,7 @@ const MappingTable = ({
             },
             options: { sourceOpts: uniqueSrcOpts, rankedTgtOpts },
             matchThreshold,
+            makeInitialSuggestions,
           }
           switch (tableType) {
             case tableTypes.DE:
@@ -104,6 +105,7 @@ MappingTable.propTypes = {
   }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
   matchThreshold: PropTypes.number.isRequired,
+  makeInitialSuggestions: PropTypes.bool,
 }
 
 export default MappingTable

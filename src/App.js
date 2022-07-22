@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { MenuBar } from './components'
+import SetupStateProvider from './SetupStateProvider'
+import { CssVariables } from '@dhis2/ui'
 import classes from './App.module.css'
-import MappingPage from './components/MappingPage/MappingPage'
-import SetupPage from './components/SetupPage/SetupPage'
 
 const App = () => {
-  const [sourceDs, setSourceDs] = useState([])
-  const [sourceUrl, setSourceUrl] = useState('')
-  const [targetDs, setTargetDs] = useState([])
-  const [targetUrl, setTargetUrl] = useState('')
-
   return (
     <div className={classes.container}>
-      {sourceDs.length > 0 && targetDs.length > 0 ? (
+      <CssVariables colors elevations layers spacers theme />
+      <SetupStateProvider>
+        <MenuBar />
+      </SetupStateProvider>
+      {/* {sourceDs.length > 0 && targetDs.length > 0 ? (
         <MappingPage
           sourceDs={sourceDs}
           targetDs={targetDs}
@@ -24,7 +24,7 @@ const App = () => {
           setSourceUrl={setSourceUrl}
           setTargetUrl={setTargetUrl}
         />
-      )}
+      )} */}
     </div>
   )
 }

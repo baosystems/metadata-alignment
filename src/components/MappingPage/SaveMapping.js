@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { Button } from '@dhis2/ui'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { dsPropType, mappingsKey } from './MappingConsts'
+import { getRowKey } from '../../utils/dataStoreUtils'
 import { dataStoreKey } from '../SetupPage/SetupPageConsts'
-import { getMapInfo } from '../../utils/mappingUtils'
 
 export const dsQuery = {
   namespaces: {
@@ -30,43 +30,23 @@ const mappingsMutation = (type, maps) => ({
   data: maps,
 })
 
-function arrMatch(idArr1, idArr2) {
-  if (idArr1.length !== idArr2.length) {
-    return false
-  }
-  idArr1.sort()
-  idArr2.sort()
-  for (let i = 0; i < idArr1.length; i++) {
-    if (idArr1[i] != idArr2[i]) {
-      return false
-    }
-  }
-  return true
-}
-
-function mapsMatch(map1, map2) {
-  const srcDSetsMatch = arrMatch(map1.sourceDs.ids, map2.sourceDs.ids)
-  const tgtDSetsMatch = arrMatch(map1.targetDs.ids, map2.targetDs.ids)
-  const srcUrlMatch = map1.sourceUrl === map2.sourceUrl
-  const tgtUrlMatch = map1.targetUrl === map2.targetUrl
-  return srcDSetsMatch && tgtDSetsMatch && srcUrlMatch && tgtUrlMatch
-}
-
 const SaveMapping = ({ mapConfig, mappings }) => {
   const engine = useDataEngine()
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const { show: showErr } = useAlert((msg) => msg, { critical: true })
   const { show: showPass } = useAlert((msg) => msg, { success: true })
+  const rowKey = getRowKey(mapConfig)
   const thisMap = {
-    sourceDs: getMapInfo(sourceDs),
-    targetDs: getMapInfo(targetDs),
+    rowKey,
+    sourceDs,
+    targetDs,
     sourceUrl,
     targetUrl,
   }
   const handleSave = async () => {
     try {
       const existingMaps = await getMaps(engine)
-      const otherMaps = existingMaps.filter((map) => !mapsMatch(thisMap, map))
+      const otherMaps = existingMaps.filter((map) => map.rowKey !== rowKey)
       const importType = existingMaps.length != otherMaps.length ? 'upd' : 'cre'
       const newMaps = [{ ...thisMap, mappings }, ...otherMaps]
       await engine.mutate(mappingsMutation('update', newMaps))
