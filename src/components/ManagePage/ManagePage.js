@@ -45,8 +45,12 @@ const ManagePage = () => {
                   <DataTableCell>{targetUrl}</DataTableCell>
                   <DataTableCell>
                     <div className="rowControls">
-                      <EditMappingBtn mappingData={rowData} refresh={refresh} />
-                      <DeleteMappingBtn mappingData={rowData} />
+                      <EditMappingBtn mappingData={rowData} />
+                      <DeleteMappingBtn
+                        mappingData={rowData}
+                        allMaps={data}
+                        refresh={refresh}
+                      />
                     </div>
                   </DataTableCell>
                 </DataTableRow>

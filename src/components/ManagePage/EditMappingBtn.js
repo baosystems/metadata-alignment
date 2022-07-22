@@ -23,14 +23,8 @@ const EditMappingBtn = ({ mappingData }) => {
 
 EditMappingBtn.propTypes = {
   mappingData: PropTypes.shape({
-    sourceDs: PropTypes.shape({
-      names: PropTypes.arrayOf(PropTypes.string),
-      ids: PropTypes.arrayOf(PropTypes.string),
-    }),
-    targetDs: PropTypes.shape({
-      names: PropTypes.arrayOf(PropTypes.string),
-      ids: PropTypes.arrayOf(PropTypes.string),
-    }),
+    sourceDs: PropTypes.array.isRequired,
+    targetDs: PropTypes.array.isRequired,
     sourceUrl: PropTypes.string.isRequired,
     targetUrl: PropTypes.string.isRequired,
     mappings: PropTypes.arrayOf(
