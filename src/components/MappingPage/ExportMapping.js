@@ -55,10 +55,7 @@ const ExportMapping = ({ mapConfig, mappings }) => {
         }
         for (const deUid of sourceDes) {
           for (const cocUid of sourceCocs) {
-            const mapRow = [deUid, cocUid, targetDes[0], targetCocs[0]]
-            if (mapRow.every((v) => Boolean(v))) {
-              result.push(mapRow)
-            }
+            result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
           }
         }
       }
