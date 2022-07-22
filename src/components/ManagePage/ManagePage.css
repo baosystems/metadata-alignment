@@ -1,0 +1,13 @@
+.managePage {
+  margin: 66px;
+}
+
+.rowControls {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.managePage td {
+  padding: 10px 12px;
+}

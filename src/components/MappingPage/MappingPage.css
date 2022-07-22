@@ -1,7 +1,13 @@
 .mappingPage {
   justify-content: center;
   padding: 0 10%;
-  background-color: #efefef;
+}
+
+.noMapping {
+  display: flex;
+  justify-content: center;
+  height: 80%;
+  align-items: center;
 }
 
 .tableControls {

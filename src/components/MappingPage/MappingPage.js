@@ -13,7 +13,11 @@ const MappingPage = () => {
   const { sourceDs, targetDs, sourceUrl, targetUrl, currentMapping } =
     sharedState
   if (!sourceDs.length > 0 || !targetDs.length > 0) {
-    return <p>Please setup or load a mapping via the other pages</p>
+    return (
+      <p className="noMapping">
+        Please setup or load a mapping via the other pages
+      </p>
+    )
   }
   const sourceDes = flattenDataSets(sourceDs)
   const targetDes = flattenDataSets(targetDs)
