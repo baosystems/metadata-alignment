@@ -32,6 +32,9 @@ export function getSourceNames(opts, ids) {
 
 export function autoFill(config) {
   const { rankedTgtOpts, matchThreshold, sourceItems } = config
+  if (rankedTgtOpts.length === 0) {
+    return []
+  }
   const bestMatch = rankedTgtOpts[0]
   if (matchThreshold === 0.0) {
     const hasSource = sourceItems.length > 0
