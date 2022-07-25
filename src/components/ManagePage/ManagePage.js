@@ -1,6 +1,6 @@
 import React from 'react'
 import useMappings from './useMappings'
-import { TableLoading, TableError } from './TableStates'
+import { TableLoading, TableError, TableEmpty } from './TableStates'
 import { getRowKey } from '../../utils/dataStoreUtils'
 import EditMappingBtn from './EditMappingBtn'
 import DeleteMappingBtn from './DeleteMappingBtn'
@@ -31,6 +31,7 @@ const ManagePage = () => {
         <DataTableBody>
           {loading && <TableLoading />}
           {error && <TableError message={error} />}
+          {data.length === 0 && !loading && !error && <TableEmpty />}
           {data &&
             data.map((rowData) => {
               const { sourceDs, targetDs, sourceUrl, targetUrl } = rowData

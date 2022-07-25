@@ -6,18 +6,23 @@ const STATES = ['loading', 'error']
 const STATES_MAP = {
   LOADING: 'loading',
   ERROR: 'error',
+  EMPTY: 'empty',
 }
 
 const TableState = ({ content, type }) => (
   <DataTableRow>
     <DataTableCell colSpan="5">
-      {type === STATES_MAP.LOADING && (
-        <>
-          <CircularLoader />
-          Loading mappings...
-        </>
-      )}
-      {type === STATES_MAP.error && content}
+      <div className="rowContents">
+        {type === STATES_MAP.LOADING && (
+          <>
+            <CircularLoader />
+            Loading mappings...
+          </>
+        )}
+        {type === STATES_MAP.ERROR && content}
+        {type === STATES_MAP.EMPTY &&
+          "No mappings found, please use the 'Create new mapping' tab to create a new mapping"}
+      </div>
     </DataTableCell>
   </DataTableRow>
 )
@@ -36,3 +41,5 @@ export const TableError = ({ error }) => (
 TableError.propTypes = {
   error: PropTypes.any,
 }
+
+export const TableEmpty = () => <TableState type={STATES_MAP.EMPTY} />

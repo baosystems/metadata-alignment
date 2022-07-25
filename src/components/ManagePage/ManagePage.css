@@ -11,3 +11,10 @@
 .managePage td {
   padding: 10px 12px;
 }
+
+.rowContents {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
