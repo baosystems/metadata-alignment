@@ -82,7 +82,7 @@ async function getExternalDs(dsIds, engine, baseUrl) {
   const params = {
     filter: `id:in:[${dsIds.join(',')}]`,
     fields:
-      'id,name,dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))',
+      'id,name,categoryCombo(id,name,categoryOptionCombos(id,name)),dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))',
   }
   const req = await fetch(`${baseUrl}/api/dataSets?${formatParams(params)}`, {
     method: 'GET',

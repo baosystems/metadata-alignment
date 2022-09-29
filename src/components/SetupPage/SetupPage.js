@@ -34,6 +34,7 @@ const SetupPage = () => {
     sharedState.setSourceDs(sourceDs)
     sharedState.setTargetDs(targetDs)
     sharedState.setCurrentMapping([])
+    sharedState.setCurrentMappingAocs([])
     history.push('/edit')
   }
 

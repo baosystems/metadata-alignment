@@ -3,6 +3,18 @@ import PropTypes from 'prop-types'
 export const tableTypes = {
   DE: 'de',
   COC: 'coc',
+  AOC: 'aoc',
+}
+
+export const tableTypeKeys = {
+  [tableTypes.COC]: {
+    sourceKey: 'sourceCocs',
+    targetKey: 'targetCocs',
+  },
+  [tableTypes.AOC]: {
+    sourceKey: 'sourceAocs',
+    targetKey: 'targetAocs',
+  },
 }
 
 export const mappingsKey = 'mappings'

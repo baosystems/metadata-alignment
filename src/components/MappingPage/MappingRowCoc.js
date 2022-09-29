@@ -4,6 +4,7 @@ import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import { autoFill, getSourceNames } from '../../utils/mappingUtils'
+import { tableTypeKeys } from './MappingConsts'
 
 const MappingRowCoc = ({
   rowId,
@@ -11,20 +12,25 @@ const MappingRowCoc = ({
   options,
   matchThreshold,
   makeInitialSuggestions,
+  variant,
 }) => {
   const [firstRender, setFirstRender] = useState(true)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
+
+  const { sourceKey } = tableTypeKeys[variant]
+  const { targetKey } = tableTypeKeys[variant]
+
   // Make suggestions on first render
   useEffect(() => {
     if (makeInitialSuggestions || (!makeInitialSuggestions && !firstRender)) {
       const suggestedMapping = autoFill({
         rankedTgtOpts,
         matchThreshold,
-        sourceItems: getSourceNames(sourceOpts, mapping.sourceCocs),
+        sourceItems: getSourceNames(sourceOpts, mapping[sourceKey]),
       })
       if (suggestedMapping.length > 0) {
-        setMapping.targetCocs(suggestedMapping)
+        setMapping[targetKey](suggestedMapping)
       }
     }
   }, [matchThreshold])
@@ -38,16 +44,16 @@ const MappingRowCoc = ({
       <DataTableCell>
         <MappingSelect
           rowId={rowId}
-          selected={mapping.sourceCocs}
-          onChange={(e) => setMapping.sourceCocs(e.selected)}
+          selected={mapping[sourceKey]}
+          onChange={(e) => setMapping[sourceKey](e.selected)}
           options={sourceOpts}
         />
       </DataTableCell>
       <DataTableCell>
         <MappingSelect
           rowId={rowId}
-          selected={mapping.targetCocs}
-          onChange={(e) => setMapping.targetCocs(e.selected)}
+          selected={mapping[targetKey]}
+          onChange={(e) => setMapping[targetKey](e.selected)}
           options={rankedTgtOpts}
         />
       </DataTableCell>
@@ -79,6 +85,7 @@ MappingRowCoc.propTypes = {
   }).isRequired,
   matchThreshold: PropTypes.number.isRequired,
   makeInitialSuggestions: PropTypes.bool,
+  variant: PropTypes.string.isRequired,
 }
 
 export default MappingRowCoc

@@ -11,6 +11,8 @@ export const SharedStateContext = createContext({
   setTargetUrl: () => {},
   currentMapping: [],
   setCurrentMapping: () => {},
+  currentMappingAocs: [],
+  setCurrentMappingAocs: () => {},
 })
 
 export const useSharedState = () => {
@@ -19,6 +21,7 @@ export const useSharedState = () => {
   const [targetDs, setTargetDsInternal] = useState([])
   const [targetUrl, setTargetUrlInternal] = useState('')
   const [currentMapping, setCurrentMappingInternal] = useState({})
+  const [currentMappingAocs, setCurrentMappingAocsInternal] = useState({})
 
   const setSourceDs = useCallback((ds) => {
     setSourceDsInternal(ds)
@@ -35,6 +38,9 @@ export const useSharedState = () => {
   const setCurrentMapping = useCallback((mapping) => {
     setCurrentMappingInternal(mapping)
   }, [])
+  const setCurrentMappingAocs = useCallback((mapping) => {
+    setCurrentMappingAocsInternal(mapping)
+  }, [])
 
   return {
     sourceDs,
@@ -47,5 +53,7 @@ export const useSharedState = () => {
     setTargetUrl,
     currentMapping,
     setCurrentMapping,
+    currentMappingAocs,
+    setCurrentMappingAocs,
   }
 }

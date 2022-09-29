@@ -74,7 +74,9 @@ const MappingRowDe = ({
       <MappingTable
         sourceOpts={sourceCocs}
         targetOpts={targetCocs}
-        tableState={cocTableState}
+        mappings={cocTableState.mappings}
+        setMappings={cocTableState.setMappings}
+        suggestions={cocTableState.rankedSuggestions}
         tableType={tableTypes.COC}
         matchThreshold={matchThreshold}
         makeInitialSuggestions={makeInitialSuggestions}

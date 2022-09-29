@@ -15,6 +15,7 @@ const EditMappingBtn = ({ mappingData }) => {
     sharedState.setTargetDs(mappingData.targetDs)
     sharedState.setTargetUrl(mappingData.targetUrl)
     sharedState.setCurrentMapping(mappingData.mappings)
+    sharedState.setCurrentMappingAocs(mappingData.mappingsAocs)
     history.push('/edit')
   }
 

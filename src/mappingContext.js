@@ -17,7 +17,7 @@ function makeDeCocMap(sourceDeArr, targetDeArr) {
   return result
 }
 
-function initaliseMap(srcDeArr, deCocMap) {
+function initialiseMap(srcDeArr, deCocMap) {
   const result = []
   for (const de of srcDeArr) {
     const srcCocs = deCocMap.source[de.id]
@@ -30,6 +30,19 @@ function initaliseMap(srcDeArr, deCocMap) {
       })),
     })
   }
+  return result
+}
+
+function initialiseMapAocs(sourceAocs) {
+  const result = []
+
+  for (const aoc of sourceAocs) {
+    result.push({
+      sourceAocs: [aoc.id],
+      targetAocs: [],
+    })
+  }
+
   return result
 }
 
@@ -132,6 +145,27 @@ function idNmArrayFromMap(idNameMap) {
   return result
 }
 
+function createSimilarityMatrixAocs(sourceAocs, targetAocs) {
+  console.log('Creating similarity matrix Aocs')
+  const sourceIdNameMap = {}
+  const targetIdNameMap = {}
+
+  for (const { id, name } of sourceAocs) {
+    sourceIdNameMap[id] = name
+  }
+
+  for (const { id, name } of targetAocs) {
+    targetIdNameMap[id] = name
+  }
+
+  const sourceAocsArr = idNmArrayFromMap(sourceIdNameMap)
+  const targetAocsArr = idNmArrayFromMap(targetIdNameMap)
+
+  return {
+    ...makeRankedSuggestions(sourceAocsArr, targetAocsArr, sourceIdNameMap),
+  }
+}
+
 function createSimilarityMatrix(sourceDes, targetDes) {
   console.log('Creating similarity matrix')
   const idNmMap = createIdNmMap(sourceDes, targetDes)
@@ -145,20 +179,44 @@ function createSimilarityMatrix(sourceDes, targetDes) {
   }
 }
 
-export const useMappingState = (sourceDes, targetDes, initMapping) => {
+export const useMappingState = (
+  sourceDes,
+  targetDes,
+  sourceAocs,
+  targetAocs,
+  initMapping,
+  initMappingAocs
+) => {
   let initVal = []
+  let initValAocs = []
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
   const existingMapping = initMapping && initMapping.length > 0
+  const existingMappingAocs = initMappingAocs && initMappingAocs.length > 0
   if (existingMapping) {
     initVal = initMapping
   } else {
-    initVal = initaliseMap(sourceDes, deCocMap)
+    initVal = initialiseMap(sourceDes, deCocMap)
   }
+
+  if (existingMappingAocs) {
+    initValAocs = initMappingAocs
+  } else {
+    initValAocs = initialiseMapAocs(sourceAocs)
+  }
+
   const [mappings, setMappingsInternal] = useState(initVal)
+  const [mappingsAocs, setMappingsAocsInternal] = useState(initValAocs)
+
   const rankedSuggestions = useMemo(
     () => createSimilarityMatrix(sourceDes, targetDes),
     []
   )
+
+  const rankedSuggestionsAocs = useMemo(
+    () => createSimilarityMatrixAocs(sourceAocs, targetAocs),
+    []
+  )
+
   const setMappings = []
   for (let i = 0; i < mappings.length; i++) {
     const rowSetter = {
@@ -190,5 +248,31 @@ export const useMappingState = (sourceDes, targetDes, initMapping) => {
     }
     setMappings.push({ ...rowSetter, cocSetters: cocSetters })
   }
-  return { mappings, setMappings, deCocMap, rankedSuggestions }
+
+  const setMappingsAocs = []
+  for (let i = 0; i < mappingsAocs.length; i++) {
+    const rowSetter = {
+      sourceAocs: useCallback((v) => {
+        const newMappings = [...mappingsAocs]
+        newMappings[i].sourceAocs = v
+        setMappingsAocsInternal(newMappings)
+      }),
+      targetAocs: useCallback((v) => {
+        const newMappings = [...mappingsAocs]
+        newMappings[i].targetAocs = v
+        setMappingsAocsInternal(newMappings)
+      }),
+    }
+    setMappingsAocs.push({ ...rowSetter })
+  }
+
+  return {
+    mappings,
+    setMappings,
+    mappingsAocs,
+    setMappingsAocs,
+    deCocMap,
+    rankedSuggestions,
+    rankedSuggestionsAocs,
+  }
 }

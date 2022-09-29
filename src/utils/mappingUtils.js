@@ -1,9 +1,19 @@
-export function flattenDataSets(dSets) {
+export function flattenDataSetElements(dSets) {
   const des = []
   for (const { dataSetElements } of dSets) {
     des.push(...dataSetElements.map((dse) => dse.dataElement))
   }
   return des
+}
+
+export function flattenAocs(dSets) {
+  const aocs = []
+
+  for (const { categoryCombo } of dSets) {
+    aocs.push(...categoryCombo.categoryOptionCombos)
+  }
+
+  return aocs
 }
 
 export function getCocs(deIds, deCocMap) {

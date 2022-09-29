@@ -17,7 +17,10 @@ import { getUniqueOpts } from '../../utils/mappingUtils'
 const MappingTable = ({
   sourceOpts,
   targetOpts,
-  tableState,
+  mappings,
+  setMappings,
+  suggestions,
+  deCocMap,
   urlParams,
   tableType,
   matchThreshold,
@@ -25,7 +28,6 @@ const MappingTable = ({
 }) => {
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
-  const { mappings, setMappings, deCocMap, rankedSuggestions } = tableState
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
   const rankOpts = (tgtOpts, allOptsRanked) => {
@@ -40,17 +42,19 @@ const MappingTable = ({
           {hasSubMaps && <DataTableColumnHeader />}
           <DataTableColumnHeader>
             Source
-            {tableType === tableTypes.DE && ` (${urlParams.sourceUrl})`}
+            {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
+              ` (${urlParams.sourceUrl})`}
           </DataTableColumnHeader>
           <DataTableColumnHeader>
             Target
-            {tableType === tableTypes.DE && ` (${urlParams.targetUrl})`}
+            {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
+              ` (${urlParams.targetUrl})`}
           </DataTableColumnHeader>
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
         {uniqueSrcOpts.map(({ id }, idx) => {
-          const rankedTgtOpts = rankOpts(uniqueTgtOpts, rankedSuggestions[id])
+          const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
           const rowProps = {
             key: id,
             rowId: id,
@@ -67,12 +71,14 @@ const MappingTable = ({
               return (
                 <MappingRowDe
                   {...rowProps}
-                  rankedSuggestions={rankedSuggestions}
+                  rankedSuggestions={suggestions}
                   deCocMap={deCocMap}
                 />
               )
             case tableTypes.COC:
-              return <MappingRowCoc {...rowProps} />
+              return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
+            case tableTypes.AOC:
+              return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
             default:
               return <p>No mapping found for table type {tableType}</p>
           }
@@ -85,19 +91,17 @@ const MappingTable = ({
 MappingTable.propTypes = {
   sourceOpts: idNameArray.isRequired,
   targetOpts: idNameArray.isRequired,
-  tableState: PropTypes.shape({
-    mappings: PropTypes.array,
-    setMappings: PropTypes.array,
-    deCocMap: PropTypes.object,
-    rankedSuggestions: PropTypes.shape({
-      [PropTypes.string]: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          score: PropTypes.number.isRequired,
-        })
-      ),
-    }),
+  mappings: PropTypes.array,
+  setMappings: PropTypes.array,
+  deCocMap: PropTypes.object,
+  rankedSuggestions: PropTypes.shape({
+    [PropTypes.string]: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        score: PropTypes.number.isRequired,
+      })
+    ),
   }),
   urlParams: PropTypes.shape({
     sourceUrl: PropTypes.string,

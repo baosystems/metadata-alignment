@@ -30,7 +30,7 @@ const mappingsMutation = (type, maps) => ({
   data: maps,
 })
 
-const SaveMapping = ({ mapConfig, mappings }) => {
+const SaveMapping = ({ mapConfig, mappings, mappingsAocs }) => {
   const engine = useDataEngine()
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const { show: showErr } = useAlert((msg) => msg, { critical: true })
@@ -47,8 +47,9 @@ const SaveMapping = ({ mapConfig, mappings }) => {
     try {
       const existingMaps = await getMaps(engine)
       const otherMaps = existingMaps.filter((map) => map.rowKey !== rowKey)
-      const importType = existingMaps.length != otherMaps.length ? 'upd' : 'cre'
-      const newMaps = [{ ...thisMap, mappings }, ...otherMaps]
+      const importType =
+        existingMaps.length !== otherMaps.length ? 'upd' : 'cre'
+      const newMaps = [{ ...thisMap, mappings, mappingsAocs }, ...otherMaps]
       await engine.mutate(mappingsMutation('update', newMaps))
       showPass(`Mapping ${importType}ated`)
     } catch (e) {
@@ -87,6 +88,7 @@ SaveMapping.propTypes = {
     targetUrl: PropTypes.string.isRequired,
   }),
   mappings: PropTypes.array,
+  mappingsAocs: PropTypes.array,
 }
 
 export default SaveMapping
