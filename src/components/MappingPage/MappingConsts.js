@@ -26,6 +26,19 @@ const idNameArray = PropTypes.arrayOf(
   })
 )
 
+export const csvExportHeaders = [
+  'dataitemid_src',
+  'catoptcomboid_src',
+  'dataitemid_tgt',
+  'catoptcomboid_tgt',
+]
+
+export const aocCsvExportHeaders = [
+  'attoptcomboid_src',
+  'attoptcomboid_tgt',
+]
+
+
 export const dsPropType = PropTypes.arrayOf(
   PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -43,10 +56,3 @@ export const dsPropType = PropTypes.arrayOf(
     ),
   })
 )
-
-export const csvExportHeaders = [
-  'dataitemid_src',
-  'catoptcomboid_src',
-  'dataitemid_tgt',
-  'catoptcomboid_tgt',
-]

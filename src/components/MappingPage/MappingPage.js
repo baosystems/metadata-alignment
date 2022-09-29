@@ -91,7 +91,11 @@ const MappingPage = () => {
           extMatchThresh={matchThreshold}
           extSetMatchThresh={setMatchThreshold}
         />
-        <ExportMapping mapConfig={mapConfig} mappings={mappingState.mappings} />
+        <ExportMapping
+          mapConfig={mapConfig}
+          mappings={mappingState.mappings}
+          mappingsAocs={mappingState.mappingsAocs}
+        />
         <SaveMapping
           mapConfig={mapConfig}
           mappings={mappingState.mappings}
