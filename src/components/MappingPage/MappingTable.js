@@ -32,7 +32,16 @@ const MappingTable = ({
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
   const rankOpts = (tgtOpts, allOptsRanked) => {
     const tgtOptIds = tgtOpts.map(({ id }) => id)
-    return allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
+    const result = allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
+
+    if (result.length < tgtOpts.length) {
+      result.forEach(({ id }) => {
+        tgtOpts = tgtOpts.filter(({ id: tgtId, name }) => tgtId !== id)
+      })
+      result.push(...tgtOpts)
+    }
+
+    return result
   }
 
   return (
