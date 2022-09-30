@@ -204,8 +204,8 @@ export const useMappingState = (
     initValAocs = initialiseMapAocs(sourceAocs)
   }
 
-  const [mappings, setMappingsInternal] = useState(initVal)
-  const [mappingsAocs, setMappingsAocsInternal] = useState(initValAocs)
+  const [deCocMappings, setDeCocMappingsInternal] = useState(initVal)
+  const [aocMappings, setAocMappingsInternal] = useState(initValAocs)
 
   const rankedSuggestions = useMemo(
     () => createSimilarityMatrix(sourceDes, targetDes),
@@ -217,60 +217,60 @@ export const useMappingState = (
     []
   )
 
-  const setMappings = []
-  for (let i = 0; i < mappings.length; i++) {
+  const setDeCocMappings = []
+  for (let i = 0; i < deCocMappings.length; i++) {
     const rowSetter = {
       sourceDes: useCallback((v) => {
-        const newMappings = [...mappings]
+        const newMappings = [...deCocMappings]
         newMappings[i].sourceDes = v
-        setMappingsInternal(newMappings)
+        setDeCocMappingsInternal(newMappings)
       }),
       targetDes: useCallback((v) => {
-        const newMappings = [...mappings]
+        const newMappings = [...deCocMappings]
         newMappings[i].targetDes = v
-        setMappingsInternal(newMappings)
+        setDeCocMappingsInternal(newMappings)
       }),
     }
     const cocSetters = []
-    for (let j = 0; j < mappings[i].cocMappings.length; j++) {
+    for (let j = 0; j < deCocMappings[i].cocMappings.length; j++) {
       cocSetters.push({
         sourceCocs: useCallback((v) => {
-          const newMappings = [...mappings]
+          const newMappings = [...deCocMappings]
           newMappings[i].cocMappings[j].sourceCocs = v
-          setMappingsInternal(newMappings)
+          setDeCocMappingsInternal(newMappings)
         }),
         targetCocs: useCallback((v) => {
-          const newMappings = [...mappings]
+          const newMappings = [...deCocMappings]
           newMappings[i].cocMappings[j].targetCocs = v
-          setMappingsInternal(newMappings)
+          setDeCocMappingsInternal(newMappings)
         }),
       })
     }
-    setMappings.push({ ...rowSetter, cocSetters: cocSetters })
+    setDeCocMappings.push({ ...rowSetter, cocSetters: cocSetters })
   }
 
-  const setMappingsAocs = []
-  for (let i = 0; i < mappingsAocs.length; i++) {
+  const setAocMappings = []
+  for (let i = 0; i < aocMappings.length; i++) {
     const rowSetter = {
       sourceAocs: useCallback((v) => {
-        const newMappings = [...mappingsAocs]
+        const newMappings = [...aocMappings]
         newMappings[i].sourceAocs = v
-        setMappingsAocsInternal(newMappings)
+        setAocMappingsInternal(newMappings)
       }),
       targetAocs: useCallback((v) => {
-        const newMappings = [...mappingsAocs]
+        const newMappings = [...aocMappings]
         newMappings[i].targetAocs = v
-        setMappingsAocsInternal(newMappings)
+        setAocMappingsInternal(newMappings)
       }),
     }
-    setMappingsAocs.push({ ...rowSetter })
+    setAocMappings.push({ ...rowSetter })
   }
 
   return {
-    mappings,
-    setMappings,
-    mappingsAocs,
-    setMappingsAocs,
+    deCocMappings,
+    setDeCocMappings,
+    aocMappings,
+    setAocMappings,
     deCocMap,
     rankedSuggestions,
     rankedSuggestionsAocs,

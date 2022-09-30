@@ -56,8 +56,8 @@ const MappingPage = () => {
         sourceOpts={sourceDes}
         targetOpts={targetDes}
         urlParams={{ sourceUrl, targetUrl }}
-        mappings={mappingState.mappings}
-        setMappings={mappingState.setMappings}
+        mappings={mappingState.deCocMappings}
+        setMappings={mappingState.setDeCocMappings}
         suggestions={mappingState.rankedSuggestions}
         deCocMap={mappingState.deCocMap}
         tableType={tableTypes.DE}
@@ -73,8 +73,8 @@ const MappingPage = () => {
         sourceOpts={sourceAocs}
         targetOpts={targetAocs}
         urlParams={{ sourceUrl, targetUrl }}
-        mappings={mappingState.mappingsAocs}
-        setMappings={mappingState.setMappingsAocs}
+        mappings={mappingState.aocMappings}
+        setMappings={mappingState.setAocMappings}
         suggestions={mappingState.rankedSuggestionsAocs}
         tableType={tableTypes.AOC}
         matchThreshold={Number(matchThreshold)}
@@ -93,13 +93,13 @@ const MappingPage = () => {
         />
         <ExportMapping
           mapConfig={mapConfig}
-          mappings={mappingState.mappings}
-          mappingsAocs={mappingState.mappingsAocs}
+          deCocMappings={mappingState.deCocMappings}
+          aocMappings={mappingState.aocMappings}
         />
         <SaveMapping
           mapConfig={mapConfig}
-          mappings={mappingState.mappings}
-          mappingsAocs={mappingState.mappingsAocs}
+          deCocMappings={mappingState.deCocMappings}
+          aocMappings={mappingState.aocMappings}
         />
       </div>
       <DataTable>

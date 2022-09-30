@@ -1,6 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {aocCsvExportHeaders, csvExportHeaders, dsPropType} from './MappingConsts'
+import {
+  aocCsvExportHeaders,
+  csvExportHeaders,
+  dsPropType,
+} from './MappingConsts'
 import { useAlert } from '@dhis2/app-runtime'
 import { Button } from '@dhis2/ui'
 import { getMapInfo } from '../../utils/mappingUtils'
@@ -22,7 +26,7 @@ export function saveAsCsv(csvData, downloadElId, fileName) {
   link.click()
 }
 
-const ExportMapping = ({ mapConfig, mappings, mappingsAocs }) => {
+const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   const { show: showError } = useAlert((msg) => msg, { critical: true })
 
   const exportMapping = () => {
@@ -43,7 +47,7 @@ const ExportMapping = ({ mapConfig, mappings, mappingsAocs }) => {
       mapConfig.targetUrl,
     ]
     const result = [mapInfoArr, csvExportHeaders]
-    for (const { cocMappings, sourceDes, targetDes } of mappings) {
+    for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
       if (targetDes.length > 1) {
         showError('Only single target de mappings are currently supported')
         return
@@ -62,8 +66,8 @@ const ExportMapping = ({ mapConfig, mappings, mappingsAocs }) => {
     }
     saveAsCsv(result, 'download-link', 'DE_Coc_Mapping.csv')
 
-    const resultAocs = [mapInfoArr.slice(2,), aocCsvExportHeaders]
-    for (const { sourceAocs, targetAocs } of mappingsAocs) {
+    const resultAocs = [mapInfoArr.slice(2), aocCsvExportHeaders]
+    for (const { sourceAocs, targetAocs } of aocMappings) {
       if (targetAocs.length > 1) {
         showError('Only single target aoc mappings are currently supported')
         return
@@ -94,7 +98,8 @@ ExportMapping.propTypes = {
     sourceUrl: PropTypes.string.isRequired,
     targetUrl: PropTypes.string.isRequired,
   }),
-  mappings: PropTypes.array,
+  deCocMappings: PropTypes.array,
+  aocMappings: PropTypes.array,
 }
 
 export default ExportMapping
