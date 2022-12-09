@@ -25,13 +25,6 @@ const MappingPage = () => {
     currentMapping,
     currentMappingAocs,
   } = sharedState
-  if (!sourceDs.length > 0 || !targetDs.length > 0) {
-    return (
-      <p className="noMapping">
-        Please setup or load a mapping via the other pages
-      </p>
-    )
-  }
   const sourceDes = flattenDataSetElements(sourceDs)
   const targetDes = flattenDataSetElements(targetDs)
   const sourceAocs = flattenAocs(sourceDs)
@@ -44,13 +37,20 @@ const MappingPage = () => {
     currentMapping,
     currentMappingAocs
   )
-
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   const [showDeMapping, setShowDeMapping] = useState(false)
   const [showAocMapping, setShowAocMapping] = useState(false)
 
-  let expandableContentDe = (
+  if (!sourceDs.length > 0 || !targetDs.length > 0) {
+    return (
+      <p className="noMapping">
+        Please setup or load a mapping via the other pages
+      </p>
+    )
+  }
+
+  const expandableContentDe = (
     <MappingContext.Provider value={mappingState}>
       <MappingTable
         sourceOpts={sourceDes}
@@ -67,7 +67,7 @@ const MappingPage = () => {
     </MappingContext.Provider>
   )
 
-  let expandableContentAoc = (
+  const expandableContentAoc = (
     <MappingContext.Provider value={mappingState}>
       <MappingTable
         sourceOpts={sourceAocs}
