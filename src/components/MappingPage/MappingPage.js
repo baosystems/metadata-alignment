@@ -11,6 +11,7 @@ import { flattenAocs, flattenDataSetElements } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
+import RefreshMetadata from './RefreshMetadata'
 import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
 import { SharedStateContext } from '../../sharedStateContext'
@@ -88,9 +89,10 @@ const MappingPage = () => {
       <h1>Configure Data set mapping</h1>
       <div className="tableControls">
         <ThresholdInput
-          extMatchThresh={matchThreshold}
+          extMatchThresh={`${matchThreshold}`}
           extSetMatchThresh={setMatchThreshold}
         />
+        <RefreshMetadata />
         <ExportMapping
           mapConfig={mapConfig}
           deCocMappings={mappingState.deCocMappings}
