@@ -72,3 +72,8 @@
 .hidden {
   display: none;
 }
+
+.modalActions {
+  display: flex;
+  gap: 16px;
+}
