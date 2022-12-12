@@ -4,6 +4,7 @@ module.exports = {
   extends: [config.eslintReact],
   rules: {
     'import/order': ['off'],
+    'max-params': ['off'],
     'import/extensions': [
       'error',
       'ignorePackages',

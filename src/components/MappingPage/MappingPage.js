@@ -92,7 +92,11 @@ const MappingPage = () => {
           extMatchThresh={`${matchThreshold}`}
           extSetMatchThresh={setMatchThreshold}
         />
-        <RefreshMetadata />
+        <RefreshMetadata
+          mapConfig={mapConfig}
+          setShowDeMapping={setShowDeMapping}
+          setShowAocMapping={setShowAocMapping}
+        />
         <ExportMapping
           mapConfig={mapConfig}
           deCocMappings={mappingState.deCocMappings}

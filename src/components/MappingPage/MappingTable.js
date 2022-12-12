@@ -32,11 +32,13 @@ const MappingTable = ({
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
   const rankOpts = (tgtOpts, allOptsRanked) => {
     const tgtOptIds = tgtOpts.map(({ id }) => id)
+    if (!allOptsRanked) {
+      return tgtOpts
+    }
     const result = allOptsRanked.filter(({ id }) => tgtOptIds.includes(id))
-
     if (result.length < tgtOpts.length) {
       result.forEach(({ id }) => {
-        tgtOpts = tgtOpts.filter(({ id: tgtId, name }) => tgtId !== id)
+        tgtOpts = tgtOpts.filter(({ id: tgtId }) => tgtId !== id)
       })
       result.push(...tgtOpts)
     }
@@ -62,7 +64,8 @@ const MappingTable = ({
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
-        {uniqueSrcOpts.map(({ id }, idx) => {
+        {mappings.map((rowMapping, idx) => {
+          const id = rowMapping.sourceDes?.[0]
           const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
           const rowProps = {
             key: id,
@@ -103,7 +106,7 @@ MappingTable.propTypes = {
   mappings: PropTypes.array,
   setMappings: PropTypes.array,
   deCocMap: PropTypes.object,
-  rankedSuggestions: PropTypes.shape({
+  suggestions: PropTypes.shape({
     [PropTypes.string]: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string.isRequired,

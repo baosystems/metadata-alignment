@@ -34,6 +34,11 @@ const keysQuery = {
   },
 }
 
+export function getBaseAddress() {
+  const origin = window.location.origin
+  return origin.replace(/^https*:\/\//, '')
+}
+
 const urlToKey = (url) => {
   const noHttp = url.replace('https://', '').replace('http://', '')
   return noHttp.replaceAll('.', '-')

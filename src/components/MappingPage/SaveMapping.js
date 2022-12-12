@@ -2,9 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Button } from '@dhis2/ui'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
-import { dsPropType, mappingsKey } from './MappingConsts'
+import { mappingsKey } from './MappingConsts'
 import { getRowKey } from '../../utils/dataStoreUtils'
 import { dataStoreKey } from '../SetupPage/SetupPageConsts'
+import { mapConfigType } from './sharedPropTypes'
 
 export const dsQuery = {
   namespaces: {
@@ -81,12 +82,7 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
 }
 
 SaveMapping.propTypes = {
-  mapConfig: PropTypes.shape({
-    sourceDs: dsPropType,
-    targetDs: dsPropType,
-    sourceUrl: PropTypes.string.isRequired,
-    targetUrl: PropTypes.string.isRequired,
-  }),
+  mapConfig: mapConfigType,
   deCocMappings: PropTypes.array,
   aocMappings: PropTypes.array,
 }
