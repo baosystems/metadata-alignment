@@ -41,7 +41,7 @@ export function getBaseAddress() {
 
 const urlToKey = (url) => {
   const noHttp = url.replace('https://', '').replace('http://', '')
-  return noHttp.replaceAll('.', '-')
+  return noHttp.replaceAll('.', '-').replaceAll('/', '_')
 }
 
 const makeMutation = (type, urlKey, pat) => ({
