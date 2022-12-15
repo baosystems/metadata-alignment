@@ -28,7 +28,7 @@ const ExternalServerDsSelect = ({
 
   const setUrl = (value) => {
     setConfig({ ...config, baseUrl: value })
-    setValidUrl(value.match(/^https:\/\/.+\..+/))
+    setValidUrl(value.match(/^http*s:\/\/.+\..+/))
   }
 
   const setPat = (value) => {
@@ -52,6 +52,7 @@ const ExternalServerDsSelect = ({
       const res = await req.json()
       if ('dataSets' in res) {
         setDsOptions(res.dataSets)
+        console.log('Saving pat with key ')
         savePat(engine, targetUrl, paToken)
         setPaToken(null)
       } else {

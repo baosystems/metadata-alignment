@@ -2,11 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { mapConfigType } from './sharedPropTypes'
-import {
-  getBaseAddress,
-  getDsData,
-  PatRequestError,
-} from '../../utils/apiUtils'
+import { getDsData, PatRequestError } from '../../utils/apiUtils'
 import {
   dataSetsEquivalent,
   updateRequiredMappings,
@@ -15,6 +11,7 @@ import { SharedStateContext } from '../../sharedStateContext'
 import { dsLocations } from '../SetupPage/SetupPageConsts'
 import SavePatModal from './SavePatModal'
 import { Button } from '@dhis2/ui'
+import { mappingDestinations } from './MappingConsts'
 
 const RefreshMetadata = ({
   mapConfig,
@@ -22,35 +19,34 @@ const RefreshMetadata = ({
   setShowAocMapping,
 }) => {
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
-  const [updatedDsMeta, setUpdatedDsMeta] = useState({
-    source: null,
-    target: null,
-  })
+  const [updatedSourceDs, setUpdatedSourceDs] = useState(null)
+  const [updatedTargetDs, setUpdatedTargetDs] = useState(null)
   const [modalData, setModalData] = useState(null)
   const sharedState = useContext(SharedStateContext)
   const { show } = useAlert((msg) => msg, { success: true })
   const engine = useDataEngine()
 
   useEffect(() => {
-    const { source, target } = updatedDsMeta
-    if (source && target) {
-      const sourcesMatch = dataSetsEquivalent(source, sourceDs)
-      const targetsMatch = dataSetsEquivalent(target, targetDs)
+    if (updatedSourceDs && updatedTargetDs) {
+      const sourcesMatch = dataSetsEquivalent(updatedSourceDs, sourceDs)
+      const targetsMatch = dataSetsEquivalent(updatedTargetDs, targetDs)
       const newDsConfig = { source: null, target: null }
       if (!sourcesMatch) {
-        newDsConfig.source = source
+        newDsConfig.source = updatedSourceDs
       }
       if (!targetsMatch) {
-        newDsConfig.target = target
+        newDsConfig.target = updatedTargetDs
       }
       if (!sourcesMatch || !targetsMatch) {
         updateRequiredMappings(newDsConfig, sharedState)
-        show('Metadata refresh complete')
+        show(
+          'Metadata refresh complete, to save updates after review, use the Save mapping button'
+        )
       } else {
         show('No data set changes detected')
       }
     }
-  }, [updatedDsMeta])
+  }, [updatedSourceDs, updatedTargetDs])
 
   const getMetadataUpdate = async (
     baseAddress,
@@ -59,8 +55,7 @@ const RefreshMetadata = ({
     destination,
     pat = null
   ) => {
-    const protocol = updateAddress.includes('localhost') ? 'http' : 'https'
-    const config = { baseUrl: `${protocol}://${updateAddress}` }
+    const config = { baseUrl: updateAddress }
     const dsIds = dsMeta.map(({ id }) => id)
     config.dsLocation =
       baseAddress === updateAddress
@@ -68,7 +63,11 @@ const RefreshMetadata = ({
         : dsLocations.externalServer
     try {
       const updatedDataSetMeta = await getDsData(engine, dsIds, config, pat)
-      setUpdatedDsMeta({ ...updatedDsMeta, [destination]: updatedDataSetMeta })
+      if (destination === mappingDestinations.SOURCE) {
+        setUpdatedSourceDs(updatedDataSetMeta)
+      } else if (destination === mappingDestinations.TARGET) {
+        setUpdatedTargetDs(updatedDataSetMeta)
+      }
     } catch (err) {
       if (err instanceof PatRequestError) {
         // If different user to setup user is refreshing from an external server
@@ -89,7 +88,7 @@ const RefreshMetadata = ({
   const handleRefresh = async () => {
     setShowDeMapping(false)
     setShowAocMapping(false)
-    const baseAddress = getBaseAddress()
+    const baseAddress = window.location.origin
     await getMetadataUpdate(baseAddress, sourceUrl, sourceDs, 'source')
     await getMetadataUpdate(baseAddress, targetUrl, targetDs, 'target')
   }
