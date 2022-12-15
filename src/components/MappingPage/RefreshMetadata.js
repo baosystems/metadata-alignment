@@ -21,6 +21,7 @@ const RefreshMetadata = ({
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const [updatedSourceDs, setUpdatedSourceDs] = useState(null)
   const [updatedTargetDs, setUpdatedTargetDs] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [modalData, setModalData] = useState(null)
   const sharedState = useContext(SharedStateContext)
   const { show } = useAlert((msg) => msg, { success: true })
@@ -45,6 +46,7 @@ const RefreshMetadata = ({
       } else {
         show('No data set changes detected')
       }
+      setLoading(false)
     }
   }, [updatedSourceDs, updatedTargetDs])
 
@@ -86,6 +88,7 @@ const RefreshMetadata = ({
   }
 
   const handleRefresh = async () => {
+    setLoading(true)
     setShowDeMapping(false)
     setShowAocMapping(false)
     const baseAddress = window.location.origin
@@ -102,7 +105,12 @@ const RefreshMetadata = ({
           getMetadataUpdate={getMetadataUpdate}
         />
       )}
-      <Button primary onClick={handleRefresh} className="refreshButton">
+      <Button
+        loading={loading}
+        primary
+        onClick={handleRefresh}
+        className="refreshButton"
+      >
         Refresh metadata
       </Button>
     </>
