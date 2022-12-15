@@ -86,13 +86,14 @@ export function getMapInfo(dSets) {
 // For a given data set, get all the unique cocs assigned across all the
 // data elements in the data set
 function getDsDeCocs(ds) {
-  const cocsByUid = {}
+  const cocsByUid = new Set()
   for (const { dataElement } of ds.dataSetElements) {
-    for (const coc of dataElement.categoryCombo.categoryOptionCombos) {
-      cocsByUid[coc.id] = coc
+    const deCocs = dataElement?.categoryCombo?.categoryOptionCombos || []
+    for (const coc of deCocs) {
+      cocsByUid.add(coc.id)
     }
   }
-  return Object.values(cocsByUid).map(({ id }) => id)
+  return Array.from(cocsByUid)
 }
 
 /**
@@ -263,7 +264,6 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
   }
   const result = currentMappings
   if (removedMetadata) {
-    console.log('Found removed metadata: ', removedMetadata)
     const config = { removedMetadata, mappingDestination }
     result.des = currentMappings.des
       .map((deMap) => removeDesCocs(deMap, config))
@@ -273,14 +273,12 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
       .filter(Boolean) // Remove null values from invalid mappings
   }
   if (newMetadata) {
-    console.log('Found new metadata:', newMetadata)
     result.des = [...result.des, ...newMetadata.des]
     result.aocs = [...result.aocs, ...newMetadata.aocs]
   }
   if (removedMetadata || newMetadata) {
     return result
   } else {
-    console.log('No DEs, AOCs or COCs removed, so not updating the mapping')
     return null
   }
 }
@@ -324,8 +322,6 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
   if (mappingUpdated) {
     sharedState.setCurrentMapping(newMapping.des)
     sharedState.setCurrentMappingAocs(newMapping.aocs)
-  } else {
-    console.log('No mapping changes required')
   }
 }
 

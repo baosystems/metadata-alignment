@@ -2,7 +2,11 @@ import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { mapConfigType } from './sharedPropTypes'
-import { getBaseAddress, getDsData, getPatError } from '../../utils/apiUtils'
+import {
+  getBaseAddress,
+  getDsData,
+  PatRequestError,
+} from '../../utils/apiUtils'
 import {
   dataSetsEquivalent,
   updateRequiredMappings,
@@ -22,19 +26,16 @@ const RefreshMetadata = ({
     source: null,
     target: null,
   })
-  const [modalData, setModalData] = useState(false)
+  const [modalData, setModalData] = useState(null)
   const sharedState = useContext(SharedStateContext)
   const { show } = useAlert((msg) => msg, { success: true })
   const engine = useDataEngine()
 
   useEffect(() => {
     const { source, target } = updatedDsMeta
-    console.log('updatedDsMeta: ', updatedDsMeta)
     if (source && target) {
       const sourcesMatch = dataSetsEquivalent(source, sourceDs)
-      console.log('sourcesMatch: ', sourcesMatch)
       const targetsMatch = dataSetsEquivalent(target, targetDs)
-      console.log('targetsMatch: ', targetsMatch)
       const newDsConfig = { source: null, target: null }
       if (!sourcesMatch) {
         newDsConfig.source = source
@@ -58,8 +59,8 @@ const RefreshMetadata = ({
     destination,
     pat = null
   ) => {
-    const protocall = updateAddress.includes('localhost') ? 'http' : 'https'
-    const config = { baseUrl: `${protocall}://${updateAddress}` }
+    const protocol = updateAddress.includes('localhost') ? 'http' : 'https'
+    const config = { baseUrl: `${protocol}://${updateAddress}` }
     const dsIds = dsMeta.map(({ id }) => id)
     config.dsLocation =
       baseAddress === updateAddress
@@ -69,10 +70,9 @@ const RefreshMetadata = ({
       const updatedDataSetMeta = await getDsData(engine, dsIds, config, pat)
       setUpdatedDsMeta({ ...updatedDsMeta, [destination]: updatedDataSetMeta })
     } catch (err) {
-      if (err instanceof getPatError) {
+      if (err instanceof PatRequestError) {
         // If different user to setup user is refreshing from an external server
         // then the credendentials to access the server might not be available
-        console.log(err)
         setModalData({
           engine,
           baseAddress,

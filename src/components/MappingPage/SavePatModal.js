@@ -13,7 +13,6 @@ import './MappingPage.css'
 
 const SavePatModal = ({ modalData, setModalData, getMetadataUpdate }) => {
   const { engine, baseAddress, updateAddress, dsMeta, destination } = modalData
-  console.log('modalData: ', modalData)
   const [pat, setPat] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -44,7 +43,12 @@ const SavePatModal = ({ modalData, setModalData, getMetadataUpdate }) => {
       <ModalActions>
         <div className="modalActions">
           <Button onClick={() => setModalData(null)}>Cancel</Button>
-          <Button primary loading={loading} onClick={handleSave}>
+          <Button
+            disabled={!(pat && pat.length > 0)}
+            primary
+            loading={loading}
+            onClick={handleSave}
+          >
             Continue
           </Button>
         </div>

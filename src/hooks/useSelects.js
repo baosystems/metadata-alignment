@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 
 export default function useSelects(keyArr, initFunc) {
   const itemIds = keyArr.map(({ id }) => id)
@@ -9,9 +9,9 @@ export default function useSelects(keyArr, initFunc) {
   const [values, setValues] = useState(initState)
   const setters = {}
   for (const key in initState) {
-    setters[key] = useCallback((v) => {
+    setters[key] = (v) => {
       setValues({ ...values, [key]: v })
-    })
+    }
   }
   return [values, setters]
 }

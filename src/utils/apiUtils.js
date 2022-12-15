@@ -76,7 +76,7 @@ export async function savePat(engine, targetUrl, pat) {
   }
 }
 
-export class getPatError extends Error {
+export class PatRequestError extends Error {
   constructor(message) {
     super(message)
   }
@@ -117,7 +117,9 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
       throw new Error('Error fetching data set information ' + err)
     }
   } catch (e) {
-    throw new getPatError('Could not find personal access token for ' + urlKey)
+    throw new PatRequestError(
+      'Could not find personal access token for ' + urlKey
+    )
   }
 }
 
