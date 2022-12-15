@@ -25,6 +25,7 @@ const RefreshMetadata = ({
   const [modalData, setModalData] = useState(null)
   const sharedState = useContext(SharedStateContext)
   const { show } = useAlert((msg) => msg, { success: true })
+  const { show: showError } = useAlert((msg) => msg, { critical: true })
   const engine = useDataEngine()
 
   useEffect(() => {
@@ -39,14 +40,21 @@ const RefreshMetadata = ({
         newDsConfig.target = updatedTargetDs
       }
       if (!sourcesMatch || !targetsMatch) {
-        updateRequiredMappings(newDsConfig, sharedState)
-        show(
-          'Metadata refresh complete, to save updates after review, use the Save mapping button'
-        )
+        try {
+          updateRequiredMappings(newDsConfig, sharedState)
+          show(
+            'Metadata refresh complete, to save updates after review, use the Save mapping button'
+          )
+        } catch (err) {
+          console.log(err)
+          showError('Error updating mappings')
+        } finally {
+          setLoading(false)
+        }
       } else {
         show('No data set changes detected')
+        setLoading(false)
       }
-      setLoading(false)
     }
   }, [updatedSourceDs, updatedTargetDs])
 
