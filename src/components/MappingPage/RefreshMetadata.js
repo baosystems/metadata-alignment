@@ -46,7 +46,7 @@ const RefreshMetadata = ({
             'Metadata refresh complete, to save updates after review, use the Save mapping button'
           )
         } catch (err) {
-          console.log(err)
+          console.error(err)
           showError('Error updating mappings')
         } finally {
           setLoading(false)
@@ -100,8 +100,14 @@ const RefreshMetadata = ({
     setShowDeMapping(false)
     setShowAocMapping(false)
     const baseAddress = window.location.origin
-    await getMetadataUpdate(baseAddress, sourceUrl, sourceDs, 'source')
-    await getMetadataUpdate(baseAddress, targetUrl, targetDs, 'target')
+    try {
+      await getMetadataUpdate(baseAddress, sourceUrl, sourceDs, 'source')
+      await getMetadataUpdate(baseAddress, targetUrl, targetDs, 'target')
+    } catch (err) {
+      console.error(err)
+      showError('Error updating mappings')
+      setLoading(false)
+    }
   }
 
   return (
