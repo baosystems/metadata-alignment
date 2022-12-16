@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { DataTableRow, DataTableCell, CircularLoader } from '@dhis2/ui'
 
-const STATES = ['loading', 'error']
+const STATES = ['loading', 'error', 'empty']
 const STATES_MAP = {
   LOADING: 'loading',
   ERROR: 'error',

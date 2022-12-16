@@ -36,7 +36,7 @@ const keysQuery = {
 
 const urlToKey = (url) => {
   const noHttp = url.replace('https://', '').replace('http://', '')
-  return noHttp.replaceAll('.', '-')
+  return noHttp.replaceAll('.', '-').replaceAll('/', '_')
 }
 
 const makeMutation = (type, urlKey, pat) => ({
@@ -71,34 +71,70 @@ export async function savePat(engine, targetUrl, pat) {
   }
 }
 
-async function getExternalDs(dsIds, engine, baseUrl) {
+export class PatRequestError extends Error {
+  constructor(message) {
+    super(message)
+  }
+}
+
+export const formatUrl = (url) => {
+  return url.replace('https://', '').replace('http://', '')
+}
+
+async function getPat(engine, baseUrl) {
   const urlKey = urlToKey(baseUrl)
   const patRes = await engine.query({
     pat: {
       resource: `userDataStore/${dataStoreKey}/${urlKey}`,
     },
   })
-  const pat = patRes.pat.pat
-  const params = {
-    filter: `id:in:[${dsIds.join(',')}]`,
-    fields:
-      'id,name,categoryCombo(id,name,categoryOptionCombos(id,name)),dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))',
-  }
-  const req = await fetch(`${baseUrl}/api/dataSets?${formatParams(params)}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `ApiToken ${pat}`,
-    },
-  })
-  const res = await req.json()
-  return res.dataSets
+  return patRes?.pat?.pat
 }
 
-export async function getDsData(engine, dsIds, { dsLocation, baseUrl }) {
+async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
+  const urlKey = urlToKey(baseUrl)
+  try {
+    const pat = patIn || (await getPat(engine, baseUrl))
+    const params = {
+      filter: `id:in:[${dsIds.join(',')}]`,
+      fields:
+        'id,name,categoryCombo(id,name,categoryOptionCombos(id,name)),dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))',
+    }
+    try {
+      const req = await fetch(
+        `${baseUrl}/api/dataSets?${formatParams(params)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `ApiToken ${pat}`,
+          },
+        }
+      )
+      const res = await req.json()
+      return res.dataSets
+    } catch (err) {
+      throw new Error('Error fetching data set information ' + err)
+    }
+  } catch (e) {
+    if (e.message.includes('Error fetching data set information')) {
+      throw e
+    }
+    throw new PatRequestError(
+      'Could not find personal access token for ' + urlKey
+    )
+  }
+}
+
+export async function getDsData(
+  engine,
+  dsIds,
+  { dsLocation, baseUrl },
+  pat = null
+) {
   if (dsLocation === dsLocations.currentServer) {
     const res = await engine.query(dsInfoQuery, { variables: { dsIds } })
     return res.dataSets.dataSets
   } else {
-    return getExternalDs(dsIds, engine, baseUrl)
+    return getExternalDs(dsIds, engine, baseUrl, pat)
   }
 }

@@ -21,8 +21,8 @@ const SetupPage = () => {
   const history = useHistory()
 
   const formatUrl = (url) => {
-    const baseUrl = url === 'https://' ? window.location.origin : url
-    return baseUrl.replace('https://', '').replace('http://', '')
+    // If current server then url field will be default value (https://), so set to origin
+    return url === 'https://' ? window.location.origin : url
   }
 
   const getDataSets = async () => {

@@ -11,20 +11,6 @@ const App = () => {
       <SetupStateProvider>
         <MenuBar />
       </SetupStateProvider>
-      {/* {sourceDs.length > 0 && targetDs.length > 0 ? (
-        <MappingPage
-          sourceDs={sourceDs}
-          targetDs={targetDs}
-          urlParams={{ sourceUrl, targetUrl }}
-        />
-      ) : (
-        <SetupPage
-          setSourceDs={setSourceDs}
-          setTargetDs={setTargetDs}
-          setSourceUrl={setSourceUrl}
-          setTargetUrl={setTargetUrl}
-        />
-      )} */}
     </div>
   )
 }

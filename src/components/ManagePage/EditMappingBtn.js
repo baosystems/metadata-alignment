@@ -6,14 +6,22 @@ import { useHistory } from 'react-router-dom'
 
 const EditMappingBtn = ({ mappingData }) => {
   const sharedState = useContext(SharedStateContext)
-
   const history = useHistory()
+
+  // To handle legacy mappings where protocol was not in the data store
+  const addProtocol = (url) => {
+    if (url.slice(0, 4) === 'http') {
+      return url
+    } else {
+      return url.includes('localhost') ? `http://${url}` : `https://${url}`
+    }
+  }
 
   const handleEdit = () => {
     sharedState.setSourceDs(mappingData.sourceDs)
-    sharedState.setSourceUrl(mappingData.sourceUrl)
+    sharedState.setSourceUrl(addProtocol(mappingData.sourceUrl))
     sharedState.setTargetDs(mappingData.targetDs)
-    sharedState.setTargetUrl(mappingData.targetUrl)
+    sharedState.setTargetUrl(addProtocol(mappingData.targetUrl))
     sharedState.setCurrentMapping(mappingData.deCocMappings)
     sharedState.setCurrentMappingAocs(mappingData.aocMappings)
     history.push('/edit')

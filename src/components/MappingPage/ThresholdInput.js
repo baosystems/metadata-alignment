@@ -15,7 +15,6 @@ const ThresholdInput = ({ extMatchThresh, extSetMatchThresh }) => {
           value={matchThreshold}
           onChange={(e) => setMatchThreshold(e.value)}
           inputWidth="50px"
-          // helpText="Value between 0 and 1 to autofill mappings, lower values match more strictly"
         />
         <Button primary onClick={() => extSetMatchThresh(matchThreshold)}>
           Update suggestions

@@ -21,7 +21,7 @@
   margin-right: auto;
 }
 
-.exportButton {
+.refreshButton {
   margin-left: auto;
 }
 
@@ -71,4 +71,9 @@
 
 .hidden {
   display: none;
+}
+
+.modalActions {
+  display: flex;
+  gap: 16px;
 }

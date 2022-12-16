@@ -1,10 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {
-  aocCsvExportHeaders,
-  csvExportHeaders,
-  dsPropType,
-} from './MappingConsts'
+import { aocCsvExportHeaders, csvExportHeaders } from './MappingConsts'
+import { mapConfigType } from './sharedPropTypes'
 import { useAlert } from '@dhis2/app-runtime'
 import { Button } from '@dhis2/ui'
 import { getMapInfo } from '../../utils/mappingUtils'
@@ -77,7 +74,7 @@ const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
         resultAocs.push([aocId, targetAocs[0]])
       }
     }
-    
+
     saveAsCsv(resultAocs, 'download-link', 'Aoc_Mapping.csv')
   }
 
@@ -92,12 +89,7 @@ const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
 }
 
 ExportMapping.propTypes = {
-  mapConfig: PropTypes.shape({
-    sourceDs: dsPropType,
-    targetDs: dsPropType,
-    sourceUrl: PropTypes.string.isRequired,
-    targetUrl: PropTypes.string.isRequired,
-  }),
+  mapConfig: mapConfigType,
   deCocMappings: PropTypes.array,
   aocMappings: PropTypes.array,
 }

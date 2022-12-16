@@ -11,6 +11,7 @@ import { flattenAocs, flattenDataSetElements } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
+import RefreshMetadata from './RefreshMetadata'
 import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
 import { SharedStateContext } from '../../sharedStateContext'
@@ -25,13 +26,6 @@ const MappingPage = () => {
     currentMapping,
     currentMappingAocs,
   } = sharedState
-  if (!sourceDs.length > 0 || !targetDs.length > 0) {
-    return (
-      <p className="noMapping">
-        Please setup or load a mapping via the other pages
-      </p>
-    )
-  }
   const sourceDes = flattenDataSetElements(sourceDs)
   const targetDes = flattenDataSetElements(targetDs)
   const sourceAocs = flattenAocs(sourceDs)
@@ -44,13 +38,20 @@ const MappingPage = () => {
     currentMapping,
     currentMappingAocs
   )
-
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   const [showDeMapping, setShowDeMapping] = useState(false)
   const [showAocMapping, setShowAocMapping] = useState(false)
 
-  let expandableContentDe = (
+  if (!sourceDs.length > 0 || !targetDs.length > 0) {
+    return (
+      <p className="noMapping">
+        Please setup or load a mapping via the other pages
+      </p>
+    )
+  }
+
+  const expandableContentDe = (
     <MappingContext.Provider value={mappingState}>
       <MappingTable
         sourceOpts={sourceDes}
@@ -67,7 +68,7 @@ const MappingPage = () => {
     </MappingContext.Provider>
   )
 
-  let expandableContentAoc = (
+  const expandableContentAoc = (
     <MappingContext.Provider value={mappingState}>
       <MappingTable
         sourceOpts={sourceAocs}
@@ -88,8 +89,13 @@ const MappingPage = () => {
       <h1>Configure Data set mapping</h1>
       <div className="tableControls">
         <ThresholdInput
-          extMatchThresh={matchThreshold}
+          extMatchThresh={`${matchThreshold}`}
           extSetMatchThresh={setMatchThreshold}
+        />
+        <RefreshMetadata
+          mapConfig={mapConfig}
+          setShowDeMapping={setShowDeMapping}
+          setShowAocMapping={setShowAocMapping}
         />
         <ExportMapping
           mapConfig={mapConfig}

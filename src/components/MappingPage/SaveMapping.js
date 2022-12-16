@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Button } from '@dhis2/ui'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
-import { dsPropType, mappingsKey } from './MappingConsts'
+import { mappingsKey } from './MappingConsts'
 import { getRowKey } from '../../utils/dataStoreUtils'
 import { dataStoreKey } from '../SetupPage/SetupPageConsts'
+import { mapConfigType } from './sharedPropTypes'
 
 export const dsQuery = {
   namespaces: {
@@ -31,6 +32,7 @@ const mappingsMutation = (type, maps) => ({
 })
 
 const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
+  const [loading, setLoading] = useState(false)
   const engine = useDataEngine()
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const { show: showErr } = useAlert((msg) => msg, { critical: true })
@@ -45,6 +47,7 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   }
   const handleSave = async () => {
     try {
+      setLoading(true)
       const existingMaps = await getMaps(engine)
       const otherMaps = existingMaps.filter((map) => map.rowKey !== rowKey)
       const importType =
@@ -54,6 +57,8 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
       showPass(`Mapping ${importType}ated`)
     } catch (e) {
       showErr('Error saving the current mapping: ' + e)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -74,19 +79,19 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   }
 
   return (
-    <Button className="saveButton" onClick={handleSave} primary>
+    <Button
+      loading={loading}
+      className="saveButton"
+      onClick={handleSave}
+      primary
+    >
       Save mapping
     </Button>
   )
 }
 
 SaveMapping.propTypes = {
-  mapConfig: PropTypes.shape({
-    sourceDs: dsPropType,
-    targetDs: dsPropType,
-    sourceUrl: PropTypes.string.isRequired,
-    targetUrl: PropTypes.string.isRequired,
-  }),
+  mapConfig: mapConfigType,
   deCocMappings: PropTypes.array,
   aocMappings: PropTypes.array,
 }
