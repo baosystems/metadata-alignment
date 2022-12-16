@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Button } from '@dhis2/ui'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
@@ -32,6 +32,7 @@ const mappingsMutation = (type, maps) => ({
 })
 
 const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
+  const [loading, setLoading] = useState(false)
   const engine = useDataEngine()
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const { show: showErr } = useAlert((msg) => msg, { critical: true })
@@ -46,6 +47,7 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   }
   const handleSave = async () => {
     try {
+      setLoading(true)
       const existingMaps = await getMaps(engine)
       const otherMaps = existingMaps.filter((map) => map.rowKey !== rowKey)
       const importType =
@@ -55,6 +57,8 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
       showPass(`Mapping ${importType}ated`)
     } catch (e) {
       showErr('Error saving the current mapping: ' + e)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -75,7 +79,12 @@ const SaveMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   }
 
   return (
-    <Button className="saveButton" onClick={handleSave} primary>
+    <Button
+      loading={loading}
+      className="saveButton"
+      onClick={handleSave}
+      primary
+    >
       Save mapping
     </Button>
   )

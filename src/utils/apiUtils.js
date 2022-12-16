@@ -116,6 +116,9 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
       throw new Error('Error fetching data set information ' + err)
     }
   } catch (e) {
+    if (e.message.includes('Error fetching data set information')) {
+      throw e
+    }
     throw new PatRequestError(
       'Could not find personal access token for ' + urlKey
     )

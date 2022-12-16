@@ -23,7 +23,9 @@ export async function getFromDataStore(engine, dsType, keyInfo) {
 
 export function getRowKey(rowData) {
   const { sourceDs, targetDs, sourceUrl, targetUrl } = rowData
+  const sourceAddress = sourceUrl.replace(/^http*s:\/\//, '')
+  const targetAddress = targetUrl.replace(/^http*s:\/\//, '')
   const srcDsIds = sourceDs.map((ds) => ds.id).join('-')
   const tgtDsIds = targetDs.map((ds) => ds.id).join('-')
-  return `${srcDsIds}-${tgtDsIds}-${sourceUrl}-${targetUrl}`
+  return `${srcDsIds}-${tgtDsIds}-${sourceAddress}-${targetAddress}`
 }
