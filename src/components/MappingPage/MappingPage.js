@@ -51,6 +51,7 @@ const MappingPage = () => {
     currentMappingAocs,
     currentMappingOus
   )
+  console.log('mappingState.setOuMappings: ', mappingState.setOuMappings)
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   const [showDeMapping, setShowDeMapping] = useState(false)

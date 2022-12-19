@@ -71,7 +71,7 @@ const MappingTable = ({
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
-        {mappings.map((rowMapping, idx) => {
+        {mappings.slice(0, 10).map((rowMapping, idx) => {
           const id = rowMapping?.[sourceRowIdKey]?.[0]
           const rankedTgtOpts = suggestions
             ? rankOpts(uniqueTgtOpts, suggestions[id])

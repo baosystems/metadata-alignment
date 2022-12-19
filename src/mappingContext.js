@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo } from 'react'
+import { createContext, useState, useEffect, useMemo, useRef } from 'react'
 import Fuse from 'fuse.js'
 
 const metaTypes = {
@@ -222,11 +222,13 @@ export const useMappingState = (
   initMappingAocs,
   initMappingOus
 ) => {
-  const initialMappings = {
-    [DE_COC]: initMapping,
-    [AOC]: initMappingAocs,
-    [OU]: initMappingOus,
-  }
+  const initialMappings = useMemo(() => {
+    return {
+      [DE_COC]: initMapping,
+      [AOC]: initMappingAocs,
+      [OU]: initMappingOus,
+    }
+  }, [initMapping, initMappingAocs, initMappingOus])
   const metadata = {
     [DE_COC]: { source: sourceDes, target: targetDes },
     [AOC]: { source: sourceAocs, target: targetAocs },
@@ -235,9 +237,12 @@ export const useMappingState = (
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
   const initialValues = initilizeAllMaps(initialMappings, metadata, deCocMap)
   const { [DE_COC]: initDeCoc, [AOC]: initAoc, [OU]: initOu } = initialValues
+
   const [deCocMappings, setDeCocMappingsInternal] = useState(initDeCoc)
   const [aocMappings, setAocMappingsInternal] = useState(initAoc)
   const [ouMappings, setOuMappingsInternal] = useState(initOu)
+  const [ouSetters, setOuSetters] = useState([])
+  const ouSetterCountRef = useRef(ouSetters.length)
   const setterMap = {
     [DE_COC]: setDeCocMappingsInternal,
     [AOC]: setAocMappingsInternal,
@@ -313,23 +318,29 @@ export const useMappingState = (
     setAocMappings.push({ ...rowSetter })
   }
 
-  const setOuMappings = []
-  for (let i = 0; i < ouMappings.length; i++) {
-    console.log('Creating OU setter')
-    const rowSetter = {
-      sourceOus: (v) => {
-        const newMappings = [...ouMappings]
-        newMappings[i].sourceOus = v
-        setOuMappingsInternal(newMappings)
-      },
-      targetOus: (v) => {
-        const newMappings = [...ouMappings]
-        newMappings[i].targetOus = v
-        setOuMappingsInternal(newMappings)
-      },
+  useEffect(() => {
+    if (ouMappings.length === ouSetterCountRef.current) {
+      return
     }
-    setOuMappings.push({ ...rowSetter })
-  }
+    const result = []
+    for (let i = 0; i < ouMappings.length; i++) {
+      const rowSetter = {
+        sourceOus: (v) => {
+          const newMappings = [...ouMappings]
+          newMappings[i].sourceOus = v
+          setOuMappingsInternal(newMappings)
+        },
+        targetOus: (v) => {
+          const newMappings = [...ouMappings]
+          newMappings[i].targetOus = v
+          setOuMappingsInternal(newMappings)
+        },
+      }
+      result.push({ ...rowSetter })
+    }
+    ouSetterCountRef.current = result.length
+    setOuSetters(result)
+  }, [ouMappings])
 
   return {
     deCocMappings,
@@ -337,7 +348,7 @@ export const useMappingState = (
     aocMappings,
     setAocMappings,
     ouMappings,
-    setOuMappings,
+    setOuMappings: ouSetters,
     deCocMap,
     rankedSuggestions,
     rankedSuggestionsAocs,
