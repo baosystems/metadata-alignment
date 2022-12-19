@@ -26,6 +26,13 @@ const MappingTable = ({
   matchThreshold,
   makeInitialSuggestions,
 }) => {
+  const tableSourceRowIdMap = {
+    [tableTypes.DE]: 'sourceDes',
+    [tableTypes.COC]: 'sourceCocs',
+    [tableTypes.AOC]: 'sourceAocs',
+    [tableTypes.OU]: 'source',
+  }
+  const sourceRowIdKey = tableSourceRowIdMap?.[tableType]
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const hasSubMaps = [tableTypes.DE].includes(tableType)
@@ -65,7 +72,7 @@ const MappingTable = ({
       </DataTableHead>
       <DataTableBody>
         {mappings.map((rowMapping, idx) => {
-          const id = rowMapping.sourceDes?.[0]
+          const id = rowMapping?.[sourceRowIdKey]?.[0]
           const rankedTgtOpts = suggestions
             ? rankOpts(uniqueTgtOpts, suggestions[id])
             : uniqueTgtOpts

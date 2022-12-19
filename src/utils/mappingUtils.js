@@ -7,9 +7,7 @@ export function flatten(arr, keyPath) {
   for (const item of arr) {
     let value = item
     for (const key of valuePath) {
-      console.log('Getting value for key: ' + key, ' from item: ' + item)
       value = value?.[key]
-      console.log('item: ', item)
     }
     result.push(...value)
   }

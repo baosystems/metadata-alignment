@@ -38,12 +38,7 @@ const MappingPage = () => {
   const targetDes = flattenDataSetElements(targetDs)
   const sourceAocs = flattenAocs(sourceDs)
   const targetAocs = flattenAocs(targetDs)
-  console.log('sourceDs: ', sourceDs)
   const sourceOus = flatten(sourceDs, 'organisationUnits')
-  console.log(
-    '🚀 ~ file: MappingPage.js:38 ~ MappingPage ~ sourceOus',
-    sourceOus
-  )
   const targetOus = flatten(targetDs, 'organisationUnits')
   const mappingState = useMappingState(
     sourceDes,
@@ -56,7 +51,6 @@ const MappingPage = () => {
     currentMappingAocs,
     currentMappingOus
   )
-  console.log('ouMappings: ', mappingState.ouMappings)
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   const [showDeMapping, setShowDeMapping] = useState(false)
@@ -107,6 +101,7 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}
+      matchThreshold={Number(matchThreshold)}
     />
   )
 

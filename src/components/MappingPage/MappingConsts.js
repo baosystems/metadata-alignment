@@ -14,6 +14,10 @@ export const tableTypeKeys = {
     sourceKey: 'sourceAocs',
     targetKey: 'targetAocs',
   },
+  [tableTypes.OU]: {
+    sourceKey: 'sourceOus',
+    targetKey: 'targetOus',
+  },
 }
 
 export const mappingsKey = 'mappings'

@@ -227,7 +227,6 @@ export const useMappingState = (
     [AOC]: initMappingAocs,
     [OU]: initMappingOus,
   }
-  console.log('Source OUs: ', sourceOus)
   const metadata = {
     [DE_COC]: { source: sourceDes, target: targetDes },
     [AOC]: { source: sourceAocs, target: targetAocs },
@@ -236,7 +235,6 @@ export const useMappingState = (
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
   const initialValues = initilizeAllMaps(initialMappings, metadata, deCocMap)
   const { [DE_COC]: initDeCoc, [AOC]: initAoc, [OU]: initOu } = initialValues
-  console.log('🚀 ~ file: mappingContext.js:238 ~ initOu', initOu)
   const [deCocMappings, setDeCocMappingsInternal] = useState(initDeCoc)
   const [aocMappings, setAocMappingsInternal] = useState(initAoc)
   const [ouMappings, setOuMappingsInternal] = useState(initOu)
@@ -317,6 +315,7 @@ export const useMappingState = (
 
   const setOuMappings = []
   for (let i = 0; i < ouMappings.length; i++) {
+    console.log('Creating OU setter')
     const rowSetter = {
       sourceOus: (v) => {
         const newMappings = [...ouMappings]
@@ -329,7 +328,7 @@ export const useMappingState = (
         setOuMappingsInternal(newMappings)
       },
     }
-    setAocMappings.push({ ...rowSetter })
+    setOuMappings.push({ ...rowSetter })
   }
 
   return {
