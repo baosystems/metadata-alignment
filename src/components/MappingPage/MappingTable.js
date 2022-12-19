@@ -66,7 +66,9 @@ const MappingTable = ({
       <DataTableBody>
         {mappings.map((rowMapping, idx) => {
           const id = rowMapping.sourceDes?.[0]
-          const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
+          const rankedTgtOpts = suggestions
+            ? rankOpts(uniqueTgtOpts, suggestions[id])
+            : uniqueTgtOpts
           const rowProps = {
             key: id,
             rowId: id,
@@ -91,6 +93,8 @@ const MappingTable = ({
               return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
             case tableTypes.AOC:
               return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
+            case tableTypes.OU:
+              return <MappingRowCoc {...rowProps} variant={tableTypes.OU} />
             default:
               return <p>No mapping found for table type {tableType}</p>
           }

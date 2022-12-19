@@ -73,6 +73,10 @@ const RefreshMetadata = ({
         : dsLocations.externalServer
     try {
       const updatedDataSetMeta = await getDsData(engine, dsIds, config, pat)
+      console.log(
+        '🚀 ~ file: RefreshMetadata.js:76 ~ updatedDataSetMeta',
+        updatedDataSetMeta
+      )
       if (destination === mappingDestinations.SOURCE) {
         setUpdatedSourceDs(updatedDataSetMeta)
       } else if (destination === mappingDestinations.TARGET) {

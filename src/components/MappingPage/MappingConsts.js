@@ -2,6 +2,7 @@ export const tableTypes = {
   DE: 'de',
   COC: 'coc',
   AOC: 'aoc',
+  OU: 'ou',
 }
 
 export const tableTypeKeys = {

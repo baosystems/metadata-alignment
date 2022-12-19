@@ -1,6 +1,21 @@
 import { isEqual } from 'lodash'
 import { mappingDestinations } from '../components/MappingPage/MappingConsts'
 
+export function flatten(arr, keyPath) {
+  const result = []
+  const valuePath = Array.isArray(keyPath) ? keyPath : [keyPath]
+  for (const item of arr) {
+    let value = item
+    for (const key of valuePath) {
+      console.log('Getting value for key: ' + key, ' from item: ' + item)
+      value = value?.[key]
+      console.log('item: ', item)
+    }
+    result.push(...value)
+  }
+  return result
+}
+
 export function flattenDataSetElements(dSets) {
   const des = []
   for (const { dataSetElements } of dSets) {
@@ -350,6 +365,7 @@ function makeComparibleDataSet(dataSet) {
         'id'
       ),
     },
+    organisationUnits: arrayToObjectByKey(dataSet.organisationUnits, 'id'),
     dataSetElements: arrayToObjectByKey(
       dataSet.dataSetElements.map((dse) => ({
         dataElement: {

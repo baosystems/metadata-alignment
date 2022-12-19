@@ -13,6 +13,12 @@ export const SharedStateContext = createContext({
   setCurrentMapping: () => {},
   currentMappingAocs: [],
   setCurrentMappingAocs: () => {},
+  sourceRootOu: {},
+  setSourceRootOu: () => {},
+  targetRootOu: [],
+  setTargetRootOu: () => {},
+  currentMappingOus: {},
+  setCurrentMappingOus: () => {},
 })
 
 export const useSharedState = () => {

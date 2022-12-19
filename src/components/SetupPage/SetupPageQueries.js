@@ -13,7 +13,7 @@ export const dsInfoQuery = {
     resource: 'dataSets',
     params: ({ dsIds }) => ({
       fields:
-        'id,name,categoryCombo(id,name,categoryOptionCombos(id,name)),dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))',
+        'id,name,categoryCombo(id,name,categoryOptionCombos(id,name)),dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name)))),organisationUnits(id,name)',
       filter: `id:in:[${dsIds.join(',')}]`,
     }),
   },

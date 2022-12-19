@@ -1,6 +1,14 @@
 import { createContext, useState, useEffect, useMemo } from 'react'
 import Fuse from 'fuse.js'
 
+const metaTypes = {
+  DE_COC: 'deCoc',
+  AOC: 'aoc',
+  OU: 'ou',
+}
+
+const { DE_COC, AOC, OU } = metaTypes
+
 export const MappingContext = createContext({
   mappings: [],
   setMapping: () => {},
@@ -17,7 +25,15 @@ function makeDeCocMap(sourceDeArr, targetDeArr) {
   return result
 }
 
-function initialiseMap(srcDeArr, deCocMap) {
+function initializeMap(source, metaType, deCocMap) {
+  if (metaType === DE_COC) {
+    return initializeDeCocMap(source, deCocMap)
+  } else {
+    return initializeGenericMap(source)
+  }
+}
+
+function initializeDeCocMap(srcDeArr, deCocMap) {
   const result = []
   for (const de of srcDeArr) {
     const srcCocs = deCocMap.source[de.id]
@@ -33,16 +49,32 @@ function initialiseMap(srcDeArr, deCocMap) {
   return result
 }
 
-function initialiseMapAocs(sourceAocs) {
+function initializeGenericMap(sourceMeta) {
   const result = []
-
-  for (const aoc of sourceAocs) {
+  if (!sourceMeta) {
+    return result
+  }
+  for (const sourceItem of sourceMeta) {
     result.push({
-      sourceAocs: [aoc.id],
-      targetAocs: [],
+      source: [sourceItem.id],
+      target: [],
     })
   }
 
+  return result
+}
+
+function initilizeAllMaps(allInitVals, allMetadata, deCocMap) {
+  const result = {}
+  const metaTypes = [DE_COC, AOC, OU]
+  for (const metaType of metaTypes) {
+    const initVals = allInitVals[metaType]
+    const metadata = allMetadata[metaType]
+    const existingMapping = initVals && initVals.length > 0
+    result[metaType] = existingMapping
+      ? initVals
+      : initializeMap(metadata.source, metaType, deCocMap)
+  }
   return result
 }
 
@@ -184,42 +216,45 @@ export const useMappingState = (
   targetDes,
   sourceAocs,
   targetAocs,
+  sourceOus,
+  targetOus,
   initMapping,
-  initMappingAocs
+  initMappingAocs,
+  initMappingOus
 ) => {
-  let initVal = []
-  let initValAocs = []
+  const initialMappings = {
+    [DE_COC]: initMapping,
+    [AOC]: initMappingAocs,
+    [OU]: initMappingOus,
+  }
+  console.log('Source OUs: ', sourceOus)
+  const metadata = {
+    [DE_COC]: { source: sourceDes, target: targetDes },
+    [AOC]: { source: sourceAocs, target: targetAocs },
+    [OU]: { source: sourceOus, target: targetOus },
+  }
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
-  const existingMapping = initMapping && initMapping.length > 0
-  const existingMappingAocs = initMappingAocs && initMappingAocs.length > 0
-  if (existingMapping) {
-    initVal = initMapping
-  } else {
-    initVal = initialiseMap(sourceDes, deCocMap)
+  const initialValues = initilizeAllMaps(initialMappings, metadata, deCocMap)
+  const { [DE_COC]: initDeCoc, [AOC]: initAoc, [OU]: initOu } = initialValues
+  console.log('🚀 ~ file: mappingContext.js:238 ~ initOu', initOu)
+  const [deCocMappings, setDeCocMappingsInternal] = useState(initDeCoc)
+  const [aocMappings, setAocMappingsInternal] = useState(initAoc)
+  const [ouMappings, setOuMappingsInternal] = useState(initOu)
+  const setterMap = {
+    [DE_COC]: setDeCocMappingsInternal,
+    [AOC]: setAocMappingsInternal,
+    [OU]: setOuMappingsInternal,
   }
-
-  if (existingMappingAocs) {
-    initValAocs = initMappingAocs
-  } else {
-    initValAocs = initialiseMapAocs(sourceAocs)
-  }
-
-  const [deCocMappings, setDeCocMappingsInternal] = useState(initVal)
-  const [aocMappings, setAocMappingsInternal] = useState(initValAocs)
 
   // Effect to refresh the mappings on refresh metadata
   useEffect(() => {
-    if (initMapping && initMapping.length > 0) {
-      setDeCocMappingsInternal(initMapping)
+    for (const metaType in initialMappings) {
+      const initialMapping = initialMappings[metaType]
+      if (initialMapping && initialMapping.length > 0) {
+        setterMap[metaType](initialMapping)
+      }
     }
-  }, [initMapping])
-
-  // Effect to refresh the mappings on refresh metadata
-  useEffect(() => {
-    if (initMappingAocs && initMappingAocs.length > 0) {
-      setAocMappingsInternal(initMappingAocs)
-    }
-  }, [initMappingAocs])
+  }, [initialMappings])
 
   const rankedSuggestions = useMemo(
     () => createSimilarityMatrix(sourceDes, targetDes),
@@ -280,11 +315,30 @@ export const useMappingState = (
     setAocMappings.push({ ...rowSetter })
   }
 
+  const setOuMappings = []
+  for (let i = 0; i < ouMappings.length; i++) {
+    const rowSetter = {
+      sourceOus: (v) => {
+        const newMappings = [...ouMappings]
+        newMappings[i].sourceOus = v
+        setOuMappingsInternal(newMappings)
+      },
+      targetOus: (v) => {
+        const newMappings = [...ouMappings]
+        newMappings[i].targetOus = v
+        setOuMappingsInternal(newMappings)
+      },
+    }
+    setAocMappings.push({ ...rowSetter })
+  }
+
   return {
     deCocMappings,
     setDeCocMappings,
     aocMappings,
     setAocMappings,
+    ouMappings,
+    setOuMappings,
     deCocMap,
     rankedSuggestions,
     rankedSuggestionsAocs,
