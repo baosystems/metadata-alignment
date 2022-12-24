@@ -9,9 +9,9 @@ import {
 import MappingTable from './MappingTable'
 import OuMappingTable from './OuMappingTable/OuMappingTable'
 import {
-  flatten,
   flattenAocs,
   flattenDataSetElements,
+  flattenOus,
 } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 import { MappingContext, useMappingState } from '../../mappingContext'
@@ -28,8 +28,6 @@ const MappingPage = () => {
     targetDs,
     sourceUrl,
     targetUrl,
-    // sourceRootOu,
-    // targetRootOu,
     currentMapping,
     currentMappingAocs,
     currentMappingOus,
@@ -38,8 +36,8 @@ const MappingPage = () => {
   const targetDes = flattenDataSetElements(targetDs)
   const sourceAocs = flattenAocs(sourceDs)
   const targetAocs = flattenAocs(targetDs)
-  const sourceOus = flatten(sourceDs, 'organisationUnits')
-  const targetOus = flatten(targetDs, 'organisationUnits')
+  const sourceOus = flattenOus(sourceDs)
+  const targetOus = flattenOus(targetDs)
   const mappingState = useMappingState(
     sourceDes,
     targetDes,
@@ -51,7 +49,6 @@ const MappingPage = () => {
     currentMappingAocs,
     currentMappingOus
   )
-  console.log('mappingState.setOuMappings: ', mappingState.setOuMappings)
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
   const [showDeMapping, setShowDeMapping] = useState(false)
@@ -91,7 +88,7 @@ const MappingPage = () => {
       suggestions={mappingState.rankedSuggestionsAocs}
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
-      makeInitialSuggestions={currentMapping.length === 0}
+      makeInitialSuggestions={currentMappingAocs.length === 0}
     />
   )
 
@@ -102,7 +99,9 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}
+      suggestions={mappingState.rankedSuggestionsOus}
       matchThreshold={Number(matchThreshold)}
+      makeInitialSuggestions={currentMappingOus.length === 0}
     />
   )
 
@@ -129,6 +128,7 @@ const MappingPage = () => {
             mapConfig={mapConfig}
             deCocMappings={mappingState.deCocMappings}
             aocMappings={mappingState.aocMappings}
+            ouMappings={mappingState.ouMappings}
           />
         </div>
         <DataTable>
@@ -154,7 +154,7 @@ const MappingPage = () => {
             <DataTableRow
               key={`row-ou`}
               expanded={showOuMapping}
-              onExpandToggle={() => setShowOuMapping(!showAocMapping)}
+              onExpandToggle={() => setShowOuMapping(!showOuMapping)}
               expandableContent={expandableContentOu}
             >
               <DataTableCell large={true}>OU Mapping</DataTableCell>

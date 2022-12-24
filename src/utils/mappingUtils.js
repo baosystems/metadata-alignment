@@ -14,6 +14,25 @@ export function flatten(arr, keyPath) {
   return result
 }
 
+export function flattenOus(dSets) {
+  const ous = []
+
+  for (const { organisationUnits } of dSets) {
+    ous.push(
+      ...organisationUnits.map((ou) => ({
+        id: ou.id,
+        name:
+          ou.ancestors.map((ancestor) => ancestor.name).join(' > ') +
+          ' > ' +
+          ou.name,
+        ouName: ou.name,
+      }))
+    )
+  }
+
+  return ous
+}
+
 export function flattenDataSetElements(dSets) {
   const des = []
   for (const { dataSetElements } of dSets) {
@@ -353,7 +372,7 @@ function arrayToObjectByKey(array, keys) {
 
 // Swap all the arrays in the data set (which can cause lodas isEqual to fail)
 // to objects using the id for each item in the original array as the key
-function makeComparibleDataSet(dataSet) {
+function makeComparableDataSet(dataSet) {
   return {
     ...dataSet,
     categoryCombo: {
@@ -383,7 +402,7 @@ function makeComparibleDataSet(dataSet) {
 
 export function dataSetsEquivalent(dataSets1In, dataSets2In) {
   // transform lists into sets for lodash equal comparison
-  const ds1 = new Set(dataSets1In.map((ds) => makeComparibleDataSet(ds)))
-  const ds2 = new Set(dataSets2In.map((ds) => makeComparibleDataSet(ds)))
+  const ds1 = new Set(dataSets1In.map((ds) => makeComparableDataSet(ds)))
+  const ds2 = new Set(dataSets2In.map((ds) => makeComparableDataSet(ds)))
   return isEqual(ds1, ds2)
 }

@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect, useMemo, useRef } from 'react'
+import { createContext, useEffect, useMemo, useRef, useState } from 'react'
 import Fuse from 'fuse.js'
+import { tableTypeKeys } from './components/MappingPage/MappingConsts'
 
 const metaTypes = {
   DE_COC: 'deCoc',
@@ -29,7 +30,7 @@ function initializeMap(source, metaType, deCocMap) {
   if (metaType === DE_COC) {
     return initializeDeCocMap(source, deCocMap)
   } else {
-    return initializeGenericMap(source)
+    return initializeGenericMap(source, metaType)
   }
 }
 
@@ -49,22 +50,24 @@ function initializeDeCocMap(srcDeArr, deCocMap) {
   return result
 }
 
-function initializeGenericMap(sourceMeta) {
+function initializeGenericMap(sourceMeta, metaType) {
   const result = []
   if (!sourceMeta) {
     return result
   }
+
+  let metaKeys = tableTypeKeys[metaType]
   for (const sourceItem of sourceMeta) {
     result.push({
-      source: [sourceItem.id],
-      target: [],
+      [metaKeys.sourceKey]: [sourceItem.id],
+      [metaKeys.targetKey]: [],
     })
   }
 
   return result
 }
 
-function initilizeAllMaps(allInitVals, allMetadata, deCocMap) {
+function initializeAllMaps(allInitVals, allMetadata, deCocMap) {
   const result = {}
   const metaTypes = [DE_COC, AOC, OU]
   for (const metaType of metaTypes) {
@@ -177,29 +180,27 @@ function idNmArrayFromMap(idNameMap) {
   return result
 }
 
-function createSimilarityMatrixAocs(sourceAocs, targetAocs) {
-  console.log('Creating similarity matrix Aocs')
+function createSimilarityMatrix(source, target) {
   const sourceIdNameMap = {}
   const targetIdNameMap = {}
 
-  for (const { id, name } of sourceAocs) {
+  for (const { id, name } of source) {
     sourceIdNameMap[id] = name
   }
 
-  for (const { id, name } of targetAocs) {
+  for (const { id, name } of target) {
     targetIdNameMap[id] = name
   }
 
-  const sourceAocsArr = idNmArrayFromMap(sourceIdNameMap)
-  const targetAocsArr = idNmArrayFromMap(targetIdNameMap)
+  const sourceArr = idNmArrayFromMap(sourceIdNameMap)
+  const targetArr = idNmArrayFromMap(targetIdNameMap)
 
   return {
-    ...makeRankedSuggestions(sourceAocsArr, targetAocsArr, sourceIdNameMap),
+    ...makeRankedSuggestions(sourceArr, targetArr, sourceIdNameMap),
   }
 }
 
-function createSimilarityMatrix(sourceDes, targetDes) {
-  console.log('Creating similarity matrix')
+function createSimilarityMatrixDeCocs(sourceDes, targetDes) {
   const idNmMap = createIdNmMap(sourceDes, targetDes)
   const sourceCocs = idNmArrayFromMap(idNmMap.sourceCocsMap)
   const targetCocs = idNmArrayFromMap(idNmMap.targetCocsMap)
@@ -235,7 +236,7 @@ export const useMappingState = (
     [OU]: { source: sourceOus, target: targetOus },
   }
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
-  const initialValues = initilizeAllMaps(initialMappings, metadata, deCocMap)
+  const initialValues = initializeAllMaps(initialMappings, metadata, deCocMap)
   const { [DE_COC]: initDeCoc, [AOC]: initAoc, [OU]: initOu } = initialValues
 
   const [deCocMappings, setDeCocMappingsInternal] = useState(initDeCoc)
@@ -260,15 +261,19 @@ export const useMappingState = (
   }, [initialMappings])
 
   const rankedSuggestions = useMemo(
-    () => createSimilarityMatrix(sourceDes, targetDes),
+    () => createSimilarityMatrixDeCocs(sourceDes, targetDes),
     [sourceDes, targetDes]
   )
 
   const rankedSuggestionsAocs = useMemo(
-    () => createSimilarityMatrixAocs(sourceAocs, targetAocs),
+    () => createSimilarityMatrix(sourceAocs, targetAocs),
     [sourceAocs, targetAocs]
   )
 
+  const rankedSuggestionsOus = useMemo(
+    () => createSimilarityMatrix(sourceOus, targetOus),
+    [sourceOus, targetOus]
+  )
   const setDeCocMappings = []
   for (let i = 0; i < deCocMappings.length; i++) {
     const rowSetter = {
@@ -352,5 +357,6 @@ export const useMappingState = (
     deCocMap,
     rankedSuggestions,
     rankedSuggestionsAocs,
+    rankedSuggestionsOus,
   }
 }

@@ -30,7 +30,7 @@ const MappingTable = ({
     [tableTypes.DE]: 'sourceDes',
     [tableTypes.COC]: 'sourceCocs',
     [tableTypes.AOC]: 'sourceAocs',
-    [tableTypes.OU]: 'source',
+    [tableTypes.OU]: 'sourceOus',
   }
   const sourceRowIdKey = tableSourceRowIdMap?.[tableType]
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
@@ -71,7 +71,7 @@ const MappingTable = ({
         </DataTableRow>
       </DataTableHead>
       <DataTableBody>
-        {mappings.slice(0, 10).map((rowMapping, idx) => {
+        {mappings.map((rowMapping, idx) => {
           const id = rowMapping?.[sourceRowIdKey]?.[0]
           const rankedTgtOpts = suggestions
             ? rankOpts(uniqueTgtOpts, suggestions[id])
