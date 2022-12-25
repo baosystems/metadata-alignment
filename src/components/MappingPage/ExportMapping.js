@@ -1,6 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { aocCsvExportHeaders, csvExportHeaders } from './MappingConsts'
+import {
+  aocCsvExportHeaders as aocHeader,
+  deCocCsvExportHeaders as deCocHeader,
+  ouCsvExportHeaders as ouHeader,
+  tableTypeKeys,
+  tableTypes,
+} from './MappingConsts'
 import { mapConfigType } from './sharedPropTypes'
 import { useAlert } from '@dhis2/app-runtime'
 import { Button } from '@dhis2/ui'
@@ -23,13 +29,18 @@ export function saveAsCsv(csvData, downloadElId, fileName) {
   link.click()
 }
 
-const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
+const ExportMapping = ({
+  mapConfig,
+  deCocMappings: deCocs,
+  aocMappings: aocs,
+  ouMappings: ous,
+}) => {
   const { show: showError } = useAlert((msg) => msg, { critical: true })
 
   const exportMapping = () => {
     const sourceDs = getMapInfo(mapConfig.sourceDs)
     const targetDs = getMapInfo(mapConfig.targetDs)
-    const mapInfoArr = [
+    const infoHeader = [
       '',
       '',
       '',
@@ -43,39 +54,11 @@ const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
       'Target url',
       mapConfig.targetUrl,
     ]
-    const result = [mapInfoArr, csvExportHeaders]
-    for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
-      if (targetDes.length > 1) {
-        showError('Only single target de mappings are currently supported')
-        return
-      }
-      for (const { sourceCocs, targetCocs } of cocMappings) {
-        if (targetCocs.length > 1) {
-          showError('Only single target coc mappings are currently supported')
-          return
-        }
-        for (const deUid of sourceDes) {
-          for (const cocUid of sourceCocs) {
-            result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
-          }
-        }
-      }
-    }
-    saveAsCsv(result, 'download-link', 'DE_Coc_Mapping.csv')
+    const { AOC, OU } = tableTypes
 
-    const resultAocs = [mapInfoArr.slice(2), aocCsvExportHeaders]
-    for (const { sourceAocs, targetAocs } of aocMappings) {
-      if (targetAocs.length > 1) {
-        showError('Only single target aoc mappings are currently supported')
-        return
-      }
-
-      for (const aocId of sourceAocs) {
-        resultAocs.push([aocId, targetAocs[0]])
-      }
-    }
-
-    saveAsCsv(resultAocs, 'download-link', 'Aoc_Mapping.csv')
+    generateDeCocExport(infoHeader, deCocs, showError)
+    generateExport(infoHeader, ouHeader, ous, OU, showError)
+    generateExport(infoHeader, aocHeader, aocs, AOC, showError)
   }
 
   return (
@@ -88,10 +71,58 @@ const ExportMapping = ({ mapConfig, deCocMappings, aocMappings }) => {
   )
 }
 
+function generateDeCocExport(mapInfoArr, deCocMappings, showError) {
+  const result = [mapInfoArr, deCocHeader]
+
+  for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
+    if (targetDes.length > 1) {
+      showError('Only single target de mappings are currently supported')
+      return
+    }
+    for (const { sourceCocs, targetCocs } of cocMappings) {
+      if (targetCocs.length > 1) {
+        showError('Only single target coc mappings are currently supported')
+        return
+      }
+      for (const deUid of sourceDes) {
+        for (const cocUid of sourceCocs) {
+          result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
+        }
+      }
+    }
+  }
+
+  saveAsCsv(result, 'download-link', 'de_coc_Mapping.csv')
+}
+
+function generateExport(mapInfoArr, headers, mappings, tableType, showError) {
+  const result = [mapInfoArr.slice(2), headers]
+  const keys = tableTypeKeys[tableType]
+
+  for (const {
+    [keys.sourceKey]: source,
+    [keys.targetKey]: target,
+  } of mappings) {
+    if (target.length > 1) {
+      showError(
+          `Only single target ${tableType} mappings are currently supported`
+      )
+      return
+    }
+
+    for (const ouId of source) {
+      result.push([ouId, target[0]])
+    }
+  }
+
+  saveAsCsv(result, 'download-link', `${tableType}_mapping.csv`)
+}
+
 ExportMapping.propTypes = {
   mapConfig: mapConfigType,
   deCocMappings: PropTypes.array,
   aocMappings: PropTypes.array,
+  ouMappings: PropTypes.array,
 }
 
 export default ExportMapping

@@ -123,6 +123,7 @@ const MappingPage = () => {
             mapConfig={mapConfig}
             deCocMappings={mappingState.deCocMappings}
             aocMappings={mappingState.aocMappings}
+            ouMappings={mappingState.ouMappings}
           />
           <SaveMapping
             mapConfig={mapConfig}

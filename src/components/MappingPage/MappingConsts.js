@@ -22,7 +22,7 @@ export const tableTypeKeys = {
 
 export const mappingsKey = 'mappings'
 
-export const csvExportHeaders = [
+export const deCocCsvExportHeaders = [
   'dataitemid_src',
   'catoptcomboid_src',
   'dataitemid_tgt',
@@ -30,6 +30,8 @@ export const csvExportHeaders = [
 ]
 
 export const aocCsvExportHeaders = ['attoptcomboid_src', 'attoptcomboid_tgt']
+
+export const ouCsvExportHeaders = ['orgunitid_src', 'orgunitid_tgt']
 
 export const mappingDestinations = {
   SOURCE: 'source',
