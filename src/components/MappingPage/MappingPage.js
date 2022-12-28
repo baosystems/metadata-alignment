@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   DataTable,
   DataTableFoot,
@@ -6,6 +6,7 @@ import {
   DataTableRow,
   DataTableCell,
 } from '@dhis2/ui'
+import { useAlert } from '@dhis2/app-runtime'
 import MappingTable from './MappingTable'
 import OuMappingTable from './OuMappingTable/OuMappingTable'
 import {
@@ -62,6 +63,8 @@ const MappingPage = () => {
   const [deCocSuggestions, setDecCocSuggestions] = useState({})
   const [aocSuggestions, setAocSuggestions] = useState({})
   const [ouSuggestions, setOuSuggestions] = useState({})
+  const { show: showInfo } = useAlert((msg) => msg, { info: true })
+  const { show: showSuccess } = useAlert((msg) => msg, { success: true })
 
   useEffect(() => {
     spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
@@ -82,9 +85,11 @@ const MappingPage = () => {
   }, [])
 
   useEffect(() => {
+    showInfo('Generating OU suggestions')
     spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
       console.log('OU suggestions done')
       setOuSuggestions(ous)
+      showSuccess('Successfully generated OU suggestions')
     })
   }, [])
 
