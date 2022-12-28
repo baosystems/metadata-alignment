@@ -21,6 +21,7 @@
     "bao-react-components": "^2.3.9",
     "fuse.js": "^6.5.3",
     "lodash": "^4.17.21",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "worker-loader": "^3.0.8"
   }
 }

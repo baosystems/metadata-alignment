@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import {
   DataTable,
   DataTableFoot,
@@ -14,12 +14,17 @@ import {
   flattenOus,
 } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
-import { MappingContext, useMappingState } from '../../mappingContext'
+import {
+  MappingContext,
+  metaTypes,
+  useMappingState,
+} from '../../mappingContext'
 import ThresholdInput from './ThresholdInput'
 import RefreshMetadata from './RefreshMetadata'
 import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
 import { SharedStateContext } from '../../sharedStateContext'
+import spawnSuggestionWorker from '../../spawn-worker'
 
 const MappingPage = () => {
   const sharedState = useContext(SharedStateContext)
@@ -54,6 +59,34 @@ const MappingPage = () => {
   const [showDeMapping, setShowDeMapping] = useState(false)
   const [showAocMapping, setShowAocMapping] = useState(false)
   const [showOuMapping, setShowOuMapping] = useState(false)
+  const [deCocSuggestions, setDecCocSuggestions] = useState({})
+  const [aocSuggestions, setAocSuggestions] = useState({})
+  const [ouSuggestions, setOuSuggestions] = useState({})
+
+  useEffect(() => {
+    spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
+      (deCocs) => {
+        console.log('DE COC suggestions done')
+        setDecCocSuggestions(deCocs)
+      }
+    )
+  }, [])
+
+  useEffect(() => {
+    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then(
+      (aocs) => {
+        console.log('AOC suggestions done')
+        setAocSuggestions(aocs)
+      }
+    )
+  }, [])
+
+  useEffect(() => {
+    spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
+      console.log('OU suggestions done')
+      setOuSuggestions(ous)
+    })
+  }, [])
 
   if (!sourceDs.length > 0 || !targetDs.length > 0) {
     return (
@@ -70,7 +103,7 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.deCocMappings}
       setMappings={mappingState.setDeCocMappings}
-      suggestions={mappingState.rankedSuggestions}
+      suggestions={deCocSuggestions}
       deCocMap={mappingState.deCocMap}
       tableType={tableTypes.DE}
       matchThreshold={Number(matchThreshold)}
@@ -85,7 +118,7 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.aocMappings}
       setMappings={mappingState.setAocMappings}
-      suggestions={mappingState.rankedSuggestionsAocs}
+      suggestions={aocSuggestions}
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={currentMappingAocs.length === 0}
@@ -99,7 +132,7 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}
-      suggestions={mappingState.rankedSuggestionsOus}
+      suggestions={ouSuggestions}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={currentMappingOus.length === 0}
     />
