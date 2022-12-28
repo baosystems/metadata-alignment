@@ -67,27 +67,22 @@ const MappingPage = () => {
   const { show: showSuccess } = useAlert((msg) => msg, { success: true })
 
   useEffect(() => {
-    spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
-      (deCocs) => {
-        console.log('DE COC suggestions done')
-        setDecCocSuggestions(deCocs)
-      }
-    )
+    spawnSuggestionWorker(
+      sourceDes,
+      targetDes,
+      metaTypes.DE_COC
+    ).then((deCocs) => setDecCocSuggestions(deCocs))
   }, [])
 
   useEffect(() => {
-    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then(
-      (aocs) => {
-        console.log('AOC suggestions done')
-        setAocSuggestions(aocs)
-      }
+    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then((aocs) =>
+      setAocSuggestions(aocs)
     )
   }, [])
 
   useEffect(() => {
     showInfo('Generating OU suggestions')
     spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
-      console.log('OU suggestions done')
       setOuSuggestions(ous)
       showSuccess('Successfully generated OU suggestions')
     })
