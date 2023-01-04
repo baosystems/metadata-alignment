@@ -107,7 +107,7 @@ const MappingPage = () => {
       deCocMap={mappingState.deCocMap}
       tableType={tableTypes.DE}
       matchThreshold={Number(matchThreshold)}
-      makeInitialSuggestions={currentMapping.length === 0}
+      makeInitialSuggestions={currentMapping && currentMapping.length === 0}
     />
   )
 
@@ -121,7 +121,9 @@ const MappingPage = () => {
       suggestions={aocSuggestions}
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
-      makeInitialSuggestions={currentMappingAocs.length === 0}
+      makeInitialSuggestions={
+        currentMappingAocs && currentMappingAocs.length === 0
+      }
     />
   )
 
@@ -134,7 +136,9 @@ const MappingPage = () => {
       setMappings={mappingState.setOuMappings}
       suggestions={ouSuggestions}
       matchThreshold={Number(matchThreshold)}
-      makeInitialSuggestions={currentMappingOus.length === 0}
+      makeInitialSuggestions={
+        currentMappingOus && currentMappingOus.length === 0
+      }
     />
   )
 

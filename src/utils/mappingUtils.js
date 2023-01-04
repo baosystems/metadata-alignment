@@ -17,17 +17,19 @@ export function flatten(arr, keyPath) {
 export function flattenOus(dSets) {
   const ous = []
 
-  for (const { organisationUnits } of dSets) {
-    ous.push(
-      ...organisationUnits.map((ou) => ({
-        id: ou.id,
-        name:
-          ou.ancestors.map((ancestor) => ancestor.name).join(' > ') +
-          ' > ' +
-          ou.name,
-        ouName: ou.name,
-      }))
-    )
+  if (dSets.organisationUnits) {
+    for (const {organisationUnits} of dSets) {
+      ous.push(
+          ...organisationUnits.map((ou) => ({
+            id: ou.id,
+            name:
+                ou.ancestors.map((ancestor) => ancestor.name).join(' > ') +
+                ' > ' +
+                ou.name,
+            ouName: ou.name,
+          }))
+      )
+    }
   }
 
   return ous
