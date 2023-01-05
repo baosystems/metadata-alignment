@@ -77,3 +77,7 @@
   display: flex;
   gap: 16px;
 }
+
+.dataTablePager {
+  margin-bottom: 16px;
+}

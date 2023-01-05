@@ -7,7 +7,9 @@ import {
   DataTableRow,
   DataTableColumnHeader,
   DataTableBody,
+  Pagination,
 } from '@dhis2/ui'
+import usePager from '../../hooks/usePager'
 import './MappingPage.css'
 import { tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
@@ -26,6 +28,8 @@ const MappingTable = ({
   matchThreshold,
   makeInitialSuggestions,
 }) => {
+  const { pageData, page, pageSize, ...pagerProps } = usePager(mappings)
+  const pageOffset = (page - 1) * pageSize
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const hasSubMaps = [tableTypes.DE].includes(tableType)
@@ -47,56 +51,64 @@ const MappingTable = ({
   }
 
   return (
-    <DataTable className={`dataTable ${styles}`}>
-      <DataTableHead>
-        <DataTableRow>
-          {hasSubMaps && <DataTableColumnHeader />}
-          <DataTableColumnHeader>
-            Source
-            {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
-              ` (${urlParams.sourceUrl})`}
-          </DataTableColumnHeader>
-          <DataTableColumnHeader>
-            Target
-            {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
-              ` (${urlParams.targetUrl})`}
-          </DataTableColumnHeader>
-        </DataTableRow>
-      </DataTableHead>
-      <DataTableBody>
-        {mappings.map((rowMapping, idx) => {
-          const id = rowMapping.sourceDes?.[0]
-          const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
-          const rowProps = {
-            key: id,
-            rowId: id,
-            stateControl: {
-              mapping: mappings[idx],
-              setMapping: setMappings[idx],
-            },
-            options: { sourceOpts: uniqueSrcOpts, rankedTgtOpts },
-            matchThreshold,
-            makeInitialSuggestions,
-          }
-          switch (tableType) {
-            case tableTypes.DE:
-              return (
-                <MappingRowDe
-                  {...rowProps}
-                  rankedSuggestions={suggestions}
-                  deCocMap={deCocMap}
-                />
-              )
-            case tableTypes.COC:
-              return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
-            case tableTypes.AOC:
-              return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
-            default:
-              return <p>No mapping found for table type {tableType}</p>
-          }
-        })}
-      </DataTableBody>
-    </DataTable>
+    <div>
+      <Pagination
+        page={page}
+        pageSize={pageSize}
+        {...pagerProps}
+        className="dataTablePager"
+      />
+      <DataTable className={`dataTable ${styles}`}>
+        <DataTableHead>
+          <DataTableRow>
+            {hasSubMaps && <DataTableColumnHeader />}
+            <DataTableColumnHeader>
+              Source
+              {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
+                ` (${urlParams.sourceUrl})`}
+            </DataTableColumnHeader>
+            <DataTableColumnHeader>
+              Target
+              {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
+                ` (${urlParams.targetUrl})`}
+            </DataTableColumnHeader>
+          </DataTableRow>
+        </DataTableHead>
+        <DataTableBody>
+          {pageData.map((rowMapping, idx) => {
+            const id = rowMapping.sourceDes?.[0]
+            const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
+            const rowProps = {
+              key: id,
+              rowId: id,
+              stateControl: {
+                mapping: pageData[idx],
+                setMapping: setMappings[pageOffset + idx],
+              },
+              options: { sourceOpts: uniqueSrcOpts, rankedTgtOpts },
+              matchThreshold,
+              makeInitialSuggestions,
+            }
+            switch (tableType) {
+              case tableTypes.DE:
+                return (
+                  <MappingRowDe
+                    {...rowProps}
+                    rankedSuggestions={suggestions}
+                    deCocMap={deCocMap}
+                  />
+                )
+              case tableTypes.COC:
+                return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
+              case tableTypes.AOC:
+                return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
+              default:
+                return <p>No mapping found for table type {tableType}</p>
+            }
+          })}
+        </DataTableBody>
+      </DataTable>
+    </div>
   )
 }
 
