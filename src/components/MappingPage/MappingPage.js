@@ -60,6 +60,7 @@ const MappingPage = () => {
   const [showDeMapping, setShowDeMapping] = useState(false)
   const [showAocMapping, setShowAocMapping] = useState(false)
   const [showOuMapping, setShowOuMapping] = useState(false)
+  const [metadataRefreshed, setMetadataRefreshed] = useState(false)
   const [deCocSuggestions, setDecCocSuggestions] = useState({})
   const [aocSuggestions, setAocSuggestions] = useState({})
   const [ouSuggestions, setOuSuggestions] = useState({})
@@ -72,13 +73,13 @@ const MappingPage = () => {
       targetDes,
       metaTypes.DE_COC
     ).then((deCocs) => setDecCocSuggestions(deCocs))
-  }, [])
+  }, [metadataRefreshed])
 
   useEffect(() => {
     spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then((aocs) =>
       setAocSuggestions(aocs)
     )
-  }, [])
+  }, [metadataRefreshed])
 
   useEffect(() => {
     showInfo('Generating OU suggestions')
@@ -86,7 +87,7 @@ const MappingPage = () => {
       setOuSuggestions(ous)
       showSuccess('Successfully generated OU suggestions')
     })
-  }, [])
+  }, [metadataRefreshed])
 
   if (!sourceDs.length > 0 || !targetDs.length > 0) {
     return (
@@ -107,7 +108,9 @@ const MappingPage = () => {
       deCocMap={mappingState.deCocMap}
       tableType={tableTypes.DE}
       matchThreshold={Number(matchThreshold)}
-      makeInitialSuggestions={currentMapping && currentMapping.length === 0}
+      makeInitialSuggestions={
+        (currentMapping && currentMapping.length === 0) || metadataRefreshed
+      }
     />
   )
 
@@ -122,7 +125,8 @@ const MappingPage = () => {
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={
-        currentMappingAocs && currentMappingAocs.length === 0
+        (currentMappingAocs && currentMappingAocs.length === 0) ||
+        metadataRefreshed
       }
     />
   )
@@ -137,10 +141,15 @@ const MappingPage = () => {
       suggestions={ouSuggestions}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={
-        currentMappingOus && currentMappingOus.length === 0
+        (currentMappingOus && currentMappingOus.length === 0) ||
+        metadataRefreshed
       }
     />
   )
+
+  if (showDeMapping && showAocMapping && showOuMapping) {
+    setMetadataRefreshed(false)
+  }
 
   return (
     <MappingContext.Provider value={mappingState}>
@@ -155,6 +164,8 @@ const MappingPage = () => {
             mapConfig={mapConfig}
             setShowDeMapping={setShowDeMapping}
             setShowAocMapping={setShowAocMapping}
+            setShowOuMapping={setShowOuMapping}
+            setMetadataRefreshed={setMetadataRefreshed}
           />
           <ExportMapping
             mapConfig={mapConfig}
