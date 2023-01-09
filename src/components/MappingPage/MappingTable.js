@@ -26,6 +26,13 @@ const MappingTable = ({
   matchThreshold,
   makeInitialSuggestions,
 }) => {
+  const tableSourceRowIdMap = {
+    [tableTypes.DE]: 'sourceDes',
+    [tableTypes.COC]: 'sourceCocs',
+    [tableTypes.AOC]: 'sourceAocs',
+    [tableTypes.OU]: 'sourceOus',
+  }
+  const sourceRowIdKey = tableSourceRowIdMap?.[tableType]
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const hasSubMaps = [tableTypes.DE].includes(tableType)
@@ -65,8 +72,10 @@ const MappingTable = ({
       </DataTableHead>
       <DataTableBody>
         {mappings.map((rowMapping, idx) => {
-          const id = rowMapping.sourceDes?.[0]
-          const rankedTgtOpts = rankOpts(uniqueTgtOpts, suggestions[id])
+          const id = rowMapping?.[sourceRowIdKey]?.[0]
+          const rankedTgtOpts = suggestions
+            ? rankOpts(uniqueTgtOpts, suggestions[id])
+            : uniqueTgtOpts
           const rowProps = {
             key: id,
             rowId: id,
@@ -91,6 +100,8 @@ const MappingTable = ({
               return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
             case tableTypes.AOC:
               return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
+            case tableTypes.OU:
+              return <MappingRowCoc {...rowProps} variant={tableTypes.OU} />
             default:
               return <p>No mapping found for table type {tableType}</p>
           }
