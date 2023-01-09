@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 50
 
 export default function usePager(data) {
   const [page, setPage] = useState(1)

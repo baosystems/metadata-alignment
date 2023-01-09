@@ -63,6 +63,7 @@ const MappingTable = ({
         page={page}
         pageSize={pageSize}
         {...pagerProps}
+        pageSizes={['5', '10', '25', '50', '75', '100', '150', '200']}
         className="dataTablePager"
       />
       <DataTable className={`dataTable ${styles}`}>
