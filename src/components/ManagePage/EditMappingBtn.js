@@ -24,6 +24,7 @@ const EditMappingBtn = ({ mappingData }) => {
     sharedState.setTargetUrl(addProtocol(mappingData.targetUrl))
     sharedState.setCurrentMapping(mappingData.deCocMappings)
     sharedState.setCurrentMappingAocs(mappingData.aocMappings)
+    sharedState.setCurrentMappingOus(mappingData.ouMappings)
     history.push('/edit')
   }
 
@@ -52,6 +53,12 @@ EditMappingBtn.propTypes = {
       PropTypes.shape({
         sourceAocs: PropTypes.arrayOf(PropTypes.string),
         targetAocs: PropTypes.arrayOf(PropTypes.string),
+      })
+    ),
+    ouMappings: PropTypes.arrayOf(
+      PropTypes.shape({
+        sourceOus: PropTypes.arrayOf(PropTypes.string),
+        targetOus: PropTypes.arrayOf(PropTypes.string),
       })
     ),
   }),

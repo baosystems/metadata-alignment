@@ -1,6 +1,40 @@
 import { isEqual } from 'lodash'
 import { mappingDestinations } from '../components/MappingPage/MappingConsts'
 
+export function flatten(arr, keyPath) {
+  const result = []
+  const valuePath = Array.isArray(keyPath) ? keyPath : [keyPath]
+  for (const item of arr) {
+    let value = item
+    for (const key of valuePath) {
+      value = value?.[key]
+    }
+    result.push(...value)
+  }
+  return result
+}
+
+export function flattenOus(dSets) {
+  const ous = []
+
+  for (const { organisationUnits } of dSets) {
+    if (organisationUnits) {
+      ous.push(
+        ...organisationUnits.map((ou) => ({
+          id: ou.id,
+          name:
+            ou.ancestors.map((ancestor) => ancestor.name).join(' > ') +
+            ' > ' +
+            ou.name,
+          ouName: ou.name,
+        }))
+      )
+    }
+  }
+
+  return ous
+}
+
 export function flattenDataSetElements(dSets) {
   const des = []
   for (const { dataSetElements } of dSets) {
@@ -34,13 +68,8 @@ export function getSourceNames(opts, ids) {
       names.push(opt.name)
     }
   }
-  if (names.length === 0) {
-    const idsStr = ids.join(', ')
-    const optsStr = JSON.stringify(opts)
-    throw `No options with ids ${idsStr} in available options: ${optsStr}`
-  } else {
-    return names
-  }
+
+  return names
 }
 
 export function autoFill(config) {
@@ -112,11 +141,18 @@ function getRemovedDsMetadata(dsOld, dsNew) {
   const newDeUids = (newDses || []).map((dse) => dse.dataElement.id)
   const oldCocUids = getDsDeCocs(dsOld)
   const newCocUids = getDsDeCocs(dsNew)
+  const oldOus = dsOld.organisationUnits || []
+  const oldOuUids = oldOus.map(({ id }) => id)
+  const newOus = dsNew?.organisationUnits || []
+  const newOuUids = newOus.map(({ id }) => id)
+
   const result = {
     aocs: oldAocUids.filter((aocId) => !newAocUids.includes(aocId)),
-    des: oldDeUids.filter((deId) => !newDeUids.includes(deId)),
     cocs: oldCocUids.filter((cocId) => !newCocUids.includes(cocId)),
+    des: oldDeUids.filter((deId) => !newDeUids.includes(deId)),
+    ous: oldOuUids.filter((ouId) => !newOuUids.includes(ouId)),
   }
+
   if (Object.values(result).some((val) => val && val.length > 0)) {
     return result
   } else {
@@ -137,6 +173,7 @@ function getRemovedMetadata(oldDataSets, newDataSets) {
     aocs: [],
     des: [],
     cocs: [],
+    ous: [],
   }
   for (const oldDs of oldDataSets) {
     const newDs = newDataSets.find((newDs) => newDs.id === oldDs.id)
@@ -145,6 +182,7 @@ function getRemovedMetadata(oldDataSets, newDataSets) {
       result.aocs = [...result.aocs, ...dsResult.aocs]
       result.des = [...result.des, ...dsResult.des]
       result.cocs = [...result.cocs, ...dsResult.cocs]
+      result.ous = [...result.ous, ...dsResult.ous]
     }
   }
   if (Object.values(result).some((val) => val && val.length > 0)) {
@@ -152,6 +190,7 @@ function getRemovedMetadata(oldDataSets, newDataSets) {
       aocs: Array.from(new Set(result.aocs)),
       des: Array.from(new Set(result.des)),
       cocs: Array.from(new Set(result.cocs)),
+      ous: Array.from(new Set(result.ous)),
     }
   } else {
     // If there are no values to remove, make this
@@ -199,24 +238,47 @@ function removeDesCocs(deMap, config) {
  */
 function removeAocs(aocMap, config) {
   const { removedMetadata, mappingDestination } = config
-  const removeAocs = removedMetadata?.aocs || []
+  const removedAocs = removedMetadata?.aocs || []
   const aocKey = `${mappingDestination}Aocs`
   const result = {
     ...aocMap,
-    [aocKey]: removeIfIn(aocMap[aocKey], removeAocs),
+    [aocKey]: removeIfIn(aocMap[aocKey], removedAocs),
   }
   // If there are no source aocs left, then this mapping row should be removed
   return result.sourceAocs.length > 0 ? result : null
 }
 
+/**
+ * Update an ou mapping by removing the ous specified. If there is no longer
+ * a source ou left then return null as the row is no longer valid
+ * @param {Object} ouMap Mapping row for ous
+ * @param {Object} config Holds which fields should be removed and what the destination is
+ * @returns An updated ou mapping row if the row is still valid, otherwise null
+ */
+function removeOus(ouMap, config) {
+  const { removedMetadata, mappingDestination } = config
+  const removedOus = removedMetadata?.ous || []
+  const ouKey = `${mappingDestination}Ous`
+  const result = {
+    ...ouMap,
+    [ouKey]: removeIfIn(ouMap[ouKey], removedOus),
+  }
+  // If there are no source ous left, then this mapping row should be removed
+  return result.sourceOus.length ? result : null
+}
+
 function getNewMetadata(oldDataSets, newDataSets) {
-  const result = { des: [], aocs: [] }
+  const result = { des: [], aocs: [], ous: [] }
   for (const newDs of newDataSets) {
     const oldDs = oldDataSets.find((oldDs) => newDs.id === oldDs.id)
-    const oldAocs = oldDs.categoryCombo.categoryOptionCombos
-    const oldDsAocUids = oldAocs.map(({ id }) => id)
-    const newAocs = newDs?.categoryCombo?.categoryOptionCombos
-    const newDsAocUids = (newAocs || []).map(({ id }) => id)
+    const oldDsAocUids = (oldDs?.categoryCombo?.categoryOptionCombos || []).map(
+      ({ id }) => id
+    )
+    const newDsAocUids = (newDs?.categoryCombo?.categoryOptionCombos || []).map(
+      ({ id }) => id
+    )
+    const oldDsOuUids = (oldDs.organisationUnits || []).map(({ id }) => id)
+    const newDsOuUids = (newDs?.organisationUnits || []).map(({ id }) => id)
     const oldDsDeUids = oldDs.dataSetElements.map((dse) => dse.dataElement.id)
     const newDses = newDs?.dataSetElements
     const newDsDeUids = (newDses || []).map((dse) => dse.dataElement.id)
@@ -229,6 +291,7 @@ function getNewMetadata(oldDataSets, newDataSets) {
       cocMappings: [],
     }))
     result.des = [...result.des, ...newDeRows]
+
     const newAocUids = newDsAocUids.filter(
       (aocUid) => !oldDsAocUids.includes(aocUid)
     )
@@ -237,8 +300,18 @@ function getNewMetadata(oldDataSets, newDataSets) {
       targetAocs: [],
     }))
     result.aocs = [...result.aocs, ...newAocRows]
+
+    const newOuUids = newDsOuUids.filter(
+      (ouUid) => !oldDsOuUids.includes(ouUid)
+    )
+    const newOuRows = newOuUids.map((ouUid) => ({
+      sourceOus: [ouUid],
+      targetOus: [],
+    }))
+    result.ous = [...result.ous, ...newOuRows]
   }
-  if (result.des.length > 0 || result.aocs.length > 0) {
+
+  if (result.des.length || result.aocs.length || result.ous.length) {
     return result
   } else {
     return null
@@ -254,28 +327,43 @@ function getNewMetadata(oldDataSets, newDataSets) {
 function updateMapping(updatedDataSet, mappingDestination, config) {
   const { currentMappings, previousDs } = config
   const removedMetadata = getRemovedMetadata(previousDs, updatedDataSet)
-  let newMetadata = { des: [], aocs: [] }
+  let newMetadata = { des: [], aocs: [], ous: [] }
   if (mappingDestination === mappingDestinations.SOURCE) {
     // Only need to calculate for new source metadata because new target metadata
     // will not cause new rows in the mapping table
-    // so does not need to be checked, the assitional options will show
+    // so does not need to be checked, the additional options will show
     // in the updated metadata though
     newMetadata = getNewMetadata(previousDs, updatedDataSet)
   }
   const result = currentMappings
   if (removedMetadata) {
     const config = { removedMetadata, mappingDestination }
-    result.des = currentMappings.des
-      .map((deMap) => removeDesCocs(deMap, config))
-      .filter(Boolean) // Remove null values from invalid mappings
-    result.aocs = currentMappings.aocs
-      .map((aocMap) => removeAocs(aocMap, config))
-      .filter(Boolean) // Remove null values from invalid mappings
+    result.des = currentMappings?.des
+      ? currentMappings.des
+          .map((deMap) => removeDesCocs(deMap, config))
+          .filter(Boolean)
+      : []
+    result.aocs = currentMappings?.aocs
+      ? currentMappings.aocs
+          .map((aocMap) => removeAocs(aocMap, config))
+          .filter(Boolean)
+      : []
+    result.ous = currentMappings?.ous
+      ? currentMappings.ous
+          .map((ouMap) => removeOus(ouMap, config))
+          .filter(Boolean)
+      : []
   }
+
   if (newMetadata) {
     result.des = [...result.des, ...newMetadata.des]
     result.aocs = [...result.aocs, ...newMetadata.aocs]
+    result.ous =
+      result.ous && result.ous.length
+        ? [...result.ous, ...newMetadata.ous]
+        : [...newMetadata.ous]
   }
+
   if (removedMetadata || newMetadata) {
     return result
   } else {
@@ -295,6 +383,7 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
     currentMappings: {
       des: sharedState.currentMapping,
       aocs: sharedState.currentMappingAocs,
+      ous: sharedState.currentMappingOus,
     },
   }
   let newMapping = config.currentMappings
@@ -319,28 +408,32 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
       newMapping = updatedMapping
     }
   }
+
   if (mappingUpdated) {
     sharedState.setCurrentMapping(newMapping.des)
     sharedState.setCurrentMappingAocs(newMapping.aocs)
+    sharedState.setCurrentMappingOus(newMapping.ous)
   }
 }
 
 function arrayToObjectByKey(array, keys) {
-  const keyArray = Array.isArray(keys) ? keys : [keys]
-  const result = {}
-  for (const item of array) {
-    let itemKey = item[keyArray[0]]
-    for (const key of keyArray.slice(1)) {
-      itemKey = itemKey[key]
+  if (array) {
+    const keyArray = Array.isArray(keys) ? keys : [keys]
+    const result = {}
+    for (const item of array) {
+      let itemKey = item[keyArray[0]]
+      for (const key of keyArray.slice(1)) {
+        itemKey = itemKey[key]
+      }
+      result[itemKey] = item
     }
-    result[itemKey] = item
+    return result
   }
-  return result
 }
 
-// Swap all the arrays in the data set (which can cause lodas isEqual to fail)
+// Swap all the arrays in the data set (which can cause lodash isEqual to fail)
 // to objects using the id for each item in the original array as the key
-function makeComparibleDataSet(dataSet) {
+function makeComparableDataSet(dataSet) {
   return {
     ...dataSet,
     categoryCombo: {
@@ -350,6 +443,7 @@ function makeComparibleDataSet(dataSet) {
         'id'
       ),
     },
+    organisationUnits: arrayToObjectByKey(dataSet.organisationUnits, 'id'),
     dataSetElements: arrayToObjectByKey(
       dataSet.dataSetElements.map((dse) => ({
         dataElement: {
@@ -369,7 +463,7 @@ function makeComparibleDataSet(dataSet) {
 
 export function dataSetsEquivalent(dataSets1In, dataSets2In) {
   // transform lists into sets for lodash equal comparison
-  const ds1 = new Set(dataSets1In.map((ds) => makeComparibleDataSet(ds)))
-  const ds2 = new Set(dataSets2In.map((ds) => makeComparibleDataSet(ds)))
+  const ds1 = new Set(dataSets1In.map((ds) => makeComparableDataSet(ds)))
+  const ds2 = new Set(dataSets2In.map((ds) => makeComparableDataSet(ds)))
   return isEqual(ds1, ds2)
 }

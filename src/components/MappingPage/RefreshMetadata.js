@@ -17,6 +17,8 @@ const RefreshMetadata = ({
   mapConfig,
   setShowDeMapping,
   setShowAocMapping,
+  setShowOuMapping,
+  setMetadataRefreshed,
 }) => {
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const [updatedSourceDs, setUpdatedSourceDs] = useState(null)
@@ -42,6 +44,7 @@ const RefreshMetadata = ({
       if (!sourcesMatch || !targetsMatch) {
         try {
           updateRequiredMappings(newDsConfig, sharedState)
+          setMetadataRefreshed(true)
           show(
             'Metadata refresh complete, to save updates after review, use the Save mapping button'
           )
@@ -56,6 +59,7 @@ const RefreshMetadata = ({
         setLoading(false)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedSourceDs, updatedTargetDs])
 
   const getMetadataUpdate = async (
@@ -81,7 +85,7 @@ const RefreshMetadata = ({
     } catch (err) {
       if (err instanceof PatRequestError) {
         // If different user to setup user is refreshing from an external server
-        // then the credendentials to access the server might not be available
+        // then the credentials to access the server might not be available
         setModalData({
           engine,
           baseAddress,
@@ -99,6 +103,7 @@ const RefreshMetadata = ({
     setLoading(true)
     setShowDeMapping(false)
     setShowAocMapping(false)
+    setShowOuMapping(false)
     const baseAddress = window.location.origin
     try {
       await getMetadataUpdate(baseAddress, sourceUrl, sourceDs, 'source')
@@ -135,6 +140,8 @@ RefreshMetadata.propTypes = {
   mapConfig: mapConfigType,
   setShowDeMapping: PropTypes.func.isRequired,
   setShowAocMapping: PropTypes.func.isRequired,
+  setShowOuMapping: PropTypes.func.isRequired,
+  setMetadataRefreshed: PropTypes.func.isRequired,
 }
 
 export default RefreshMetadata
