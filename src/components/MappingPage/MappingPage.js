@@ -68,25 +68,33 @@ const MappingPage = () => {
   const { show: showSuccess } = useAlert((msg) => msg, { success: true })
 
   useEffect(() => {
-    spawnSuggestionWorker(
-      sourceDes,
-      targetDes,
-      metaTypes.DE_COC
-    ).then((deCocs) => setDecCocSuggestions(deCocs))
+    if (metadataRefreshed) {
+      spawnSuggestionWorker(
+        sourceDes,
+        targetDes,
+        metaTypes.DE_COC
+      ).then((deCocs) => setDecCocSuggestions(deCocs))
+    }
   }, [metadataRefreshed])
 
   useEffect(() => {
-    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then((aocs) =>
-      setAocSuggestions(aocs)
-    )
+    if (metadataRefreshed) {
+      spawnSuggestionWorker(
+        sourceAocs,
+        targetAocs,
+        metaTypes.AOC
+      ).then((aocs) => setAocSuggestions(aocs))
+    }
   }, [metadataRefreshed])
 
   useEffect(() => {
-    showInfo('Generating OU suggestions')
-    spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
-      setOuSuggestions(ous)
-      showSuccess('Successfully generated OU suggestions')
-    })
+    if (metadataRefreshed) {
+      showInfo('Generating OU suggestions')
+      spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
+        setOuSuggestions(ous)
+        showSuccess('Successfully generated OU suggestions')
+      })
+    }
   }, [metadataRefreshed])
 
   if (!sourceDs.length > 0 || !targetDs.length > 0) {
@@ -147,7 +155,7 @@ const MappingPage = () => {
     />
   )
 
-  if (showDeMapping && showAocMapping && showOuMapping) {
+  if (showDeMapping && showAocMapping && showOuMapping && metadataRefreshed) {
     setMetadataRefreshed(false)
   }
 

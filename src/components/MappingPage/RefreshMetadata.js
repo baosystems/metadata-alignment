@@ -140,6 +140,7 @@ RefreshMetadata.propTypes = {
   setShowDeMapping: PropTypes.func.isRequired,
   setShowAocMapping: PropTypes.func.isRequired,
   setShowOuMapping: PropTypes.func.isRequired,
+  setMetadataRefreshed: PropTypes.func.isRequired,
 }
 
 export default RefreshMetadata

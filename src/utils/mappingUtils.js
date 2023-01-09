@@ -68,13 +68,8 @@ export function getSourceNames(opts, ids) {
       names.push(opt.name)
     }
   }
-  if (names.length === 0) {
-    const idsStr = ids.join(', ')
-    const optsStr = JSON.stringify(opts)
-    throw `No options with ids ${idsStr} in available options: ${optsStr}`
-  } else {
-    return names
-  }
+
+  return names
 }
 
 export function autoFill(config) {
@@ -343,24 +338,32 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
   const result = currentMappings
   if (removedMetadata) {
     const config = { removedMetadata, mappingDestination }
-    result.des = currentMappings.des
-      .map((deMap) => removeDesCocs(deMap, config))
-      .filter(Boolean) // Remove null values from invalid mappings
-    result.aocs = currentMappings.aocs
-      .map((aocMap) => removeAocs(aocMap, config))
-      .filter(Boolean) // Remove null values from invalid mappings
+    result.des = currentMappings?.des
+      ? currentMappings.des
+          .map((deMap) => removeDesCocs(deMap, config))
+          .filter(Boolean)
+      : []
+    result.aocs = currentMappings?.aocs
+      ? currentMappings.aocs
+          .map((aocMap) => removeAocs(aocMap, config))
+          .filter(Boolean)
+      : []
     result.ous = currentMappings?.ous
-      .map((ouMap) => removeOus(ouMap, config))
-      .filter(Boolean) // Remove null values from invalid mappings
+      ? currentMappings.ous
+          .map((ouMap) => removeOus(ouMap, config))
+          .filter(Boolean)
+      : []
   }
 
   if (newMetadata) {
     result.des = [...result.des, ...newMetadata.des]
     result.aocs = [...result.aocs, ...newMetadata.aocs]
-    result.ous = result.ous
-      ? [...result.ous, ...newMetadata.ous]
-      : [...newMetadata.ous]
+    result.ous =
+      result.ous && result.ous.length
+        ? [...result.ous, ...newMetadata.ous]
+        : [...newMetadata.ous]
   }
+
   if (removedMetadata || newMetadata) {
     return result
   } else {
