@@ -1,5 +1,4 @@
 import { createContext, useEffect, useMemo, useRef, useState } from 'react'
-import Fuse from 'fuse.js'
 import { tableTypeKeys } from './components/MappingPage/MappingConsts'
 
 export const metaTypes = {
@@ -56,7 +55,7 @@ function initializeGenericMap(sourceMeta, metaType) {
     return result
   }
 
-  let metaKeys = tableTypeKeys[metaType]
+  const metaKeys = tableTypeKeys[metaType]
   for (const sourceItem of sourceMeta) {
     result.push({
       [metaKeys.sourceKey]: [sourceItem.id],
@@ -113,11 +112,14 @@ export const useMappingState = (
   const [ouMappings, setOuMappingsInternal] = useState(initOu)
   const [ouSetters, setOuSetters] = useState([])
   const ouSetterCountRef = useRef(ouSetters.length)
-  const setterMap = {
-    [DE_COC]: setDeCocMappingsInternal,
-    [AOC]: setAocMappingsInternal,
-    [OU]: setOuMappingsInternal,
-  }
+  const setterMap = useMemo(
+    () => ({
+      [DE_COC]: setDeCocMappingsInternal,
+      [AOC]: setAocMappingsInternal,
+      [OU]: setOuMappingsInternal,
+    }),
+    []
+  )
 
   // Effect to refresh the mappings on refresh metadata
   useEffect(() => {
@@ -127,7 +129,7 @@ export const useMappingState = (
         setterMap[metaType](initialMapping)
       }
     }
-  }, [initialMappings])
+  }, [initialMappings, setterMap])
 
   const setDeCocMappings = []
   for (let i = 0; i < deCocMappings.length; i++) {

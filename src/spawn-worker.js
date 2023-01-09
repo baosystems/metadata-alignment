@@ -1,4 +1,4 @@
-import Worker from 'worker-loader!./suggestion.worker.js'
+import Worker from 'worker-loader!./suggestion.worker.js' // eslint-disable-line
 
 export default function spawnSuggestionWorker(source, target, mappingType) {
   return new Promise((resolve) => {

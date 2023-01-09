@@ -105,7 +105,7 @@ function generateExport(mapInfoArr, headers, mappings, tableType, showError) {
   } of mappings) {
     if (target.length > 1) {
       showError(
-          `Only single target ${tableType} mappings are currently supported`
+        `Only single target ${tableType} mappings are currently supported`
       )
       return
     }

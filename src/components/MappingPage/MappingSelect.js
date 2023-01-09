@@ -9,23 +9,25 @@ const MappingSelect = ({ rowId, selected, onChange, options }) => {
   // may not exist in `options`. This causes the `MultiSelectField`
   // to throw an error. The following ensures that only selected
   // values existing in `options` are passed to `MultiSelectField`.
-  let validSelections = []
+  const validSelections = []
   for (const opt of options) {
-    if (selected.includes(opt.id)) validSelections.push(opt.id)
+    if (selected.includes(opt.id)) {
+      validSelections.push(opt.id)
+    }
   }
 
   return (
-      <MultiSelectField
-          className="mappingMultiSelect"
-          selected={validSelections}
-          onChange={(e) => onChange(e)}
-          clearable
-          filterable
-      >
-        {options.map(({name, id}) => (
-            <MultiSelectOption label={name} value={id} key={`${rowId}-${id}-row`}/>
-        ))}
-      </MultiSelectField>
+    <MultiSelectField
+      className="mappingMultiSelect"
+      selected={validSelections}
+      onChange={(e) => onChange(e)}
+      clearable
+      filterable
+    >
+      {options.map(({ name, id }) => (
+        <MultiSelectOption label={name} value={id} key={`${rowId}-${id}-row`} />
+      ))}
+    </MultiSelectField>
   )
 }
 

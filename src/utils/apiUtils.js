@@ -96,9 +96,10 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
   try {
     const pat = patIn || (await getPat(engine, baseUrl))
 
-    const catCombo = 'categoryCombo(id,name,categoryOptionCombos(id,name))';
-    const dataSetElements = 'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))';
-    const orgUnits = 'organisationUnits(id,name,ancestors(id,name)';
+    const catCombo = 'categoryCombo(id,name,categoryOptionCombos(id,name))'
+    const dataSetElements =
+      'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))'
+    const orgUnits = 'organisationUnits(id,name,ancestors(id,name)'
 
     const params = {
       filter: `id:in:[${dsIds.join(',')}]`,

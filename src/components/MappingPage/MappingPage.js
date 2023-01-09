@@ -69,22 +69,20 @@ const MappingPage = () => {
 
   useEffect(() => {
     if (metadataRefreshed) {
-      spawnSuggestionWorker(
-        sourceDes,
-        targetDes,
-        metaTypes.DE_COC
-      ).then((deCocs) => setDecCocSuggestions(deCocs))
+      spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
+        (deCocs) => setDecCocSuggestions(deCocs)
+      )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadataRefreshed])
 
   useEffect(() => {
     if (metadataRefreshed) {
-      spawnSuggestionWorker(
-        sourceAocs,
-        targetAocs,
-        metaTypes.AOC
-      ).then((aocs) => setAocSuggestions(aocs))
+      spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then(
+        (aocs) => setAocSuggestions(aocs)
+      )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadataRefreshed])
 
   useEffect(() => {
@@ -95,6 +93,7 @@ const MappingPage = () => {
         showSuccess('Successfully generated OU suggestions')
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadataRefreshed])
 
   if (!sourceDs.length > 0 || !targetDs.length > 0) {

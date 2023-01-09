@@ -8,9 +8,10 @@ export const allDsQuery = {
   },
 }
 
-const catCombos = 'categoryCombo(id,name,categoryOptionCombos(id,name))';
-const dataSetElements = 'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))';
-const orgUnits = 'organisationUnits(id,name,ancestors(id,name)';
+const catCombos = 'categoryCombo(id,name,categoryOptionCombos(id,name))'
+const dataSetElements =
+  'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))'
+const orgUnits = 'organisationUnits(id,name,ancestors(id,name)'
 
 export const dsInfoQuery = {
   dataSets: {

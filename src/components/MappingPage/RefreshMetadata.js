@@ -59,6 +59,7 @@ const RefreshMetadata = ({
         setLoading(false)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedSourceDs, updatedTargetDs])
 
   const getMetadataUpdate = async (
