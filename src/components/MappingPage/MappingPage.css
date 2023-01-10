@@ -81,3 +81,7 @@
 .dataTablePager {
   margin-bottom: 16px;
 }
+
+.dataTablePager div.dense div.root-input > div {
+  overflow: hidden;
+}
