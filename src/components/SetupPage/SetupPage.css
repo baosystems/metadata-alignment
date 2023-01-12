@@ -39,19 +39,19 @@ button.configMap {
   margin-bottom: 32px;
 }
 
-.cardContent > p {
+.cardContent p {
   font-size: 14px;
   padding-bottom: 12px;
 }
 
-.locationSelect {
+.radioItems {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
   margin-bottom: 24px;
 }
 
-.locationSelect > label {
+.radioItems > label {
   font-size: 13px;
 }
 
@@ -62,5 +62,41 @@ button.configMap {
 }
 
 .externalConnect > div {
+  width: 100%;
+}
+
+.uploadDsSelect {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.uploadDsSelect > * {
+  width: 100%;
+}
+
+.uploadDsSelect div.file-input > div,
+.uploadDsSelect div.file-input button {
+  width: 100%;
+}
+
+.connectionMethodSelect {
+  margin-top: -16px;
+}
+
+.connectionMethodTabBar {
+  margin-bottom: 16px;
+}
+
+.connectionMethodTabBar button {
+  width: 50%;
+}
+
+.manualDownload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.manualDownload > * {
   width: 100%;
 }

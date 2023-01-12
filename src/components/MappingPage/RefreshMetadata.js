@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { mapConfigType } from './sharedPropTypes'
-import { getDsData, PatRequestError } from '../../utils/apiUtils'
+import { requestDsData, PatRequestError } from '../../utils/apiUtils'
 import {
   dataSetsEquivalent,
   updateRequiredMappings,
@@ -76,7 +76,7 @@ const RefreshMetadata = ({
         ? dsLocations.currentServer
         : dsLocations.externalServer
     try {
-      const updatedDataSetMeta = await getDsData(engine, dsIds, config, pat)
+      const updatedDataSetMeta = await requestDsData(engine, dsIds, config, pat)
       if (destination === mappingDestinations.SOURCE) {
         setUpdatedSourceDs(updatedDataSetMeta)
       } else if (destination === mappingDestinations.TARGET) {

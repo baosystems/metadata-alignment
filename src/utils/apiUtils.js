@@ -130,7 +130,7 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
   }
 }
 
-export async function getDsData(
+export async function requestDsData(
   engine,
   dsIds,
   { dsLocation, baseUrl },
