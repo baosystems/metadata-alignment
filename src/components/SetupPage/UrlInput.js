@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { InputField } from '@dhis2/ui'
 
-export const UrlInput = ({ onChange, validUrl, setValidUrl, ...props }) => {
+const UrlInput = ({ onChange, validUrl, setValidUrl, ...props }) => {
   const handleChange = (value) => {
     setValidUrl(!!value.match(/^http*s:\/\/.+\..+/))
     onChange(value)
