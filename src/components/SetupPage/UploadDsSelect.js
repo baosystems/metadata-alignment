@@ -31,13 +31,21 @@ const UploadDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
   }
 
   const handleUpload = (inputFile) => {
-    console.log('inputFile: ', inputFile)
     const reader = new FileReader()
     reader.onload = function (e) {
       try {
         const fileData = JSON.parse(e.target.result)
-        console.log('fileData: ', fileData)
-        setDsOptions(fileData.dataSets)
+        if (fileData?.dataSets && fileData.dataSets.length) {
+          const href = fileData.dataSets[0].href
+          const baseUrl = href.replace(/\/api\/dataSets\/.+/, '')
+          if (baseUrl !== targetUrl) {
+            console.warn('targetUrl not set, updating from data set file')
+            setConfig({ ...config, baseUrl })
+          }
+          setDsOptions(fileData.dataSets)
+        } else {
+          showError('No data sets found in file')
+        }
       } catch (e) {
         showError('Error loading file')
       }
