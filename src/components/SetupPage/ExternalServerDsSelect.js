@@ -1,27 +1,36 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { connectionTypes } from './SetupPageConsts'
 import PatDsSelect from './PatDsSelect'
 import UploadDsSelect from './UploadDsSelect'
 import { TabBar, Tab } from '@dhis2/ui'
 
 const ExternalServerDsSelect = (props) => {
-  const tabs = ['PAT', 'Manual Upload']
-  const [selectedTab, setSelectedTab] = useState(tabs[0])
+  const [selectedTab, setSelectedTab] = useState(connectionTypes.PAT)
+  const currentTab = props?.method || selectedTab
+
+  const handleTabChange = (title) => {
+    if (props.setMethod) {
+      props.setMethod(title)
+    }
+    setSelectedTab(title)
+  }
+
   return (
     <div className="connectionMethodSelect">
       <TabBar className="connectionMethodTabBar">
-        {tabs.map((title) => (
+        {Object.values(connectionTypes).map((title) => (
           <Tab
-            onClick={() => setSelectedTab(title)}
+            onClick={() => handleTabChange(title)}
             key={title}
-            selected={selectedTab === title}
+            selected={currentTab === title}
           >
             {title}
           </Tab>
         ))}
       </TabBar>
-      {selectedTab === 'PAT' && <PatDsSelect {...props} />}
-      {selectedTab === 'Manual Upload' && <UploadDsSelect {...props} />}
+      {currentTab === connectionTypes.PAT && <PatDsSelect {...props} />}
+      {currentTab === connectionTypes.UPLOAD && <UploadDsSelect {...props} />}
     </div>
   )
 }
@@ -34,6 +43,10 @@ ExternalServerDsSelect.propTypes = {
     baseUrl: PropTypes.string,
   }).isRequired,
   setConfig: PropTypes.func.isRequired,
+  method: PropTypes.string,
+  setMethod: PropTypes.func,
+  previousSelectedDs: PropTypes.array,
+  onCancel: PropTypes.func,
 }
 
 export default ExternalServerDsSelect

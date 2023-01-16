@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
 import { mapConfigType } from './sharedPropTypes'
-import { requestDsData, PatRequestError } from '../../utils/apiUtils'
+import { requestDsData } from '../../utils/apiUtils'
 import {
   dataSetsEquivalent,
   updateRequiredMappings,
 } from '../../utils/mappingUtils'
 import { SharedStateContext } from '../../sharedStateContext'
 import { dsLocations } from '../SetupPage/SetupPageConsts'
-import SavePatModal from './SavePatModal'
+import ConnectionHelper from './ConnectionHelper'
 import { Button } from '@dhis2/ui'
 import { mappingDestinations } from './MappingConsts'
 
@@ -32,6 +32,11 @@ const RefreshMetadata = ({
 
   useEffect(() => {
     if (updatedSourceDs && updatedTargetDs) {
+      console.log('Comparing: ', updatedSourceDs)
+      console.log('To: ', sourceDs)
+      console.log('AND')
+      console.log('Comparing: ', updatedTargetDs)
+      console.log('To: ', targetDs)
       const sourcesMatch = dataSetsEquivalent(updatedSourceDs, sourceDs)
       const targetsMatch = dataSetsEquivalent(updatedTargetDs, targetDs)
       const newDsConfig = { source: null, target: null }
@@ -62,6 +67,12 @@ const RefreshMetadata = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updatedSourceDs, updatedTargetDs])
 
+  useEffect(() => {
+    if (modalData === null) {
+      setLoading(false)
+    }
+  }, [modalData])
+
   const getMetadataUpdate = async (
     baseAddress,
     updateAddress,
@@ -83,19 +94,12 @@ const RefreshMetadata = ({
         setUpdatedTargetDs(updatedDataSetMeta)
       }
     } catch (err) {
-      if (err instanceof PatRequestError) {
-        // If different user to setup user is refreshing from an external server
-        // then the credentials to access the server might not be available
-        setModalData({
-          engine,
-          baseAddress,
-          updateAddress,
-          dsMeta,
-          destination,
-        })
-      } else {
-        throw err
-      }
+      setModalData({
+        baseAddress,
+        updateAddress,
+        dsMeta,
+        destination,
+      })
     }
   }
 
@@ -118,10 +122,12 @@ const RefreshMetadata = ({
   return (
     <>
       {modalData && (
-        <SavePatModal
+        <ConnectionHelper
           modalData={modalData}
           setModalData={setModalData}
           getMetadataUpdate={getMetadataUpdate}
+          setUpdatedSourceDs={setUpdatedSourceDs}
+          setUpdatedTargetDs={setUpdatedTargetDs}
         />
       )}
       <Button

@@ -2,7 +2,10 @@ import {
   dataStoreKey,
   dsLocations,
 } from '../components/SetupPage/SetupPageConsts'
-import { dsInfoQuery } from '../components/SetupPage/SetupPageQueries'
+import {
+  dsInfoFields,
+  dsInfoQuery,
+} from '../components/SetupPage/SetupPageQueries'
 
 /* Process a key: value params object and return a params url string
  * @param params {object}: An object with keys and strings or string arrays to format
@@ -95,15 +98,9 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
   const urlKey = urlToKey(baseUrl)
   try {
     const pat = patIn || (await getPat(engine, baseUrl))
-
-    const catCombo = 'categoryCombo(id,name,categoryOptionCombos(id,name))'
-    const dataSetElements =
-      'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))'
-    const orgUnits = 'organisationUnits(id,name,ancestors(id,name)'
-
     const params = {
       filter: `id:in:[${dsIds.join(',')}]`,
-      fields: ['id,name', catCombo, dataSetElements, orgUnits].join(','),
+      fields: dsInfoFields,
     }
     try {
       const req = await fetch(
@@ -121,6 +118,7 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
       throw new Error('Error fetching data set information ' + err)
     }
   } catch (e) {
+    console.log('e.message: ', e.message)
     if (e.message.includes('Error fetching data set information')) {
       throw e
     }

@@ -11,7 +11,13 @@ import {
   MultiSelectOption,
 } from '@dhis2/ui'
 
-const UploadDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
+const UploadDsSelect = ({
+  selectedDs,
+  setSelectedDs,
+  config,
+  setConfig,
+  previousSelectedDsIds,
+}) => {
   const [dsOptions, setDsOptions] = useState(null)
   const [uploadSection, setUploadSection] = useState(uploadSections.DOWNLOAD)
   const [validUrl, setValidUrl] = useState(true)
@@ -43,6 +49,9 @@ const UploadDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
             setConfig({ ...config, baseUrl })
           }
           setDsOptions(fileData.dataSets)
+          if (previousSelectedDsIds) {
+            getFullDs(previousSelectedDsIds, fileData.dataSets)
+          }
         } else {
           showError('No data sets found in file')
         }
@@ -57,9 +66,9 @@ const UploadDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
     }
   }
 
-  const getFullDs = (requestedIds) => {
-    console.log(requestedIds)
-    setSelectedDs(dsOptions.filter(({ id }) => requestedIds.includes(id)))
+  const getFullDs = (requestedIds, optionsIn) => {
+    const options = optionsIn || dsOptions
+    setSelectedDs(options.filter(({ id }) => requestedIds.includes(id)))
   }
 
   if (dsOptions) {
@@ -121,6 +130,7 @@ UploadDsSelect.propTypes = {
     baseUrl: PropTypes.string,
   }).isRequired,
   setConfig: PropTypes.func.isRequired,
+  previousSelectedDsIds: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default UploadDsSelect

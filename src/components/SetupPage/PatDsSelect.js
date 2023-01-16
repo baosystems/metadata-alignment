@@ -10,9 +10,17 @@ import {
   Button,
 } from '@dhis2/ui'
 
-const PatDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
+const PatDsSelect = ({
+  selectedDs,
+  setSelectedDs,
+  config,
+  setConfig,
+  previousSelectedDsIds,
+  onCancel,
+}) => {
   const { baseUrl: targetUrl } = config
   const [paToken, setPaToken] = useState('')
+  const [loading, setLoading] = useState(false)
   const [validUrl, setValidUrl] = useState(true)
   const [validPat, setValidPat] = useState(false)
   const [patTouched, setPatTouched] = useState(false)
@@ -33,6 +41,7 @@ const PatDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
   }
 
   const connect = async () => {
+    setLoading(true)
     const params = { fields: 'id,displayName~rename(name)', paging: 'false' }
     try {
       const req = await fetch(
@@ -46,15 +55,19 @@ const PatDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
       )
       const res = await req.json()
       if ('dataSets' in res) {
+        await savePat(engine, targetUrl, paToken)
         setDsOptions(res.dataSets)
-        console.log('Saving pat with key ')
-        savePat(engine, targetUrl, paToken)
+        if (previousSelectedDsIds) {
+          setSelectedDs(previousSelectedDsIds)
+        }
         setPaToken(null)
       } else {
         show()
       }
     } catch (e) {
       show()
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -94,9 +107,17 @@ const PatDsSelect = ({ selectedDs, setSelectedDs, config, setConfig }) => {
           !validPat && patTouched ? 'Please enter a valid PAT' : ''
         }
       />
-      <Button primary onClick={connect} disabled={!validPat || !validUrl}>
-        Connect
-      </Button>
+      <div className="patActions">
+        <Button
+          loading={loading}
+          primary
+          onClick={connect}
+          disabled={!validPat || !validUrl}
+        >
+          Connect
+        </Button>
+        {onCancel && <Button onClick={onCancel}>Cancel</Button>}
+      </div>
     </div>
   )
 }
@@ -109,6 +130,8 @@ PatDsSelect.propTypes = {
     baseUrl: PropTypes.string,
   }).isRequired,
   setConfig: PropTypes.func.isRequired,
+  previousSelectedDsIds: PropTypes.arrayOf(PropTypes.string),
+  onCancel: PropTypes.func,
 }
 
 export default PatDsSelect

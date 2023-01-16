@@ -65,6 +65,11 @@ button.configMap {
   width: 100%;
 }
 
+.patActions {
+  display: flex;
+  justify-content: space-between;
+}
+
 .uploadDsSelect {
   display: flex;
   flex-wrap: wrap;
