@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import { useDataEngine, useAlert } from '@dhis2/app-runtime'
+import { IconSync24 } from '@dhis2/ui-icons'
 import { mapConfigType } from './sharedPropTypes'
 import { getDsData, PatRequestError } from '../../utils/apiUtils'
+import SavePatModal from './SavePatModal'
 import {
   dataSetsEquivalent,
+  flattenAocs,
+  flattenDataSetElements,
+  flattenOus,
   updateRequiredMappings,
 } from '../../utils/mappingUtils'
 import { SharedStateContext } from '../../sharedStateContext'
 import { dsLocations } from '../SetupPage/SetupPageConsts'
-import SavePatModal from './SavePatModal'
-import { Button } from '@dhis2/ui'
+import { Button, Tooltip } from '@dhis2/ui'
 import { mappingDestinations } from './MappingConsts'
+import { metaTypes } from '../../mappingContext'
+import spawnSuggestionWorker from '../../spawn-worker'
 
 const RefreshMetadata = ({
   mapConfig,
@@ -19,6 +25,9 @@ const RefreshMetadata = ({
   setShowAocMapping,
   setShowOuMapping,
   setMetadataRefreshed,
+  setDeCocSuggestions,
+  setAocSuggestions,
+  setOuSuggestions,
 }) => {
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const [updatedSourceDs, setUpdatedSourceDs] = useState(null)
@@ -44,6 +53,29 @@ const RefreshMetadata = ({
       if (!sourcesMatch || !targetsMatch) {
         try {
           updateRequiredMappings(newDsConfig, sharedState)
+
+          spawnSuggestionWorker(
+            flattenDataSetElements(updatedSourceDs),
+            flattenDataSetElements(updatedTargetDs),
+            metaTypes.DE_COC
+          ).then((deCocs) => {
+            setDeCocSuggestions(deCocs)
+          })
+
+          spawnSuggestionWorker(
+            flattenAocs(updatedSourceDs),
+            flattenAocs(updatedTargetDs),
+            metaTypes.AOC
+          ).then((aocs) => setAocSuggestions(aocs))
+
+          spawnSuggestionWorker(
+            flattenOus(updatedSourceDs),
+            flattenOus(updatedTargetDs),
+            metaTypes.OU
+          ).then((ous) => {
+            setOuSuggestions(ous)
+          })
+
           setMetadataRefreshed(true)
           show(
             'Metadata refresh complete, to save updates after review, use the Save mapping button'
@@ -124,14 +156,17 @@ const RefreshMetadata = ({
           getMetadataUpdate={getMetadataUpdate}
         />
       )}
-      <Button
-        loading={loading}
-        primary
-        onClick={handleRefresh}
-        className="refreshButton"
-      >
-        Refresh metadata
-      </Button>
+      <Tooltip content="Refresh Metadata">
+        <Button
+          primary
+          onClick={handleRefresh}
+          className="refreshButton"
+          loading={loading}
+          icon={<IconSync24 />}
+        >
+          Sync
+        </Button>
+      </Tooltip>
     </>
   )
 }
@@ -142,6 +177,9 @@ RefreshMetadata.propTypes = {
   setShowAocMapping: PropTypes.func.isRequired,
   setShowOuMapping: PropTypes.func.isRequired,
   setMetadataRefreshed: PropTypes.func.isRequired,
+  setDeCocSuggestions: PropTypes.func.isRequired,
+  setAocSuggestions: PropTypes.func.isRequired,
+  setOuSuggestions: PropTypes.func.isRequired,
 }
 
 export default RefreshMetadata

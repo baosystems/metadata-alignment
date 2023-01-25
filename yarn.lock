@@ -2031,6 +2031,11 @@
   resolved "https://registry.yarnpkg.com/@dhis2/ui-icons/-/ui-icons-7.16.3.tgz#86ecd617688f9d9d63de3b29ca5d8a236aa03190"
   integrity sha512-G+/a74qCAxV04aVFOxCbP9s0sEMXUPGGMZn2kLRnrRsLNcSy6/d6h2EoCa1ASs0nOXvacl1mOHyfv2QXMEy7RA==
 
+"@dhis2/ui-icons@^8.7.7":
+  version "8.7.7"
+  resolved "https://registry.yarnpkg.com/@dhis2/ui-icons/-/ui-icons-8.7.7.tgz#8138aebb46723cc82168663eb0f06a6659ab2a8c"
+  integrity sha512-appRE/9TmJ8oa0B+Zb4g2W5nD+KMmdmgIAktRDKa6zRwiUvEPHLRoydm92kn38oDIg7oS9wsAHGMN1eff67cNg==
+
 "@dhis2/ui@^8.0.0", "@dhis2/ui@^8.4.2":
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/@dhis2/ui/-/ui-8.4.5.tgz#a0d579b83fa3ab09480be326a8e5c58a64df3d21"

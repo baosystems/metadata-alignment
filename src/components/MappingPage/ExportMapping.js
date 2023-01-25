@@ -2,16 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {
   aocCsvExportHeaders as aocHeader,
-  deCocCsvExportHeaders as deCocHeader,
   ouCsvExportHeaders as ouHeader,
-  tableTypeKeys,
   tableTypes,
 } from './MappingConsts'
 import { mapConfigType } from './sharedPropTypes'
 import { useAlert } from '@dhis2/app-runtime'
 import { Button } from '@dhis2/ui'
-import { getMapInfo } from '../../utils/mappingUtils'
+import {
+  getExportMappingData,
+  getExportMappingDataDeCoc,
+  getMapInfo,
+} from '../../utils/mappingUtils'
 import './MappingPage.css'
+import { IconDownload24 } from '@dhis2/ui-icons'
 
 /**
  * Download an array of arrays as a csv file with the specified file name
@@ -63,8 +66,8 @@ const ExportMapping = ({
 
   return (
     <div className="exportButton">
-      <Button primary onClick={exportMapping}>
-        Export
+      <Button primary onClick={exportMapping} icon={<IconDownload24 />}>
+        Download
       </Button>
       <a id="download-link" className="hidden"></a>
     </div>
@@ -72,50 +75,28 @@ const ExportMapping = ({
 }
 
 function generateDeCocExport(mapInfoArr, deCocMappings, showError) {
-  const result = [mapInfoArr, deCocHeader]
-
-  for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
-    if (targetDes.length > 1) {
-      showError('Only single target de mappings are currently supported')
-      return
-    }
-    for (const { sourceCocs, targetCocs } of cocMappings) {
-      if (targetCocs.length > 1) {
-        showError('Only single target coc mappings are currently supported')
-        return
-      }
-      for (const deUid of sourceDes) {
-        for (const cocUid of sourceCocs) {
-          result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
-        }
-      }
-    }
+  try {
+    const result = getExportMappingDataDeCoc(deCocMappings, mapInfoArr)
+    saveAsCsv(result, 'download-link', 'de_coc_mapping.csv')
+  } catch (error) {
+    showError(error.message)
   }
-
-  saveAsCsv(result, 'download-link', 'de_coc_Mapping.csv')
 }
 
 function generateExport(mapInfoArr, headers, mappings, tableType, showError) {
-  const result = [mapInfoArr.slice(2), headers]
-  const keys = tableTypeKeys[tableType]
+  try {
+    const extraHeader = mapInfoArr.slice(2)
+    const result = getExportMappingData(
+      headers,
+      mappings,
+      tableType,
+      extraHeader
+    )
 
-  for (const {
-    [keys.sourceKey]: source,
-    [keys.targetKey]: target,
-  } of mappings) {
-    if (target.length > 1) {
-      showError(
-        `Only single target ${tableType} mappings are currently supported`
-      )
-      return
-    }
-
-    for (const ouId of source) {
-      result.push([ouId, target[0]])
-    }
+    saveAsCsv(result, 'download-link', `${tableType}_mapping.csv`)
+  } catch (error) {
+    showError(error.message)
   }
-
-  saveAsCsv(result, 'download-link', `${tableType}_mapping.csv`)
 }
 
 ExportMapping.propTypes = {

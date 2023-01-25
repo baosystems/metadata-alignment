@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@dhis2/app-runtime": "^3.4.4",
+    "@dhis2/ui-icons": "^8.7.7",
     "bao-react-components": "^2.3.9",
     "fuse.js": "^6.5.3",
     "lodash": "^4.17.21",
