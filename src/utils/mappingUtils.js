@@ -492,8 +492,8 @@ export function getExportMappingData(
       )
     }
 
-    for (const ouId of source) {
-      result.push([ouId, target[0]])
+    for (const id of source) {
+      result.push([id, target[0]])
     }
   }
 

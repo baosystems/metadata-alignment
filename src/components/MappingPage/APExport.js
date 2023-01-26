@@ -68,7 +68,7 @@ async function exportData(
 ) {
   const nextPipelines = {}
   try {
-    for (const [, metaType] of Object.entries(metaTypes)) {
+    for (const metaType of Object.values(metaTypes)) {
       const existingPipelineId = pipelines && pipelines[metaType]
       const { name, description } = getPipelineNameAndDesc(config, metaType)
 
