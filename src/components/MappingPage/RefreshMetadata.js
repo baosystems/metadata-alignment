@@ -156,7 +156,7 @@ const RefreshMetadata = ({
           getMetadataUpdate={getMetadataUpdate}
         />
       )}
-      <Tooltip content="Refresh Metadata">
+      <Tooltip content="Refresh Metadata" placement="bottom">
         <Button
           primary
           onClick={handleRefresh}

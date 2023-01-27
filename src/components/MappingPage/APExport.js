@@ -49,7 +49,7 @@ const APExport = ({
 
   return (
     <div className="exportButton">
-      <Tooltip content="Export Mapping to AP">
+      <Tooltip content="Export Mapping to AP" placement="bottom">
         <Button primary onClick={exportMapping} icon={<IconPushRight24 />}>
           Export
         </Button>
