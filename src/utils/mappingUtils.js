@@ -1,5 +1,12 @@
 import { isEqual } from 'lodash'
-import { mappingDestinations } from '../components/MappingPage/MappingConsts'
+import {
+  aocCsvExportHeaders as aocHeader,
+  deCocCsvExportHeaders as deCocHeader,
+  mappingDestinations,
+  ouCsvExportHeaders as ouHeader,
+  tableTypeKeys,
+} from '../components/MappingPage/MappingConsts'
+import { metaTypes } from '../mappingContext'
 
 export function flatten(arr, keyPath) {
   const result = []
@@ -461,9 +468,84 @@ function makeComparableDataSet(dataSet) {
   }
 }
 
+export function getExportMappingData(
+  headers,
+  mappings,
+  tableType,
+  extraHeader
+) {
+  const result = [headers]
+
+  if (Array.isArray(extraHeader) && extraHeader.length > 0) {
+    result.unshift(extraHeader)
+  }
+
+  const keys = tableTypeKeys[tableType]
+
+  for (const {
+    [keys.sourceKey]: source,
+    [keys.targetKey]: target,
+  } of mappings) {
+    if (target.length > 1) {
+      throw Error(
+        `Only single target ${tableType} mappings are currently supported`
+      )
+    }
+
+    for (const id of source) {
+      result.push([id, target[0]])
+    }
+  }
+
+  return result
+}
+
+export function getExportMappingDataDeCoc(deCocMappings, extraHeader = null) {
+  const result = [deCocHeader]
+
+  if (Array.isArray(extraHeader) && extraHeader.length > 0) {
+    result.unshift(extraHeader)
+  }
+
+  for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
+    if (targetDes.length > 1) {
+      throw Error('Only single target de mappings are currently supported')
+    }
+    for (const { sourceCocs, targetCocs } of cocMappings) {
+      if (targetCocs.length > 1) {
+        throw Error('Only single target coc mappings are currently supported')
+      }
+      for (const deUid of sourceDes) {
+        for (const cocUid of sourceCocs) {
+          result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
+        }
+      }
+    }
+  }
+
+  return result
+}
+
 export function dataSetsEquivalent(dataSets1In, dataSets2In) {
   // transform lists into sets for lodash equal comparison
   const ds1 = new Set(dataSets1In.map((ds) => makeComparableDataSet(ds)))
   const ds2 = new Set(dataSets2In.map((ds) => makeComparableDataSet(ds)))
   return isEqual(ds1, ds2)
+}
+
+export function getFileFromMapping(mapping, mappingType) {
+  let result = []
+
+  if (mappingType === metaTypes.DE_COC) {
+    result = getExportMappingDataDeCoc(mapping)
+  } else if (mappingType === metaTypes.AOC) {
+    result = getExportMappingData(aocHeader, mapping, mappingType)
+  } else if (mappingType === metaTypes.OU) {
+    result = getExportMappingData(ouHeader, mapping, mappingType)
+  }
+
+  const csvContent = result.map((e) => `"${e.join('","')}"`).join('\n')
+  return new Blob([csvContent], {
+    type: 'data:text/csv;charset=utf-8;',
+  })
 }

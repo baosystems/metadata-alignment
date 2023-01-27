@@ -1,0 +1,22 @@
+.body {
+  background: #eeeeee;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+  display: flex;
+}
+
+.cardContent {
+  padding: 32px;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputField {
+  padding-top: 20px;
+}
+
+.loginBtn {
+  margin-top: 40px;
+  float: right;
+}
