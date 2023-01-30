@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useDataMutation, useAlert } from '@dhis2/app-runtime'
-import { Button } from '@dhis2/ui'
+import {
+  Button,
+  Modal,
+  ModalTitle,
+  ModalContent,
+  ModalActions,
+} from '@dhis2/ui'
 import { MAPPING_INFO } from './ManagePageConsts'
 
 const dsResource = `dataStore/${MAPPING_INFO.namespace}/${MAPPING_INFO.key}`
@@ -22,6 +28,10 @@ const DeleteMappingBtn = ({ mappingData, allMaps, refresh }) => {
     },
     onError: () => showError('Error deleting mapping'),
   })
+  const [confirmDelete, setConfirmDeleteModal] = useState(false)
+  const confirmCancelHandler = () => {
+    setConfirmDeleteModal(!confirmDelete)
+  }
 
   const handleDelete = () => {
     const filteredMappings = allMaps.filter(
@@ -31,9 +41,30 @@ const DeleteMappingBtn = ({ mappingData, allMaps, refresh }) => {
   }
 
   return (
-    <Button destructive onClick={handleDelete}>
-      Delete
-    </Button>
+    <>
+      <Button destructive onClick={confirmCancelHandler}>
+        Delete
+      </Button>
+      {confirmDelete && (
+        <Modal>
+          <ModalTitle>Confirm Delete</ModalTitle>
+          <ModalContent>
+            Are you sure you want to delete this Mapping?
+            <br />
+            <br />
+            This action cannot be undone.
+          </ModalContent>
+          <ModalActions>
+            <Button className="cancel-confirm" onClick={confirmCancelHandler}>
+              Cancel
+            </Button>
+            <Button destructive onClick={handleDelete}>
+              Delete
+            </Button>
+          </ModalActions>
+        </Modal>
+      )}
+    </>
   )
 }
 
