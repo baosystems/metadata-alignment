@@ -1,0 +1,5 @@
+.loaderWithLabel {
+  display: flex;
+  gap: 16px;
+  margin: 8px 0 8px 0;
+}

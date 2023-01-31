@@ -2,7 +2,10 @@ import {
   dataStoreKey,
   dsLocations,
 } from '../components/SetupPage/SetupPageConsts'
-import { dsInfoQuery } from '../components/SetupPage/SetupPageQueries'
+import {
+  dsInfoFields,
+  dsInfoQuery,
+} from '../components/SetupPage/SetupPageQueries'
 import { metaTypes } from '../mappingContext'
 
 const successCodes = [200, 201, 204]
@@ -104,17 +107,10 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
       'Could not find personal access token for ' + urlKey
     )
   }
-
-  const catCombo = 'categoryCombo(id,name,categoryOptionCombos(id,name))'
-  const dataSetElements =
-    'dataSetElements(dataElement(id,name,categoryCombo(categoryOptionCombos(id,name))))'
-  const orgUnits = 'organisationUnits(id,name,ancestors(id,name)'
-
   const params = {
     filter: `id:in:[${dsIds.join(',')}]`,
-    fields: ['id,name', catCombo, dataSetElements, orgUnits].join(','),
+    fields: dsInfoFields,
   }
-
   let req = {}
   try {
     req = await fetch(`${baseUrl}/api/dataSets?${formatParams(params)}`, {
@@ -123,21 +119,21 @@ async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
         Authorization: `ApiToken ${pat}`,
       },
     })
+
+    if (successCodes.includes(req.status)) {
+      const res = await req.json()
+      return res.dataSets
+    } else if (req.status === 401) {
+      throw new PatRequestError(
+        'Could not find personal access token for ' + urlKey
+      )
+    }
   } catch (err) {
     throw new Error('Error fetching data set information ' + err)
   }
-
-  if (successCodes.includes(req.status)) {
-    const res = await req.json()
-    return res.dataSets
-  } else if (req.status === 401) {
-    throw new PatRequestError(
-      'Could not find personal access token for ' + urlKey
-    )
-  }
 }
 
-export async function getDsData(
+export async function requestDsData(
   engine,
   dsIds,
   { dsLocation, baseUrl },

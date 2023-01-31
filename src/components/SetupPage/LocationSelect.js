@@ -4,7 +4,7 @@ import { Radio } from '@dhis2/ui'
 
 const LocationSelect = ({ dsLocation, setDsLocation }) => {
   return (
-    <div className="locationSelect">
+    <div className="radioItems">
       <Radio
         label="Current server"
         name="dsLocation"

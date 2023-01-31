@@ -442,7 +442,8 @@ function arrayToObjectByKey(array, keys) {
 // to objects using the id for each item in the original array as the key
 function makeComparableDataSet(dataSet) {
   return {
-    ...dataSet,
+    id: dataSet.id,
+    name: dataSet.name,
     categoryCombo: {
       ...dataSet.categoryCombo,
       categoryOptionCombos: arrayToObjectByKey(
