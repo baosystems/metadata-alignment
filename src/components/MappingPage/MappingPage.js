@@ -24,6 +24,7 @@ import ThresholdInput from './ThresholdInput'
 import RefreshMetadata from './RefreshMetadata'
 import ExportMapping from './ExportMapping'
 import SaveMapping from './SaveMapping'
+import APExport from './APExport'
 import { SharedStateContext } from '../../sharedStateContext'
 import spawnSuggestionWorker from '../../spawn-worker'
 
@@ -37,6 +38,7 @@ const MappingPage = () => {
     currentMapping,
     currentMappingAocs,
     currentMappingOus,
+    mappingPipelines,
   } = sharedState
   const sourceDes = flattenDataSetElements(sourceDs)
   const targetDes = flattenDataSetElements(targetDs)
@@ -53,7 +55,8 @@ const MappingPage = () => {
     targetOus,
     currentMapping,
     currentMappingAocs,
-    currentMappingOus
+    currentMappingOus,
+    mappingPipelines
   )
   const mapConfig = { sourceDs, targetDs, sourceUrl, targetUrl }
   const [matchThreshold, setMatchThreshold] = useState(0.5)
@@ -61,40 +64,34 @@ const MappingPage = () => {
   const [showAocMapping, setShowAocMapping] = useState(false)
   const [showOuMapping, setShowOuMapping] = useState(false)
   const [metadataRefreshed, setMetadataRefreshed] = useState(false)
-  const [deCocSuggestions, setDecCocSuggestions] = useState({})
+  const [deCocSuggestions, setDeCocSuggestions] = useState({})
   const [aocSuggestions, setAocSuggestions] = useState({})
   const [ouSuggestions, setOuSuggestions] = useState({})
   const { show: showInfo } = useAlert((msg) => msg, { info: true })
   const { show: showSuccess } = useAlert((msg) => msg, { success: true })
 
   useEffect(() => {
-    if (metadataRefreshed) {
-      spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
-        (deCocs) => setDecCocSuggestions(deCocs)
-      )
-    }
+    spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
+      (deCocs) => setDeCocSuggestions(deCocs)
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metadataRefreshed])
+  }, [])
 
   useEffect(() => {
-    if (metadataRefreshed) {
-      spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then(
-        (aocs) => setAocSuggestions(aocs)
-      )
-    }
+    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then((aocs) =>
+      setAocSuggestions(aocs)
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metadataRefreshed])
+  }, [])
 
   useEffect(() => {
-    if (metadataRefreshed) {
-      showInfo('Generating OU suggestions')
-      spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
-        setOuSuggestions(ous)
-        showSuccess('Successfully generated OU suggestions')
-      })
-    }
+    showInfo('Generating OU suggestions')
+    spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
+      setOuSuggestions(ous)
+      showSuccess('Successfully generated OU suggestions')
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metadataRefreshed])
+  }, [])
 
   if (!sourceDs.length > 0 || !targetDs.length > 0) {
     return (
@@ -173,6 +170,9 @@ const MappingPage = () => {
             setShowAocMapping={setShowAocMapping}
             setShowOuMapping={setShowOuMapping}
             setMetadataRefreshed={setMetadataRefreshed}
+            setDeCocSuggestions={setDeCocSuggestions}
+            setAocSuggestions={setAocSuggestions}
+            setOuSuggestions={setOuSuggestions}
           />
           <ExportMapping
             mapConfig={mapConfig}
@@ -182,6 +182,15 @@ const MappingPage = () => {
           />
           <SaveMapping
             mapConfig={mapConfig}
+            deCocMappings={mappingState.deCocMappings}
+            aocMappings={mappingState.aocMappings}
+            ouMappings={mappingState.ouMappings}
+            mappingPipelines={sharedState.mappingPipelines}
+          />
+          <APExport
+            mapConfig={mapConfig}
+            mappingPipelines={sharedState.mappingPipelines}
+            setMappingPipelines={sharedState.setMappingPipelines}
             deCocMappings={mappingState.deCocMappings}
             aocMappings={mappingState.aocMappings}
             ouMappings={mappingState.ouMappings}

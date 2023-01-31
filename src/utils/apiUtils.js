@@ -6,6 +6,9 @@ import {
   dsInfoFields,
   dsInfoQuery,
 } from '../components/SetupPage/SetupPageQueries'
+import { metaTypes } from '../mappingContext'
+
+const successCodes = [200, 201, 204]
 
 /* Process a key: value params object and return a params url string
  * @param params {object}: An object with keys and strings or string arrays to format
@@ -96,35 +99,37 @@ async function getPat(engine, baseUrl) {
 
 async function getExternalDs(dsIds, engine, baseUrl, patIn = null) {
   const urlKey = urlToKey(baseUrl)
+  let pat = ''
   try {
-    const pat = patIn || (await getPat(engine, baseUrl))
-    const params = {
-      filter: `id:in:[${dsIds.join(',')}]`,
-      fields: dsInfoFields,
-    }
-    try {
-      const req = await fetch(
-        `${baseUrl}/api/dataSets?${formatParams(params)}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `ApiToken ${pat}`,
-          },
-        }
-      )
-      const res = await req.json()
-      return res.dataSets
-    } catch (err) {
-      throw new Error('Error fetching data set information ' + err)
-    }
-  } catch (e) {
-    console.log('e.message: ', e.message)
-    if (e.message.includes('Error fetching data set information')) {
-      throw e
-    }
+    pat = patIn || (await getPat(engine, baseUrl))
+  } catch (error) {
     throw new PatRequestError(
       'Could not find personal access token for ' + urlKey
     )
+  }
+  const params = {
+    filter: `id:in:[${dsIds.join(',')}]`,
+    fields: dsInfoFields,
+  }
+  let req = {}
+  try {
+    req = await fetch(`${baseUrl}/api/dataSets?${formatParams(params)}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `ApiToken ${pat}`,
+      },
+    })
+
+    if (successCodes.includes(req.status)) {
+      const res = await req.json()
+      return res.dataSets
+    } else if (req.status === 401) {
+      throw new PatRequestError(
+        'Could not find personal access token for ' + urlKey
+      )
+    }
+  } catch (err) {
+    throw new Error('Error fetching data set information ' + err)
   }
 }
 
@@ -141,3 +146,113 @@ export async function requestDsData(
     return getExternalDs(dsIds, engine, baseUrl, pat)
   }
 }
+
+const pipelineDetails = {
+  [metaTypes.DE_COC]: {
+    nameSuffix: 'DE CoC',
+    descPrefix: 'Data Element and Category Option Combo',
+  },
+  [metaTypes.AOC]: {
+    nameSuffix: 'AOC',
+    descPrefix: 'Attribute Option Combo',
+  },
+  [metaTypes.OU]: {
+    nameSuffix: 'OU',
+    descPrefix: 'Organisation Unit',
+  },
+}
+
+export const getPipelineNameAndDesc = (mapConfig, mappingType) => {
+  const { sourceDs, targetDs } = mapConfig
+  const details = pipelineDetails[mappingType]
+  const name = `${sourceDs?.[0]?.name} - ${targetDs?.[0]?.name} ${details.nameSuffix} Mapping`
+  const description = `${details.descPrefix} Mapping Between
+     ${sourceDs?.[0]?.name} and ${targetDs?.[0]?.name} Data Sets`
+  return { name, description }
+}
+
+async function getMappingPipeline(existingPipelineId, headers) {
+  return await (
+    await fetch(AP_BASE_URL + AP_CSV_UPLOAD_PATH + '/' + existingPipelineId, {
+      headers: headers,
+      method: 'GET',
+    })
+  ).json()
+}
+
+function getFormData(name, description, file) {
+  const formData = new FormData()
+  formData.append('name', name)
+  formData.append('description', description)
+  formData.append('file', file)
+  return formData
+}
+
+export const createPipeline = async (
+  file,
+  name,
+  description,
+  existingPipelineId
+) => {
+  const auth = sessionStorage.getItem('auth')
+  if (!auth) {
+    throw Error('Please sign in to AP.')
+  }
+
+  const headers = new Headers()
+  headers.set('Authorization', `Basic ${auth}`)
+
+  const formData = getFormData(name, description, file)
+
+  if (existingPipelineId) {
+    const pipeline = await getMappingPipeline(existingPipelineId, headers)
+    if (pipeline.id !== existingPipelineId) {
+      existingPipelineId = null
+    }
+  }
+
+  const uploadPath = existingPipelineId
+    ? `/${existingPipelineId}/fileUpload`
+    : '/fileUpload'
+
+  const pipelineCreateResponse = await (
+    await fetch(AP_BASE_URL + AP_CSV_UPLOAD_PATH + uploadPath, {
+      headers: headers,
+      method: 'POST',
+      body: formData,
+    })
+  ).json()
+
+  if (!successCodes.includes(pipelineCreateResponse.statusCode)) {
+    throw pipelineCreateResponse
+  }
+
+  return pipelineCreateResponse?.data?.id
+}
+
+export const loginToAP = (username, password) => {
+  const headers = new Headers()
+  const auth = window.btoa(`${username}:${password}`)
+  headers.set('Authorization', 'Basic ' + auth)
+
+  return fetch(AP_BASE_URL + AP_AUTH_PATH, {
+    headers: headers,
+    method: 'POST',
+  })
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+      sessionStorage.setItem('auth', auth)
+      sessionStorage.setItem('username', username)
+      return data
+    })
+}
+
+const AP_BASE_URL =
+  !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    ? 'https://test.manager.baosystems.com'
+    : 'https://manager.baosystems.com'
+
+const AP_AUTH_PATH = '/api/system/authentication'
+const AP_CSV_UPLOAD_PATH = '/api/dataPipelines/csvUpload'
