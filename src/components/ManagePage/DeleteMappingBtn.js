@@ -49,10 +49,8 @@ const DeleteMappingBtn = ({ mappingData, allMaps, refresh }) => {
         <Modal>
           <ModalTitle>Confirm Delete</ModalTitle>
           <ModalContent>
-            Are you sure you want to delete this Mapping?
-            <br />
-            <br />
-            This action cannot be undone.
+            <p>Are you sure you want to delete this Mapping?</p>
+            <p>This action cannot be undone.</p>
           </ModalContent>
           <ModalActions>
             <Button className="cancel-confirm" onClick={confirmCancelHandler}>
