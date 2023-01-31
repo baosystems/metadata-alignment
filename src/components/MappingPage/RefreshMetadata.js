@@ -41,11 +41,6 @@ const RefreshMetadata = ({
 
   useEffect(() => {
     if (updatedSourceDs && updatedTargetDs) {
-      console.log('Comparing: ', updatedSourceDs)
-      console.log('To: ', sourceDs)
-      console.log('AND')
-      console.log('Comparing: ', updatedTargetDs)
-      console.log('To: ', targetDs)
       const sourcesMatch = dataSetsEquivalent(updatedSourceDs, sourceDs)
       const targetsMatch = dataSetsEquivalent(updatedTargetDs, targetDs)
       const newDsConfig = { source: null, target: null }
