@@ -54,7 +54,7 @@ const ConnectionHelper = ({
       <ModalContent>
         <p>
           It was not possible to automatically fetch the metadata updates from
-          the {destination} server. Please provide additional information
+          the {destination} server. Please provide additional information.
         </p>
         {loading ? (
           <CircularLoader label="Loading" small />
