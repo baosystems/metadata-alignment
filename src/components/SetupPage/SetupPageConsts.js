@@ -4,3 +4,8 @@ export const dsLocations = {
 }
 
 export const dataStoreKey = 'metadataAlignment'
+
+export const connectionTypes = {
+  PAT: 'Personal access token',
+  UPLOAD: 'Upload',
+}
