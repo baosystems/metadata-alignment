@@ -1,5 +1,9 @@
 import { createContext, useEffect, useMemo, useRef, useState } from 'react'
-import { tableTypeKeys } from './components/MappingPage/MappingConsts'
+import {
+  tableTypeKeys,
+  tableTypes,
+} from './components/MappingPage/MappingConsts'
+import { sortInitialMapping } from './utils/mappingUtils'
 
 export const metaTypes = {
   DE_COC: 'deCoc',
@@ -93,9 +97,9 @@ export const useMappingState = (
 ) => {
   const initialMappings = useMemo(() => {
     return {
-      [DE_COC]: initMapping,
-      [AOC]: initMappingAocs,
-      [OU]: initMappingOus,
+      [DE_COC]: sortInitialMapping(initMapping, sourceDes, tableTypes.DE),
+      [AOC]: sortInitialMapping(initMappingAocs, sourceAocs, tableTypes.AOC),
+      [OU]: sortInitialMapping(initMappingOus, sourceOus, tableTypes.OU),
     }
   }, [initMapping, initMappingAocs, initMappingOus])
   const metadata = {

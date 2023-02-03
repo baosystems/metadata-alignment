@@ -6,6 +6,10 @@ export const tableTypes = {
 }
 
 export const tableTypeKeys = {
+  [tableTypes.DE]: {
+    sourceKey: 'sourceDes',
+    targetKey: 'targetDes',
+  },
   [tableTypes.COC]: {
     sourceKey: 'sourceCocs',
     targetKey: 'targetCocs',

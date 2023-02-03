@@ -1,10 +1,11 @@
-import { isEqual } from 'lodash'
+import { isEqual, uniqBy } from 'lodash'
 import {
   aocCsvExportHeaders as aocHeader,
   deCocCsvExportHeaders as deCocHeader,
   mappingDestinations,
   ouCsvExportHeaders as ouHeader,
   tableTypeKeys,
+  tableTypes,
 } from '../components/MappingPage/MappingConsts'
 import { metaTypes } from '../mappingContext'
 
@@ -39,7 +40,66 @@ export function flattenOus(dSets) {
     }
   }
 
-  return ous
+  return ous.sort(sortMapping)
+}
+
+export const sortMapping = (a, b) =>
+  a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+
+const makeMap = (arr, keyName, valueName) => {
+  const result = {}
+  for (const item of arr) {
+    result[item[keyName]] = item[valueName]
+  }
+  return result
+}
+
+const sortMappingConfig = (mappings, sourceKey, idNameMap) => {
+  const getMapName = (mapping, sourceKey) => {
+    const sourceItems = mapping?.[sourceKey]
+    return (idNameMap[sourceItems?.[0]] || 'zzz').toLowerCase()
+  }
+  return mappings.sort((mappingA, mappingB) => {
+    const sourceAName = getMapName(mappingA, sourceKey)
+    const sourceBName = getMapName(mappingB, sourceKey)
+    return sourceAName < sourceBName ? -1 : 1
+  })
+}
+
+export const sortInitialMapping = (mappings, sourceMeta, metaType) => {
+  if (!Array.isArray(mappings)) {
+    return mappings
+  }
+  const idNameMap = makeMap(sourceMeta, 'id', 'name')
+  const sourceKey = tableTypeKeys[metaType]?.sourceKey
+  if (!sourceKey) {
+    throw new Error('Invalid meta type: ' + metaType)
+  }
+  const result = sortMappingConfig(mappings, sourceKey, idNameMap)
+
+  if (metaType === tableTypes.DE) {
+    const cocArray = []
+    sourceMeta.map((sourceData) =>
+      sourceData?.categoryCombo.categoryOptionCombos.map((eachCOC) =>
+        cocArray.push(eachCOC)
+      )
+    )
+    const filteredCocArray = uniqBy(cocArray, 'id').sort(sortMapping)
+    for (const dataElementMapping of mappings) {
+      dataElementMapping.cocMappings.sort((a, b) => {
+        return (
+          filteredCocArray
+            .map((arrayItem) => arrayItem.id)
+            .indexOf(a.sourceCocs[0]) -
+          filteredCocArray
+            .map((arrayItem) => arrayItem.id)
+            .indexOf(b.sourceCocs[0])
+        )
+      })
+    }
+  }
+
+  return result
 }
 
 export function flattenDataSetElements(dSets) {
@@ -47,7 +107,11 @@ export function flattenDataSetElements(dSets) {
   for (const { dataSetElements } of dSets) {
     des.push(...dataSetElements.map((dse) => dse.dataElement))
   }
-  return des
+  return des.sort(sortMapping).map((de) => {
+    const cocs = de?.categoryCombo?.categoryOptionCombos || []
+    const sortedCocs = cocs.sort(sortMapping)
+    return { ...de, categoryCombo: { categoryOptionCombos: sortedCocs } }
+  })
 }
 
 export function flattenAocs(dSets) {
@@ -57,7 +121,7 @@ export function flattenAocs(dSets) {
     aocs.push(...categoryCombo.categoryOptionCombos)
   }
 
-  return aocs
+  return aocs.sort(sortMapping)
 }
 
 export function getCocs(deIds, deCocMap) {
@@ -65,7 +129,7 @@ export function getCocs(deIds, deCocMap) {
   for (const deId of deIds) {
     cocs.push(...deCocMap[deId])
   }
-  return cocs
+  return cocs.sort(sortMapping)
 }
 
 export function getSourceNames(opts, ids) {
@@ -76,7 +140,7 @@ export function getSourceNames(opts, ids) {
     }
   }
 
-  return names
+  return names.sort(sortMapping)
 }
 
 export function autoFill(config) {
