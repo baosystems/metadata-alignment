@@ -547,10 +547,9 @@ export function getExportMappingData(
 
   const keys = tableTypeKeys[tableType]
 
-  for (const {
-    [keys.sourceKey]: source,
-    [keys.targetKey]: target,
-  } of mappings) {
+  for (const mapping of mappings) {
+    const source = mapping[keys.sourceKey]
+    const target = mapping[keys.targetKey]
     if (target.length > 1) {
       throw Error(
         `Only single target ${tableType} mappings are currently supported`
