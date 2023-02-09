@@ -149,6 +149,9 @@ export function autoFill(config) {
     return []
   }
   const bestMatch = rankedTgtOpts[0]
+  if (rankedTgtOpts.length === 1) {
+    return [bestMatch.id]
+  }
   if (matchThreshold === 0.0) {
     const hasSource = sourceItems.length > 0
     if (hasSource && bestMatch.name === sourceItems[0].name) {
