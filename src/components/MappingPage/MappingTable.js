@@ -13,7 +13,7 @@ import usePager from '../../hooks/usePager'
 import './MappingPage.css'
 import { tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
-import MappingRowCoc from './MappingRowCoc'
+import MappingRow from './MappingRow'
 import { getUniqueOpts } from '../../utils/mappingUtils'
 
 const MappingTable = ({
@@ -25,8 +25,6 @@ const MappingTable = ({
   deCocMap,
   urlParams,
   tableType,
-  matchThreshold,
-  makeInitialSuggestions,
 }) => {
   const { pageData, page, pageSize, ...pagerProps } = usePager(mappings)
   const pageOffset = (page - 1) * pageSize
@@ -96,8 +94,6 @@ const MappingTable = ({
                 setMapping: setMappings[pageOffset + idx],
               },
               options: { sourceOpts: uniqueSrcOpts, rankedTgtOpts },
-              matchThreshold,
-              makeInitialSuggestions,
             }
             switch (tableType) {
               case tableTypes.DE:
@@ -109,11 +105,11 @@ const MappingTable = ({
                   />
                 )
               case tableTypes.COC:
-                return <MappingRowCoc {...rowProps} variant={tableTypes.COC} />
+                return <MappingRow {...rowProps} variant={tableTypes.COC} />
               case tableTypes.AOC:
-                return <MappingRowCoc {...rowProps} variant={tableTypes.AOC} />
+                return <MappingRow {...rowProps} variant={tableTypes.AOC} />
               case tableTypes.OU:
-                return <MappingRowCoc {...rowProps} variant={tableTypes.OU} />
+                return <MappingRow {...rowProps} variant={tableTypes.OU} />
               default:
                 return <p>No mapping found for table type {tableType}</p>
             }
@@ -144,8 +140,6 @@ MappingTable.propTypes = {
     targetUrl: PropTypes.string,
   }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
-  matchThreshold: PropTypes.number.isRequired,
-  makeInitialSuggestions: PropTypes.bool,
 }
 
 export default MappingTable

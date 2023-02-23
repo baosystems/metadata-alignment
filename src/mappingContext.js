@@ -102,6 +102,7 @@ export const useMappingState = (
       [OU]: sortInitialMapping(initMappingOus, sourceOus, tableTypes.OU),
     }
   }, [initMapping, initMappingAocs, initMappingOus])
+
   const metadata = {
     [DE_COC]: { source: sourceDes, target: targetDes },
     [AOC]: { source: sourceAocs, target: targetAocs },
@@ -110,7 +111,6 @@ export const useMappingState = (
   const deCocMap = makeDeCocMap(sourceDes, targetDes)
   const initialValues = initializeAllMaps(initialMappings, metadata, deCocMap)
   const { [DE_COC]: initDeCoc, [AOC]: initAoc, [OU]: initOu } = initialValues
-
   const [deCocMappings, setDeCocMappingsInternal] = useState(initDeCoc)
   const [aocMappings, setAocMappingsInternal] = useState(initAoc)
   const [ouMappings, setOuMappingsInternal] = useState(initOu)

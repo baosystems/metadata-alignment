@@ -7,6 +7,7 @@ import './SetupPage.css'
 import { requestDsData } from '../../utils/apiUtils'
 import { SharedStateContext } from '../../sharedStateContext'
 import { useHistory } from 'react-router-dom'
+import { tableTypes } from '../MappingPage/MappingConsts'
 
 const SetupPage = () => {
   const sharedState = useContext(SharedStateContext)
@@ -45,11 +46,11 @@ const SetupPage = () => {
     sharedState.setTargetUrl(formatUrl(targetConfig.baseUrl))
     sharedState.setSourceDs(sourceDs)
     sharedState.setTargetDs(targetDs)
-    sharedState.setCurrentMapping([])
-    sharedState.setCurrentMappingAocs([])
-    sharedState.setCurrentMappingOus([])
+    sharedState.setCurrentMapping[tableTypes.DE]([])
+    sharedState.setCurrentMapping[tableTypes.AOC]([])
+    sharedState.setCurrentMapping[tableTypes.OU]([])
     sharedState.setMappingPipelines({})
-    history.push('/edit')
+    history.push('/new')
   }
 
   return (

@@ -167,6 +167,55 @@ export function autoFill(config) {
   }
 }
 
+const getCocSuggestionParams = (idx, config) => ({
+  suggestions: config.suggestions, // Because the same object has the DE and COC suggestions
+  sourceItems: config.sourceItems[idx].categoryCombo.categoryOptionCombos,
+  matchThreshold: config.matchThreshold,
+  setValues: config.setValues[idx].cocSetters,
+  tableType: tableTypes.COC,
+})
+
+export function populateSuggestions(currentMapping, config, notify) {
+  const { showSuccess, hideInfo } = notify
+  const { suggestions, sourceItems, matchThreshold, setValues, tableType } =
+    config
+  const { sourceKey, targetKey } = tableTypeKeys[tableType]
+  if (Object.keys(suggestions).length === 0) {
+    return // Cannot populate without suggestions
+  }
+  for (const [idx, mapping] of currentMapping.entries()) {
+    if (mapping[targetKey].length > 0) {
+      // Do not autofill if there's a target value there already
+      if (tableType === tableTypes.DE) {
+        // But still check COCs for rows with DE target values
+        populateSuggestions(
+          mapping.cocMappings,
+          getCocSuggestionParams(idx, config),
+          notify
+        )
+      }
+    } else {
+      const suggestedMapping = autoFill({
+        rankedTgtOpts: suggestions?.[mapping?.[sourceKey]?.[0]], // Only suggest on first source option
+        matchThreshold,
+        sourceItems,
+      })
+      if (suggestedMapping.length > 0) {
+        setValues[idx][targetKey](suggestedMapping)
+        if (tableType === tableTypes.DE) {
+          populateSuggestions(
+            mapping.cocMappings,
+            getCocSuggestionParams(idx, config),
+            notify
+          )
+        }
+      }
+    }
+  }
+  hideInfo()
+  showSuccess(`Successfully populated ${tableType} suggestions`)
+}
+
 export function getUniqueOpts(optArray) {
   const uidSet = new Set()
   return optArray.filter(({ id }) => {
@@ -484,9 +533,9 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
   }
 
   if (mappingUpdated) {
-    sharedState.setCurrentMapping(newMapping.des)
-    sharedState.setCurrentMappingAocs(newMapping.aocs)
-    sharedState.setCurrentMappingOus(newMapping.ous)
+    sharedState.setCurrentMapping[tableTypes.DE](newMapping.des)
+    sharedState.setCurrentMapping[tableTypes.AOC](newMapping.aocs)
+    sharedState.setCurrentMapping[tableTypes.OU](newMapping.ous)
   }
 }
 
