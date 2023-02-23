@@ -7,7 +7,13 @@ import MappingTable from './MappingTable'
 import { getCocs } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 
-const MappingRowDe = ({ rowId, stateControl, options, deCocMap }) => {
+const MappingRowDe = ({
+  rowId,
+  stateControl,
+  rankedSuggestions,
+  options,
+  deCocMap,
+}) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
@@ -48,7 +54,7 @@ const MappingRowDe = ({ rowId, stateControl, options, deCocMap }) => {
         targetOpts={targetCocs}
         mappings={cocTableState.mappings}
         setMappings={cocTableState.setMappings}
-        suggestions={cocTableState.rankedSuggestions}
+        suggestions={rankedSuggestions}
         tableType={tableTypes.COC}
       />
     )
