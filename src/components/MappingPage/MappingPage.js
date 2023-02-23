@@ -120,18 +120,14 @@ const MappingPage = () => {
 
   useEffect(() => {
     spawnSuggestionWorker(sourceDes, targetDes, metaTypes.DE_COC).then(
-      (deCocs) => {
-        setSuggestions[tableTypes.DE](deCocs)
-      }
+      (deCocs) => setSuggestions[tableTypes.DE](deCocs)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then(
-      (aocs) => {
-        setSuggestions[tableTypes.AOC](aocs)
-      }
+    spawnSuggestionWorker(sourceAocs, targetAocs, metaTypes.AOC).then((aocs) =>
+      setSuggestions[tableTypes.AOC](aocs)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -140,6 +136,7 @@ const MappingPage = () => {
     showInfo('Generating OU suggestions')
     spawnSuggestionWorker(sourceOus, targetOus, metaTypes.OU).then((ous) => {
       setSuggestions[tableTypes.OU](ous)
+      hideInfo()
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
