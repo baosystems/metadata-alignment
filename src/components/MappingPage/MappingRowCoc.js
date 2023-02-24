@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
-import { DataTableRow, DataTableCell } from '@dhis2/ui'
+import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import { autoFill, getSourceNames } from '../../utils/mappingUtils'
 import { tableTypeKeys } from './MappingConsts'
 
 const MappingRowCoc = ({
   rowId,
+  removeRow,
   stateControl,
   options,
   matchThreshold,
@@ -57,12 +58,16 @@ const MappingRowCoc = ({
           options={rankedTgtOpts}
         />
       </DataTableCell>
+      <DataTableCell>
+        <Button onClick={removeRow}>X</Button>
+      </DataTableCell>
     </DataTableRow>
   )
 }
 
 MappingRowCoc.propTypes = {
   rowId: PropTypes.string.isRequired,
+  removeRow: PropTypes.func,
   stateControl: PropTypes.shape({
     mapping: PropTypes.shape({
       sourceCocs: PropTypes.arrayOf(PropTypes.string),
@@ -77,9 +82,9 @@ MappingRowCoc.propTypes = {
     sourceOpts: idNameArray.isRequired,
     rankedTgtOpts: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        score: PropTypes.number.isRequired,
+        id: PropTypes.string,
+        name: PropTypes.string,
+        score: PropTypes.number,
       })
     ),
   }).isRequired,

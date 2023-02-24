@@ -7,20 +7,22 @@ import {
   DataTableRow,
   DataTableColumnHeader,
   DataTableBody,
-  Pagination,
 } from '@dhis2/ui'
 import usePager from '../../hooks/usePager'
 import './MappingPage.css'
-import { tableTypes } from './MappingConsts'
+import { tableTypeKeys, tableTypes } from './MappingConsts'
 import { idNameArray } from './sharedPropTypes'
 import MappingRowCoc from './MappingRowCoc'
 import { getUniqueOpts } from '../../utils/mappingUtils'
+import TableControls from './TableControls'
 
 const MappingTable = ({
   sourceOpts,
   targetOpts,
   mappings,
   setMappings,
+  addRow,
+  removeRow,
   suggestions,
   deCocMap,
   urlParams,
@@ -30,13 +32,7 @@ const MappingTable = ({
 }) => {
   const { pageData, page, pageSize, ...pagerProps } = usePager(mappings)
   const pageOffset = (page - 1) * pageSize
-  const tableSourceRowIdMap = {
-    [tableTypes.DE]: 'sourceDes',
-    [tableTypes.COC]: 'sourceCocs',
-    [tableTypes.AOC]: 'sourceAocs',
-    [tableTypes.OU]: 'sourceOus',
-  }
-  const sourceRowIdKey = tableSourceRowIdMap?.[tableType]
+  const { sourceKey, targetKey } = tableTypeKeys[tableType]
   const uniqueSrcOpts = getUniqueOpts(sourceOpts)
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const hasSubMaps = [tableTypes.DE].includes(tableType)
@@ -59,8 +55,10 @@ const MappingTable = ({
 
   return (
     <div>
-      <Pagination
+      <TableControls
+        tableType={tableType}
         page={page}
+        addRow={addRow}
         pageSize={pageSize}
         {...pagerProps}
         pageSizes={['5', '10', '25', '50', '75', '100', '150', '200']}
@@ -80,17 +78,21 @@ const MappingTable = ({
               {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
                 ` (${urlParams.targetUrl})`}
             </DataTableColumnHeader>
+            <DataTableColumnHeader></DataTableColumnHeader>
           </DataTableRow>
         </DataTableHead>
         <DataTableBody>
           {pageData.map((rowMapping, idx) => {
-            const id = rowMapping?.[sourceRowIdKey]?.[0]
+            const sourceIds = rowMapping?.[sourceKey].join('-')
+            const targetIds = rowMapping?.[targetKey].join('-')
+            const id = `${[...sourceIds, ...targetIds].join('_')}${idx}`
             const rankedTgtOpts = suggestions
               ? rankOpts(uniqueTgtOpts, suggestions[id])
               : uniqueTgtOpts
             const rowProps = {
               key: id,
               rowId: id,
+              removeRow: () => removeRow(idx),
               stateControl: {
                 mapping: pageData[idx],
                 setMapping: setMappings[pageOffset + idx],
@@ -129,6 +131,8 @@ MappingTable.propTypes = {
   targetOpts: idNameArray.isRequired,
   mappings: PropTypes.array,
   setMappings: PropTypes.array,
+  addRow: PropTypes.func,
+  removeRow: PropTypes.func,
   deCocMap: PropTypes.object,
   suggestions: PropTypes.shape({
     [PropTypes.string]: PropTypes.arrayOf(
