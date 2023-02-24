@@ -524,9 +524,10 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
   }
 
   if (mappingUpdated) {
-    sharedState.setCurrentMapping[tableTypes.DE](newMapping.des)
-    sharedState.setCurrentMapping[tableTypes.AOC](newMapping.aocs)
-    sharedState.setCurrentMapping[tableTypes.OU](newMapping.ous)
+    console.log('New DE mappings: ', newMapping[DE])
+    sharedState.setCurrentMapping[tableTypes.DE](newMapping[DE])
+    sharedState.setCurrentMapping[tableTypes.AOC](newMapping[AOC])
+    sharedState.setCurrentMapping[tableTypes.OU](newMapping[OU])
   }
 }
 
