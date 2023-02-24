@@ -9,6 +9,8 @@ import {
 } from '../components/MappingPage/MappingConsts'
 import { metaTypes } from '../mappingContext'
 
+const { DE, AOC, OU } = tableTypes
+
 export function flatten(arr, keyPath) {
   const result = []
   const valuePath = Array.isArray(keyPath) ? keyPath : [keyPath]
@@ -391,7 +393,7 @@ function removeOus(ouMap, config) {
 }
 
 function getNewMetadata(oldDataSets, newDataSets) {
-  const result = { des: [], aocs: [], ous: [] }
+  const result = { [DE]: [], [AOC]: [], [OU]: [] }
   for (const newDs of newDataSets) {
     const oldDs = oldDataSets.find((oldDs) => newDs.id === oldDs.id)
     const oldDsAocUids = (oldDs?.categoryCombo?.categoryOptionCombos || []).map(
@@ -413,7 +415,7 @@ function getNewMetadata(oldDataSets, newDataSets) {
       targetDes: [],
       cocMappings: [],
     }))
-    result.des = [...result.des, ...newDeRows]
+    result[DE] = [...result[DE], ...newDeRows]
 
     const newAocUids = newDsAocUids.filter(
       (aocUid) => !oldDsAocUids.includes(aocUid)
@@ -422,7 +424,7 @@ function getNewMetadata(oldDataSets, newDataSets) {
       sourceAocs: [aocUid],
       targetAocs: [],
     }))
-    result.aocs = [...result.aocs, ...newAocRows]
+    result[AOC] = [...result[AOC], ...newAocRows]
 
     const newOuUids = newDsOuUids.filter(
       (ouUid) => !oldDsOuUids.includes(ouUid)
@@ -431,10 +433,10 @@ function getNewMetadata(oldDataSets, newDataSets) {
       sourceOus: [ouUid],
       targetOus: [],
     }))
-    result.ous = [...result.ous, ...newOuRows]
+    result[OU] = [...result[OU], ...newOuRows]
   }
 
-  if (result.des.length || result.aocs.length || result.ous.length) {
+  if (result[DE].length || result[AOC].length || result[OU].length) {
     return result
   } else {
     return null
@@ -450,7 +452,7 @@ function getNewMetadata(oldDataSets, newDataSets) {
 function updateMapping(updatedDataSet, mappingDestination, config) {
   const { currentMappings, previousDs } = config
   const removedMetadata = getRemovedMetadata(previousDs, updatedDataSet)
-  let newMetadata = { des: [], aocs: [], ous: [] }
+  let newMetadata = { [DE]: [], [AOC]: [], [OU]: [] }
   if (mappingDestination === mappingDestinations.SOURCE) {
     // Only need to calculate for new source metadata because new target metadata
     // will not cause new rows in the mapping table
@@ -458,33 +460,26 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
     // in the updated metadata though
     newMetadata = getNewMetadata(previousDs, updatedDataSet)
   }
+
+  console.log('currentMappings: ', currentMappings)
   const result = currentMappings
   if (removedMetadata) {
     const config = { removedMetadata, mappingDestination }
-    result.des = currentMappings?.des
-      ? currentMappings.des
-          .map((deMap) => removeDesCocs(deMap, config))
-          .filter(Boolean)
-      : []
-    result.aocs = currentMappings?.aocs
-      ? currentMappings.aocs
-          .map((aocMap) => removeAocs(aocMap, config))
-          .filter(Boolean)
-      : []
-    result.ous = currentMappings?.ous
-      ? currentMappings.ous
-          .map((ouMap) => removeOus(ouMap, config))
-          .filter(Boolean)
-      : []
+    const mapWith = (arr, mapFn) =>
+      arr ? arr.map((item) => mapFn(item, config)).filter(Boolean) : []
+    result[DE] = mapWith(currentMappings?.[DE], removeDesCocs)
+    result[AOC] = mapWith(currentMappings?.[AOC], removeAocs)
+    result[OU] = mapWith(currentMappings?.[OU], removeOus)
   }
 
   if (newMetadata) {
-    result.des = [...result.des, ...newMetadata.des]
-    result.aocs = [...result.aocs, ...newMetadata.aocs]
-    result.ous =
-      result.ous && result.ous.length
-        ? [...result.ous, ...newMetadata.ous]
-        : [...newMetadata.ous]
+    console.log('newMetadata: ', newMetadata)
+    result[DE] = [...result[DE], ...newMetadata[DE]]
+    result[AOC] = [...result[AOC], ...newMetadata[AOC]]
+    result[OU] =
+      result?.[OU] && result[OU].length
+        ? [...result[OU], ...newMetadata[OU]]
+        : [...newMetadata[OU]]
   }
 
   if (removedMetadata || newMetadata) {
@@ -503,11 +498,7 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
 export function updateRequiredMappings(newDsConfig, sharedState) {
   const { SOURCE, TARGET } = mappingDestinations
   const config = {
-    currentMappings: {
-      des: sharedState.currentMapping,
-      aocs: sharedState.currentMappingAocs,
-      ous: sharedState.currentMappingOus,
-    },
+    currentMappings: sharedState.currentMapping,
   }
   let newMapping = config.currentMappings
   let mappingUpdated = false

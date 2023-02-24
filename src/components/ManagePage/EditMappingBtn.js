@@ -64,13 +64,11 @@ EditMappingBtn.propTypes = {
         targetOus: PropTypes.arrayOf(PropTypes.string),
       })
     ),
-    mappingPipelines: PropTypes.objectOf(
-      PropTypes.shape({
-        [metaTypes.DE_COC]: PropTypes.string,
-        [metaTypes.AOC]: PropTypes.string,
-        [metaTypes.OU]: PropTypes.string,
-      })
-    ),
+    mappingPipelines: PropTypes.shape({
+      [metaTypes.DE_COC]: PropTypes.string,
+      [metaTypes.AOC]: PropTypes.string,
+      [metaTypes.OU]: PropTypes.string,
+    }),
   }),
 }
 
