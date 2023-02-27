@@ -108,8 +108,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.deCocMappings}
       setMappings={mappingState.setDeCocMappings}
-      addRow={mappingState.addRow[tableTypes.DE]}
-      removeRow={mappingState.removeRow[tableTypes.DE]}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={deCocSuggestions}
       deCocMap={mappingState.deCocMap}
       tableType={tableTypes.DE}
@@ -127,8 +127,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.aocMappings}
       setMappings={mappingState.setAocMappings}
-      addRow={mappingState.addRow[tableTypes.AOC]}
-      removeRow={mappingState.removeRow[tableTypes.AOC]}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={aocSuggestions}
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
@@ -146,8 +146,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}
-      addRow={mappingState.addRow[tableTypes.OU]}
-      removeRow={mappingState.removeRow[tableTypes.OU]}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={ouSuggestions}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={

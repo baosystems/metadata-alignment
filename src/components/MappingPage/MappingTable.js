@@ -58,7 +58,7 @@ const MappingTable = ({
       <TableControls
         tableType={tableType}
         page={page}
-        addRow={addRow}
+        addRow={addRow[tableType]}
         pageSize={pageSize}
         {...pagerProps}
         pageSizes={['5', '10', '25', '50', '75', '100', '150', '200']}
@@ -92,7 +92,7 @@ const MappingTable = ({
             const rowProps = {
               key: id,
               rowId: id,
-              removeRow: () => removeRow(idx),
+              removeRow: () => removeRow[tableType](idx),
               stateControl: {
                 mapping: pageData[idx],
                 setMapping: setMappings[pageOffset + idx],
@@ -108,6 +108,14 @@ const MappingTable = ({
                     {...rowProps}
                     rankedSuggestions={suggestions}
                     deCocMap={deCocMap}
+                    addCocRow={{
+                      [tableTypes.COC]: () => addRow[tableTypes.COC](idx),
+                    }}
+                    removeCocRow={{
+                      [tableTypes.COC]: (cocIdx) =>
+                        removeRow[tableTypes.COC](idx, cocIdx),
+                    }}
+                    deIdx={pageOffset + idx}
                   />
                 )
               case tableTypes.COC:

@@ -13,6 +13,8 @@ const MappingRowDe = ({
   stateControl,
   options,
   rankedSuggestions,
+  addCocRow,
+  removeCocRow,
   matchThreshold,
   deCocMap,
   makeInitialSuggestions,
@@ -77,6 +79,8 @@ const MappingRowDe = ({
         targetOpts={targetCocs}
         mappings={cocTableState.mappings}
         setMappings={cocTableState.setMappings}
+        addRow={addCocRow}
+        removeRow={removeCocRow}
         suggestions={cocTableState.rankedSuggestions}
         tableType={tableTypes.COC}
         matchThreshold={matchThreshold}
@@ -149,7 +153,7 @@ MappingRowDe.propTypes = {
       PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        score: PropTypes.number.isRequired,
+        score: PropTypes.number,
       })
     ),
   }).isRequired,
@@ -162,6 +166,8 @@ MappingRowDe.propTypes = {
       })
     ),
   }),
+  addCocRow: PropTypes.objectOf(PropTypes.func),
+  removeCocRow: PropTypes.objectOf(PropTypes.func),
   matchThreshold: PropTypes.number.isRequired,
   deCocMap: PropTypes.object,
   makeInitialSuggestions: PropTypes.bool,

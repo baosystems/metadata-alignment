@@ -616,3 +616,11 @@ export function getFileFromMapping(mapping, mappingType) {
     type: 'data:text/csv;charset=utf-8;',
   })
 }
+
+export function replaceInArray(array, replaceIdx, replacement) {
+  return [
+    ...array.slice(0, replaceIdx),
+    replacement,
+    ...array.slice(replaceIdx + 1, array.length),
+  ]
+}

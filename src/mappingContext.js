@@ -10,7 +10,7 @@ import {
   tableTypeKeys,
   tableTypes,
 } from './components/MappingPage/MappingConsts'
-import { sortInitialMapping } from './utils/mappingUtils'
+import { replaceInArray, sortInitialMapping } from './utils/mappingUtils'
 
 export const metaTypes = {
   DE_COC: 'deCoc',
@@ -91,6 +91,10 @@ function initializeAllMaps(allInitVals, allMetadata, deCocMap) {
   return result
 }
 
+function getCocCount(deCocMappings) {
+  return deCocMappings.reduce((acc, curr) => acc + curr.cocMappings.length, 0)
+}
+
 export const useMappingState = (
   sourceDes,
   targetDes,
@@ -125,6 +129,7 @@ export const useMappingState = (
   const [aocSetters, setAocSetters] = useState([])
   const [ouSetters, setOuSetters] = useState([])
   const deSetterCountRef = useRef(deSetters.length)
+  const cocSetterCountRef = useRef(getCocCount(deCocMappings))
   const aocSetterCountRef = useRef(aocSetters.length)
   const ouSetterCountRef = useRef(ouSetters.length)
   const rowStateMap = useMemo(
@@ -154,7 +159,10 @@ export const useMappingState = (
   }, [initialMappings, setterMap])
 
   useEffect(() => {
-    if (deCocMappings.length === deSetterCountRef.current) {
+    const deCountUnchanged = deCocMappings.length === deSetterCountRef.current
+    const cocCountUnchanged =
+      getCocCount(deCocMappings) === cocSetterCountRef.current
+    if (deCountUnchanged && cocCountUnchanged) {
       return
     }
     const result = []
@@ -189,6 +197,7 @@ export const useMappingState = (
       result.push({ ...rowSetter, cocSetters: cocSetters })
     }
     deSetterCountRef.current = result.length
+    cocSetterCountRef.current = getCocCount(deCocMappings)
     setDeSetters(result)
   }, [deCocMappings])
 
@@ -251,12 +260,19 @@ export const useMappingState = (
     [rowStateMap]
   )
 
-  // const addCocRow = useCallback(
-  //   (deRowIdx) => {
-  //     const { sourceKey, targetKey } = tableTypeKeys[tableTypes.COC]
-  //   },
-  //   [rowStateMap]
-  // )
+  const addCocRow = (deRowIdx) => {
+    const { sourceKey, targetKey } = tableTypeKeys[tableTypes.COC]
+    const emptyRow = { [sourceKey]: [], [targetKey]: [] }
+    const deRow = deCocMappings[deRowIdx]
+    deRow.cocMappings = [emptyRow, ...deRow.cocMappings]
+    setDeCocMappingsInternal(replaceInArray(deCocMappings, deRowIdx, deRow))
+  }
+
+  const removeCocRow = (deRowIdx, removeIdx) => {
+    const deRow = { ...deCocMappings[deRowIdx] }
+    deRow.cocMappings = deRow.cocMappings.filter((_, idx) => idx !== removeIdx)
+    setDeCocMappingsInternal(replaceInArray(deCocMappings, deRowIdx, deRow))
+  }
 
   const removeRow = useCallback(
     (removeIdx, tableType) => {
@@ -272,13 +288,13 @@ export const useMappingState = (
     aocMappings,
     addRow: {
       [tableTypes.DE]: () => addRowOfType(tableTypes.DE),
-      [tableTypes.COC]: () => {}, // TODO (deRowIdx) => addCocRow(deRowIdx),
+      [tableTypes.COC]: (deRowIdx) => addCocRow(deRowIdx),
       [tableTypes.AOC]: () => addRowOfType(tableTypes.AOC),
       [tableTypes.OU]: () => addRowOfType(tableTypes.OU),
     },
     removeRow: {
       [tableTypes.DE]: (idx) => removeRow(idx, tableTypes.DE),
-      [tableTypes.COC]: (idx) => removeRow(idx, tableTypes.COC),
+      [tableTypes.COC]: (deRowIdx, idx) => removeCocRow(deRowIdx, idx),
       [tableTypes.AOC]: (idx) => removeRow(idx, tableTypes.AOC),
       [tableTypes.OU]: (idx) => removeRow(idx, tableTypes.OU),
     },
