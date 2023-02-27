@@ -164,8 +164,8 @@ MappingRowDe.propTypes = {
   rankedSuggestions: PropTypes.shape({
     [PropTypes.string]: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string,
-        name: PropTypes.string,
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         score: PropTypes.number,
       })
     ),
