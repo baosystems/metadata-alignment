@@ -47,7 +47,9 @@ const MappingRowDe = ({
 
   const handleSourceChange = (selected) => {
     if (selected.length === 0) {
-      setMapping.cocSetters.sourceCocs([])
+      for (const { sourceCocs } of setMapping.cocSetters) {
+        sourceCocs([])
+      }
     }
     setMapping.sourceDes(selected)
   }

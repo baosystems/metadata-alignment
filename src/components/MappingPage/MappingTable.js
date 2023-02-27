@@ -139,8 +139,8 @@ MappingTable.propTypes = {
   targetOpts: idNameArray.isRequired,
   mappings: PropTypes.array,
   setMappings: PropTypes.array,
-  addRow: PropTypes.func,
-  removeRow: PropTypes.func,
+  addRow: PropTypes.objectOf(PropTypes.func),
+  removeRow: PropTypes.objectOf(PropTypes.func),
   deCocMap: PropTypes.object,
   suggestions: PropTypes.shape({
     [PropTypes.string]: PropTypes.arrayOf(
