@@ -43,8 +43,15 @@ export function flattenOus(dSets) {
   return ous.sort(sortMapping)
 }
 
-export const sortMapping = (a, b) =>
-  a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+export const sortMapping = (a, b) => {
+  if ([null, undefined].includes(a?.name)) {
+    return -1
+  } else if ([null, undefined].includes(b?.name)) {
+    return 1
+  } else {
+    return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+  }
+}
 
 const makeMap = (arr, keyName, valueName) => {
   const result = {}
@@ -139,7 +146,6 @@ export function getSourceNames(opts, ids) {
       names.push(opt.name)
     }
   }
-
   return names.sort(sortMapping)
 }
 
@@ -567,30 +573,87 @@ export function getExportMappingData(
   return result
 }
 
-export function getExportMappingDataDeCoc(deCocMappings, extraHeader = null) {
-  const result = [deCocHeader]
+function getDeIdFromCoc(cocId, des) {
+  const deMatches = des.filter((de) => {
+    const cocIds = de?.categoryCombo?.categoryOptionCombos?.map(({ id }) => id)
+    if (cocIds && cocIds.length > 0) {
+      return cocIds.includes(cocId)
+    } else {
+      return false
+    }
+  })
+  if (deMatches.length === 0) {
+    throw new Error('Could not find de match for coc: ' + cocId)
+  } else if (deMatches.length > 1) {
+    throw new Error(
+      `Ambigious match on coc ${cocId} for des: ${deMatches.join(', ')}`
+    )
+  } else {
+    return deMatches[0].id
+  }
+}
 
+function addCocRows(manyCocs, singleCoc, manyDes, singleDes) {
+  const result = []
+  const singleDe = getDeIdFromCoc(singleCoc, singleDes)
+  for (const cocId of manyCocs) {
+    const deId = getDeIdFromCoc(cocId, manyDes)
+    result.push({ manyDe: deId, manyCoc: cocId, singleDe, singleCoc })
+  }
+  return result
+}
+
+function filterOnId(arr, ids) {
+  return arr.filter(({ id }) => ids.includes(id))
+}
+
+function uniqueBy(arr, fn) {
+  const resultArr = arr.map((item) => fn(item))
+  return arr.filter((item, idx) => resultArr.indexOf(fn(item)) === idx)
+}
+
+export function getExportMappingDataDeCoc(
+  deCocMappings,
+  mapConfig,
+  extraHeader = null
+) {
+  const result = [deCocHeader]
   if (Array.isArray(extraHeader) && extraHeader.length > 0) {
     result.unshift(extraHeader)
   }
-
-  for (const { cocMappings, sourceDes, targetDes } of deCocMappings) {
-    if (targetDes.length > 1) {
-      throw Error('Only single target de mappings are currently supported')
-    }
-    for (const { sourceCocs, targetCocs } of cocMappings) {
-      if (targetCocs.length > 1) {
-        throw Error('Only single target coc mappings are currently supported')
+  for (const deMappingRow of deCocMappings) {
+    const rowSourceDeIds = deMappingRow.sourceDes
+    const rowTargetDeIds = deMappingRow.targetDes
+    const { sourceDs, targetDs } = mapConfig
+    const allSourceDes = flattenDataSetElements(sourceDs)
+    const allTargetDes = flattenDataSetElements(targetDs)
+    const sourceDes = filterOnId(allSourceDes, rowSourceDeIds)
+    const targetDes = filterOnId(allTargetDes, rowTargetDeIds)
+    for (const { sourceCocs, targetCocs } of deMappingRow.cocMappings) {
+      if (sourceCocs.length > 1 && targetCocs.length > 1) {
+        throw new Error('Many to many COC mappings are not currently supported')
       }
-      for (const deUid of sourceDes) {
-        for (const cocUid of sourceCocs) {
-          result.push([deUid, cocUid, targetDes[0], targetCocs[0]])
-        }
+      if (sourceCocs.length === 0 || targetCocs.length === 0) {
+        continue
+      } else if (sourceCocs.length >= targetCocs.length) {
+        // Many to one mapping
+        result.push(
+          ...addCocRows(sourceCocs, targetCocs[0], sourceDes, targetDes).map(
+            (r) => [r.manyDe, r.manyCoc, r.singleDe, r.singleCoc]
+          )
+        )
+      } else {
+        // One to many mapping
+        result.push(
+          ...addCocRows(targetCocs, sourceCocs[0], targetDes, sourceDes).map(
+            (r) => [r.singleDe, r.singleCoc, r.manyDe, r.manyCoc]
+          )
+        )
       }
     }
   }
 
-  return result
+  return uniqueBy(result, (item) => item.join())
 }
 
 export function dataSetsEquivalent(dataSets1In, dataSets2In) {
@@ -600,11 +663,11 @@ export function dataSetsEquivalent(dataSets1In, dataSets2In) {
   return isEqual(ds1, ds2)
 }
 
-export function getFileFromMapping(mapping, mappingType) {
+export function getFileFromMapping(mapping, mapConfig, mappingType) {
   let result = []
 
   if (mappingType === metaTypes.DE_COC) {
-    result = getExportMappingDataDeCoc(mapping)
+    result = getExportMappingDataDeCoc(mapping, mapConfig)
   } else if (mappingType === metaTypes.AOC) {
     result = getExportMappingData(aocHeader, mapping, mappingType)
   } else if (mappingType === metaTypes.OU) {

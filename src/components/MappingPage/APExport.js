@@ -73,7 +73,7 @@ async function exportData(
       const { name, description } = getPipelineNameAndDesc(config, metaType)
 
       const mapping = state[`${metaType}Mappings`]
-      const file = getFileFromMapping(mapping, metaType)
+      const file = getFileFromMapping(mapping, config, metaType)
 
       try {
         const pipelineId = await createPipeline(

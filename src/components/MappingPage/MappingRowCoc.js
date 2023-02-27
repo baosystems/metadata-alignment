@@ -59,7 +59,9 @@ const MappingRowCoc = ({
         />
       </DataTableCell>
       <DataTableCell>
-        <Button onClick={removeRow}>X</Button>
+        <Button destructive onClick={removeRow}>
+          X
+        </Button>
       </DataTableCell>
     </DataTableRow>
   )
