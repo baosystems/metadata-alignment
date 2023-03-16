@@ -607,7 +607,15 @@ function filterOnId(arr, ids) {
   return arr.filter(({ id }) => ids.includes(id))
 }
 
-function uniqueBy(arr, fn) {
+/**
+ * Filter the array by to items with unique results from running the function on each item
+ * For example if the function returned the id of an object then the output would be an array of
+ * the items with unique ids (any items after the first in matching groups is removed)
+ * @param {Array} arr Array of items
+ * @param {Function} fn Function to operate on an item
+ * @returns An array with only the items which have unique values when operated on by the function
+ */
+export function uniqueBy(arr, fn) {
   const resultArr = arr.map((item) => fn(item))
   return arr.filter((item, idx) => resultArr.indexOf(fn(item)) === idx)
 }

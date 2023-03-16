@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import MappingRowDe from './MappingRowDe'
+import { useAlert } from '@dhis2/app-runtime'
 import {
   DataTable,
   DataTableHead,
@@ -37,6 +38,10 @@ const MappingTable = ({
   const uniqueTgtOpts = getUniqueOpts(targetOpts)
   const hasSubMaps = [tableTypes.DE].includes(tableType)
   const styles = hasSubMaps ? 'withSubMaps' : 'noSubMaps'
+  const { show: showError } = useAlert((msg) => msg, { critical: true })
+  const addRowError = () => showError('Error adding row')
+  const removeRowError = () => showError('Error removing row')
+  const addRowFn = addRow?.[tableType] || addRowError
   const rankOpts = (tgtOpts, allOptsRanked) => {
     const tgtOptIds = tgtOpts.map(({ id }) => id)
     if (!allOptsRanked) {
@@ -58,7 +63,7 @@ const MappingTable = ({
       <TableControls
         tableType={tableType}
         page={page}
-        addRow={addRow[tableType]}
+        addRow={addRowFn}
         pageSize={pageSize}
         {...pagerProps}
         pageSizes={['5', '10', '25', '50', '75', '100', '150', '200']}
@@ -86,13 +91,16 @@ const MappingTable = ({
             const sourceIds = rowMapping?.[sourceKey].join('-')
             const targetIds = rowMapping?.[targetKey].join('-')
             const id = `${[...sourceIds, ...targetIds].join('_')}${idx}`
+            const removeRowFn = removeRow?.[tableType] || removeRowError
+            const removeCocRowFn = removeRow[tableTypes.COC] || removeRowError
+            const addCocRowFn = addRow[tableTypes.COC] || addRowError
             const rankedTgtOpts = suggestions
               ? rankOpts(uniqueTgtOpts, suggestions[id])
               : uniqueTgtOpts
             const rowProps = {
               key: id,
               rowId: id,
-              removeRow: () => removeRow[tableType](idx),
+              removeRow: () => removeRowFn(idx),
               stateControl: {
                 mapping: pageData[idx],
                 setMapping: setMappings[pageOffset + idx],
@@ -109,11 +117,10 @@ const MappingTable = ({
                     rankedSuggestions={suggestions}
                     deCocMap={deCocMap}
                     addCocRow={{
-                      [tableTypes.COC]: () => addRow[tableTypes.COC](idx),
+                      [tableTypes.COC]: () => addCocRowFn(idx),
                     }}
                     removeCocRow={{
-                      [tableTypes.COC]: (cocIdx) =>
-                        removeRow[tableTypes.COC](idx, cocIdx),
+                      [tableTypes.COC]: (cocIdx) => removeCocRowFn(idx, cocIdx),
                     }}
                     deIdx={pageOffset + idx}
                   />
