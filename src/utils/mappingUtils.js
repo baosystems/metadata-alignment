@@ -608,9 +608,9 @@ function filterOnId(arr, ids) {
 }
 
 /**
- * Filter the array by to items with unique results from running the function on each item
+ * Filter the array to items with unique results from running the function on each item
  * For example if the function returned the id of an object then the output would be an array of
- * the items with unique ids (any items after the first in matching groups is removed)
+ * the items with unique ids (any items after the first in matching groups are removed)
  * @param {Array} arr Array of items
  * @param {Function} fn Function to operate on an item
  * @returns An array with only the items which have unique values when operated on by the function
