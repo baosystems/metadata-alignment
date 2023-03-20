@@ -108,6 +108,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.deCocMappings}
       setMappings={mappingState.setDeCocMappings}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={deCocSuggestions}
       deCocMap={mappingState.deCocMap}
       tableType={tableTypes.DE}
@@ -125,6 +127,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.aocMappings}
       setMappings={mappingState.setAocMappings}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={aocSuggestions}
       tableType={tableTypes.AOC}
       matchThreshold={Number(matchThreshold)}
@@ -142,6 +146,8 @@ const MappingPage = () => {
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}
+      addRow={mappingState.addRow}
+      removeRow={mappingState.removeRow}
       suggestions={ouSuggestions}
       matchThreshold={Number(matchThreshold)}
       makeInitialSuggestions={
@@ -159,7 +165,7 @@ const MappingPage = () => {
     <MappingContext.Provider value={mappingState}>
       <div className="mappingPage">
         <h1>Configure Data set mapping</h1>
-        <div className="tableControls">
+        <div className="mappingControls">
           <ThresholdInput
             extMatchThresh={`${matchThreshold}`}
             extSetMatchThresh={setMatchThreshold}
