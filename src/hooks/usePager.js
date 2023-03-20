@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const DEFAULT_PAGE_SIZE = 50
 
@@ -6,6 +6,11 @@ export default function usePager(data) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [pageData, setPageData] = useState(data.slice(0, DEFAULT_PAGE_SIZE))
+
+  useEffect(() => {
+    setPage(1)
+    setPageData(data.slice(0, pageSize))
+  }, [data])
 
   // Doing this rather than using a useEffect to prevent out of
   // sync parameters, for example the page goes up one and triggers

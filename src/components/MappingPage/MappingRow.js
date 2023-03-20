@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
-import { DataTableRow, DataTableCell } from '@dhis2/ui'
+import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import { tableTypeKeys } from './MappingConsts'
 
-const MappingRow = ({ rowId, stateControl, options, variant }) => {
+const MappingRow = ({ rowId, removeRow, stateControl, options, variant }) => {
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
 
@@ -30,12 +30,18 @@ const MappingRow = ({ rowId, stateControl, options, variant }) => {
           options={rankedTgtOpts}
         />
       </DataTableCell>
+      <DataTableCell>
+        <Button destructive onClick={removeRow}>
+          X
+        </Button>
+      </DataTableCell>
     </DataTableRow>
   )
 }
 
 MappingRow.propTypes = {
   rowId: PropTypes.string.isRequired,
+  removeRow: PropTypes.func,
   stateControl: PropTypes.shape({
     mapping: PropTypes.shape({
       sourceCocs: PropTypes.arrayOf(PropTypes.string),
@@ -50,9 +56,9 @@ MappingRow.propTypes = {
     sourceOpts: idNameArray.isRequired,
     rankedTgtOpts: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        score: PropTypes.number.isRequired,
+        id: PropTypes.string,
+        name: PropTypes.string,
+        score: PropTypes.number,
       })
     ),
   }).isRequired,

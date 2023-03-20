@@ -59,7 +59,7 @@ const ExportMapping = ({
     ]
     const { AOC, OU } = tableTypes
 
-    generateDeCocExport(infoHeader, deCocs, showError)
+    generateDeCocExport(infoHeader, deCocs, mapConfig, showError)
     generateExport(infoHeader, ouHeader, ous, OU, showError)
     generateExport(infoHeader, aocHeader, aocs, AOC, showError)
   }
@@ -74,9 +74,13 @@ const ExportMapping = ({
   )
 }
 
-function generateDeCocExport(mapInfoArr, deCocMappings, showError) {
+function generateDeCocExport(mapInfoArr, deCocMappings, mapConfig, showError) {
   try {
-    const result = getExportMappingDataDeCoc(deCocMappings, mapInfoArr)
+    const result = getExportMappingDataDeCoc(
+      deCocMappings,
+      mapConfig,
+      mapInfoArr
+    )
     saveAsCsv(result, 'download-link', 'de_coc_mapping.csv')
   } catch (error) {
     showError(error.message)

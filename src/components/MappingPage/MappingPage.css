@@ -11,7 +11,7 @@
   align-items: center;
 }
 
-.tableControls {
+.mappingControls {
   display: flex;
   align-items: flex-end;
   gap: 16px;
@@ -42,7 +42,12 @@
 
 .noSubMaps > thead > tr > th:nth-child(1),
 .noSubMaps > thead > tr > th:nth-child(2) {
-  width: 50%;
+  width: calc(50% - 30px);
+}
+
+.noSubMaps > thead > tr > th:nth-child(3),
+.withSubMaps > thead > tr > th:nth-child(4) {
+  width: 70px;
 }
 
 .mappingMultiSelect {
@@ -85,4 +90,15 @@
 
 .dataTablePager div.dense div.root-input > div {
   overflow: hidden;
+}
+
+.tableActions {
+  display: flex;
+  justify-content: center;
+  margin-top: -62px;
+  gap: 16px;
+}
+
+.tableActions > * {
+  margin: 16px 0;
 }

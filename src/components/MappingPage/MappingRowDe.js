@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
-import { DataTableRow, DataTableCell } from '@dhis2/ui'
+import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import MappingTable from './MappingTable'
 import { getCocs } from '../../utils/mappingUtils'
@@ -9,9 +9,12 @@ import { tableTypes } from './MappingConsts'
 
 const MappingRowDe = ({
   rowId,
+  removeRow,
   stateControl,
   rankedSuggestions,
   options,
+  addCocRow,
+  removeCocRow,
   deCocMap,
 }) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
@@ -23,7 +26,9 @@ const MappingRowDe = ({
 
   const handleSourceChange = (selected) => {
     if (selected.length === 0) {
-      setMapping.cocSetters.sourceCocs([])
+      for (const { sourceCocs } of setMapping.cocSetters) {
+        sourceCocs([])
+      }
     }
     setMapping.sourceDes(selected)
   }
@@ -55,6 +60,8 @@ const MappingRowDe = ({
         mappings={cocTableState.mappings}
         setMappings={cocTableState.setMappings}
         suggestions={rankedSuggestions}
+        addRow={addCocRow}
+        removeRow={removeCocRow}
         tableType={tableTypes.COC}
       />
     )
@@ -86,12 +93,18 @@ const MappingRowDe = ({
           options={rankedTgtOpts}
         />
       </DataTableCell>
+      <DataTableCell>
+        <Button destructive onClick={removeRow}>
+          X
+        </Button>
+      </DataTableCell>
     </DataTableRow>
   )
 }
 
 MappingRowDe.propTypes = {
   rowId: PropTypes.string.isRequired,
+  removeRow: PropTypes.func,
   stateControl: PropTypes.shape({
     mapping: PropTypes.shape({
       sourceDes: PropTypes.arrayOf(PropTypes.string),
@@ -120,7 +133,7 @@ MappingRowDe.propTypes = {
       PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        score: PropTypes.number.isRequired,
+        score: PropTypes.number,
       })
     ),
   }).isRequired,
@@ -129,10 +142,12 @@ MappingRowDe.propTypes = {
       PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        score: PropTypes.number.isRequired,
+        score: PropTypes.number,
       })
     ),
   }),
+  addCocRow: PropTypes.objectOf(PropTypes.func),
+  removeCocRow: PropTypes.objectOf(PropTypes.func),
   deCocMap: PropTypes.object,
 }
 
