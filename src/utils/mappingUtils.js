@@ -467,7 +467,6 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
     newMetadata = getNewMetadata(previousDs, updatedDataSet)
   }
 
-  console.log('currentMappings: ', currentMappings)
   const result = currentMappings
   if (removedMetadata) {
     const config = { removedMetadata, mappingDestination }
@@ -479,7 +478,6 @@ function updateMapping(updatedDataSet, mappingDestination, config) {
   }
 
   if (newMetadata) {
-    console.log('newMetadata: ', newMetadata)
     result[DE] = [...result[DE], ...newMetadata[DE]]
     result[AOC] = [...result[AOC], ...newMetadata[AOC]]
     result[OU] =
@@ -530,7 +528,6 @@ export function updateRequiredMappings(newDsConfig, sharedState) {
   }
 
   if (mappingUpdated) {
-    console.log('New DE mappings: ', newMapping[DE])
     sharedState.setCurrentMapping[tableTypes.DE](newMapping[DE])
     sharedState.setCurrentMapping[tableTypes.AOC](newMapping[AOC])
     sharedState.setCurrentMapping[tableTypes.OU](newMapping[OU])
