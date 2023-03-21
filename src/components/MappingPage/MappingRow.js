@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { tableTypeKeys } from './MappingConsts'
 
 const MappingRow = ({ rowId, removeRow, stateControl, options, variant }) => {
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
 
@@ -13,29 +15,37 @@ const MappingRow = ({ rowId, removeRow, stateControl, options, variant }) => {
   const { targetKey } = tableTypeKeys[variant]
 
   return (
-    <DataTableRow key={`${rowId}-row`}>
-      <DataTableCell>
-        <MappingSelect
-          rowId={rowId}
-          selected={mapping[sourceKey]}
-          onChange={(e) => setMapping[sourceKey](e.selected)}
-          options={sourceOpts}
+    <>
+      {showConfirmDelete && (
+        <ConfirmDeleteModal
+          removeRow={removeRow}
+          closeModal={() => setShowConfirmDelete(false)}
         />
-      </DataTableCell>
-      <DataTableCell>
-        <MappingSelect
-          rowId={rowId}
-          selected={mapping[targetKey]}
-          onChange={(e) => setMapping[targetKey](e.selected)}
-          options={rankedTgtOpts}
-        />
-      </DataTableCell>
-      <DataTableCell>
-        <Button destructive onClick={removeRow}>
-          X
-        </Button>
-      </DataTableCell>
-    </DataTableRow>
+      )}
+      <DataTableRow key={`${rowId}-row`}>
+        <DataTableCell>
+          <MappingSelect
+            rowId={rowId}
+            selected={mapping[sourceKey]}
+            onChange={(e) => setMapping[sourceKey](e.selected)}
+            options={sourceOpts}
+          />
+        </DataTableCell>
+        <DataTableCell>
+          <MappingSelect
+            rowId={rowId}
+            selected={mapping[targetKey]}
+            onChange={(e) => setMapping[targetKey](e.selected)}
+            options={rankedTgtOpts}
+          />
+        </DataTableCell>
+        <DataTableCell>
+          <Button destructive onClick={() => setShowConfirmDelete(true)}>
+            X
+          </Button>
+        </DataTableCell>
+      </DataTableRow>
+    </>
   )
 }
 

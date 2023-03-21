@@ -102,3 +102,8 @@
 .tableActions > * {
   margin: 16px 0;
 }
+
+.deleteOptions {
+  display: flex;
+  gap: 16px;
+}

@@ -4,6 +4,7 @@ import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import MappingTable from './MappingTable'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { getCocs } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 
@@ -17,6 +18,7 @@ const MappingRowDe = ({
   removeCocRow,
   deCocMap,
 }) => {
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const [showSubMaps, setShowSubMaps] = useState(false)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
@@ -71,34 +73,42 @@ const MappingRowDe = ({
   }
 
   return (
-    <DataTableRow
-      key={`${rowId}-row`}
-      expanded={showSubMaps}
-      onExpandToggle={() => setShowSubMaps(!showSubMaps)}
-      expandableContent={expandableContent}
-    >
-      <DataTableCell>
-        <MappingSelect
-          rowId={rowId}
-          selected={mapping.sourceDes}
-          onChange={(e) => handleSourceChange(e.selected)}
-          options={sourceOpts}
+    <>
+      {showConfirmDelete && (
+        <ConfirmDeleteModal
+          removeRow={removeRow}
+          closeModal={() => setShowConfirmDelete(false)}
         />
-      </DataTableCell>
-      <DataTableCell>
-        <MappingSelect
-          rowId={rowId}
-          selected={mapping.targetDes}
-          onChange={(e) => handleTargetChange(e.selected)}
-          options={rankedTgtOpts}
-        />
-      </DataTableCell>
-      <DataTableCell>
-        <Button destructive onClick={removeRow}>
-          X
-        </Button>
-      </DataTableCell>
-    </DataTableRow>
+      )}
+      <DataTableRow
+        key={`${rowId}-row`}
+        expanded={showSubMaps}
+        onExpandToggle={() => setShowSubMaps(!showSubMaps)}
+        expandableContent={expandableContent}
+      >
+        <DataTableCell>
+          <MappingSelect
+            rowId={rowId}
+            selected={mapping.sourceDes}
+            onChange={(e) => handleSourceChange(e.selected)}
+            options={sourceOpts}
+          />
+        </DataTableCell>
+        <DataTableCell>
+          <MappingSelect
+            rowId={rowId}
+            selected={mapping.targetDes}
+            onChange={(e) => handleTargetChange(e.selected)}
+            options={rankedTgtOpts}
+          />
+        </DataTableCell>
+        <DataTableCell>
+          <Button destructive onClick={() => setShowConfirmDelete(true)}>
+            X
+          </Button>
+        </DataTableCell>
+      </DataTableRow>
+    </>
   )
 }
 
