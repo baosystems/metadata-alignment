@@ -4,6 +4,7 @@ import { Button } from '@dhis2/ui'
 import { SharedStateContext } from '../../sharedStateContext'
 import { useHistory } from 'react-router-dom'
 import { metaTypes } from '../../mappingContext'
+import { tableTypes } from '../MappingPage/MappingConsts'
 
 const EditMappingBtn = ({ mappingData }) => {
   const sharedState = useContext(SharedStateContext)
@@ -23,9 +24,9 @@ const EditMappingBtn = ({ mappingData }) => {
     sharedState.setSourceUrl(addProtocol(mappingData.sourceUrl))
     sharedState.setTargetDs(mappingData.targetDs)
     sharedState.setTargetUrl(addProtocol(mappingData.targetUrl))
-    sharedState.setCurrentMapping(mappingData.deCocMappings)
-    sharedState.setCurrentMappingAocs(mappingData.aocMappings)
-    sharedState.setCurrentMappingOus(mappingData.ouMappings)
+    sharedState.setCurrentMapping[tableTypes.DE](mappingData.deCocMappings)
+    sharedState.setCurrentMapping[tableTypes.AOC](mappingData.aocMappings)
+    sharedState.setCurrentMapping[tableTypes.OU](mappingData.ouMappings)
     sharedState.setMappingPipelines(mappingData.mappingPipelines)
     history.push('/edit')
   }
@@ -63,13 +64,11 @@ EditMappingBtn.propTypes = {
         targetOus: PropTypes.arrayOf(PropTypes.string),
       })
     ),
-    mappingPipelines: PropTypes.objectOf(
-      PropTypes.shape({
-        [metaTypes.DE_COC]: PropTypes.string,
-        [metaTypes.AOC]: PropTypes.string,
-        [metaTypes.OU]: PropTypes.string,
-      })
-    ),
+    mappingPipelines: PropTypes.shape({
+      [metaTypes.DE_COC]: PropTypes.string,
+      [metaTypes.AOC]: PropTypes.string,
+      [metaTypes.OU]: PropTypes.string,
+    }),
   }),
 }
 

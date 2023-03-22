@@ -19,6 +19,13 @@ const MenuBar = () => {
       component: <SetupPage />,
     },
     {
+      key: 'new',
+      label: 'Edit mapping',
+      hide: true,
+      path: '/new',
+      component: <MappingPage />,
+    },
+    {
       key: 'edit',
       label: 'Edit mapping',
       path: '/edit',

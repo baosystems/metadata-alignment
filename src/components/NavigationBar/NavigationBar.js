@@ -24,16 +24,19 @@ const TopBar = ({ config, title }) => {
         <h2 id="appTitle" className="barTitle" onClick={toHome}>
           {title}
         </h2>
-        {config.map(({ key, label, icon, path }) => (
-          <div
-            onClick={() => history.push(path)}
-            key={key}
-            className={`barItem ${pathname === path ? 'selected' : ''}`}
-          >
-            {icon}
-            {label}
-          </div>
-        ))}
+        {config.map(
+          ({ key, label, icon, path, hide }) =>
+            !hide && (
+              <div
+                onClick={() => history.push(path)}
+                key={key}
+                className={`barItem ${pathname === path ? 'selected' : ''}`}
+              >
+                {icon}
+                {label}
+              </div>
+            )
+        )}
       </div>
     </>
   )

@@ -15,7 +15,7 @@ import { SharedStateContext } from '../../sharedStateContext'
 import { dsLocations } from '../SetupPage/SetupPageConsts'
 import ConnectionHelper from './ConnectionHelper'
 import { Button, Tooltip } from '@dhis2/ui'
-import { mappingDestinations } from './MappingConsts'
+import { mappingDestinations, tableTypes } from './MappingConsts'
 import { metaTypes } from '../../mappingContext'
 import spawnSuggestionWorker from '../../spawn-worker'
 
@@ -25,9 +25,7 @@ const RefreshMetadata = ({
   setShowAocMapping,
   setShowOuMapping,
   setMetadataRefreshed,
-  setDeCocSuggestions,
-  setAocSuggestions,
-  setOuSuggestions,
+  setSuggestions,
 }) => {
   const { sourceDs, targetDs, sourceUrl, targetUrl } = mapConfig
   const [updatedSourceDs, setUpdatedSourceDs] = useState(null)
@@ -59,21 +57,21 @@ const RefreshMetadata = ({
             flattenDataSetElements(updatedTargetDs),
             metaTypes.DE_COC
           ).then((deCocs) => {
-            setDeCocSuggestions(deCocs)
+            setSuggestions[tableTypes.DE](deCocs)
           })
 
           spawnSuggestionWorker(
             flattenAocs(updatedSourceDs),
             flattenAocs(updatedTargetDs),
             metaTypes.AOC
-          ).then((aocs) => setAocSuggestions(aocs))
+          ).then((aocs) => setSuggestions[tableTypes.AOC](aocs))
 
           spawnSuggestionWorker(
             flattenOus(updatedSourceDs),
             flattenOus(updatedTargetDs),
             metaTypes.OU
           ).then((ous) => {
-            setOuSuggestions(ous)
+            setSuggestions[tableTypes.OU](ous)
           })
 
           setMetadataRefreshed(true)
@@ -178,9 +176,11 @@ RefreshMetadata.propTypes = {
   setShowAocMapping: PropTypes.func.isRequired,
   setShowOuMapping: PropTypes.func.isRequired,
   setMetadataRefreshed: PropTypes.func.isRequired,
-  setDeCocSuggestions: PropTypes.func.isRequired,
-  setAocSuggestions: PropTypes.func.isRequired,
-  setOuSuggestions: PropTypes.func.isRequired,
+  setSuggestions: PropTypes.shape({
+    [tableTypes.DE]: PropTypes.func.isRequired,
+    [tableTypes.AOC]: PropTypes.func.isRequired,
+    [tableTypes.OU]: PropTypes.func.isRequired,
+  }),
 }
 
 export default RefreshMetadata

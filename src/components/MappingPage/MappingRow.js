@@ -1,44 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
-import { autoFill, getSourceNames } from '../../utils/mappingUtils'
 import { tableTypeKeys } from './MappingConsts'
 
-const MappingRowCoc = ({
-  rowId,
-  removeRow,
-  stateControl,
-  options,
-  matchThreshold,
-  makeInitialSuggestions,
-  variant,
-}) => {
-  const [firstRender, setFirstRender] = useState(true)
+const MappingRow = ({ rowId, removeRow, stateControl, options, variant }) => {
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
 
   const { sourceKey } = tableTypeKeys[variant]
   const { targetKey } = tableTypeKeys[variant]
-
-  // Make suggestions on first render
-  useEffect(() => {
-    if (makeInitialSuggestions || (!makeInitialSuggestions && !firstRender)) {
-      const suggestedMapping = autoFill({
-        rankedTgtOpts,
-        matchThreshold,
-        sourceItems: getSourceNames(sourceOpts, mapping[sourceKey]),
-      })
-      if (suggestedMapping.length > 0) {
-        setMapping[targetKey](suggestedMapping)
-      }
-    }
-  }, [matchThreshold])
-
-  useEffect(() => {
-    setFirstRender(false)
-  }, [])
 
   return (
     <DataTableRow key={`${rowId}-row`}>
@@ -67,7 +39,7 @@ const MappingRowCoc = ({
   )
 }
 
-MappingRowCoc.propTypes = {
+MappingRow.propTypes = {
   rowId: PropTypes.string.isRequired,
   removeRow: PropTypes.func,
   stateControl: PropTypes.shape({
@@ -90,9 +62,7 @@ MappingRowCoc.propTypes = {
       })
     ),
   }).isRequired,
-  matchThreshold: PropTypes.number.isRequired,
-  makeInitialSuggestions: PropTypes.bool,
   variant: PropTypes.string.isRequired,
 }
 
-export default MappingRowCoc
+export default MappingRow

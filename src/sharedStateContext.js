@@ -1,4 +1,5 @@
 import { useState, useCallback, createContext } from 'react'
+import { tableTypes } from './components/MappingPage/MappingConsts'
 
 export const SharedStateContext = createContext({
   sourceDs: {},
@@ -9,12 +10,8 @@ export const SharedStateContext = createContext({
   setTargetDs: () => {},
   targetUrl: '',
   setTargetUrl: () => {},
-  currentMapping: [],
+  currentMapping: {},
   setCurrentMapping: () => {},
-  currentMappingAocs: [],
-  setCurrentMappingAocs: () => {},
-  currentMappingOus: [],
-  setCurrentMappingOus: () => {},
   sourceRootOu: {},
   setSourceRootOu: () => {},
   targetRootOu: [],
@@ -28,7 +25,7 @@ export const useSharedState = () => {
   const [sourceUrl, setSourceUrlInternal] = useState('')
   const [targetDs, setTargetDsInternal] = useState([])
   const [targetUrl, setTargetUrlInternal] = useState('')
-  const [currentMapping, setCurrentMappingInternal] = useState({})
+  const [currentMappingDes, setCurrentMappingDesInternal] = useState({})
   const [currentMappingAocs, setCurrentMappingAocsInternal] = useState({})
   const [currentMappingOus, setCurrentMappingOusInternal] = useState({})
   const [mappingPipelines, setMappingPipelinesInternal] = useState({})
@@ -45,8 +42,8 @@ export const useSharedState = () => {
   const setTargetUrl = useCallback((url) => {
     setTargetUrlInternal(url)
   }, [])
-  const setCurrentMapping = useCallback((mapping) => {
-    setCurrentMappingInternal(mapping)
+  const setCurrentMappingDes = useCallback((mapping) => {
+    setCurrentMappingDesInternal(mapping)
   }, [])
   const setCurrentMappingAocs = useCallback((mapping) => {
     setCurrentMappingAocsInternal(mapping)
@@ -67,12 +64,16 @@ export const useSharedState = () => {
     setTargetDs,
     targetUrl,
     setTargetUrl,
-    currentMapping,
-    setCurrentMapping,
-    currentMappingAocs,
-    setCurrentMappingAocs,
-    currentMappingOus,
-    setCurrentMappingOus,
+    currentMapping: {
+      [tableTypes.DE]: currentMappingDes,
+      [tableTypes.AOC]: currentMappingAocs,
+      [tableTypes.OU]: currentMappingOus,
+    },
+    setCurrentMapping: {
+      [tableTypes.DE]: setCurrentMappingDes,
+      [tableTypes.AOC]: setCurrentMappingAocs,
+      [tableTypes.OU]: setCurrentMappingOus,
+    },
     mappingPipelines,
     setMappingPipelines,
   }

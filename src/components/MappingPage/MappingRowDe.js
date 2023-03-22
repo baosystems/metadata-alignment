@@ -1,49 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
 import MappingSelect from './MappingSelect'
 import MappingTable from './MappingTable'
-import { autoFill, getCocs, getSourceNames } from '../../utils/mappingUtils'
+import { getCocs } from '../../utils/mappingUtils'
 import { tableTypes } from './MappingConsts'
 
 const MappingRowDe = ({
   rowId,
   removeRow,
   stateControl,
-  options,
   rankedSuggestions,
+  options,
   addCocRow,
   removeCocRow,
-  matchThreshold,
   deCocMap,
-  makeInitialSuggestions,
 }) => {
   const [showSubMaps, setShowSubMaps] = useState(false)
-  const [firstRender, setFirstRender] = useState(true)
   const { mapping, setMapping } = stateControl
   const { sourceOpts, rankedTgtOpts } = options
   const srcCount = mapping?.sourceDes?.length || 0
   const tgtCount = mapping?.targetDes?.length || 0
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
-  // Make suggestions
-  useEffect(() => {
-    if (makeInitialSuggestions || (!makeInitialSuggestions && !firstRender)) {
-      const suggestedMapping = autoFill({
-        rankedTgtOpts,
-        matchThreshold,
-        sourceItems: getSourceNames(sourceOpts, mapping.sourceDes),
-      })
-      if (suggestedMapping.length > 0) {
-        setMapping.targetDes(suggestedMapping)
-        setShowSubMaps(true)
-      }
-    }
-  }, [matchThreshold])
-
-  useEffect(() => {
-    setFirstRender(false)
-  }, [])
 
   const handleSourceChange = (selected) => {
     if (selected.length === 0) {
@@ -70,7 +49,6 @@ const MappingRowDe = ({
     const cocTableState = {
       mappings: cocMappings,
       setMappings: setCocMappings,
-      rankedSuggestions,
     }
     const sourceCocs = getCocs(mapping.sourceDes, deCocMap.source)
     const targetCocs = getCocs(mapping.targetDes, deCocMap.target)
@@ -81,12 +59,10 @@ const MappingRowDe = ({
         targetOpts={targetCocs}
         mappings={cocTableState.mappings}
         setMappings={cocTableState.setMappings}
+        suggestions={rankedSuggestions}
         addRow={addCocRow}
         removeRow={removeCocRow}
-        suggestions={cocTableState.rankedSuggestions}
         tableType={tableTypes.COC}
-        matchThreshold={matchThreshold}
-        makeInitialSuggestions={makeInitialSuggestions}
       />
     )
   } else {
@@ -172,9 +148,7 @@ MappingRowDe.propTypes = {
   }),
   addCocRow: PropTypes.objectOf(PropTypes.func),
   removeCocRow: PropTypes.objectOf(PropTypes.func),
-  matchThreshold: PropTypes.number.isRequired,
   deCocMap: PropTypes.object,
-  makeInitialSuggestions: PropTypes.bool,
 }
 
 export default MappingRowDe
