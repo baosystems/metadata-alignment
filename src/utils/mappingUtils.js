@@ -621,10 +621,14 @@ function getDeIdFromCoc(cocId, des) {
     }
   })
   if (deMatches.length === 0) {
-    throw new Error('Could not find de match for coc: ' + cocId)
+    const deNames = des.map(({ name }) => name).join(', ')
+    const deLog = des.length === 1 ? 'data element' : 'data elements'
+    throw new Error(
+      `Could not find de match for coc: ${cocId} in ${deLog}: ${deNames}`
+    )
   } else if (deMatches.length > 1) {
     throw new Error(
-      `Ambigious match on coc ${cocId} for des: ${deMatches.join(', ')}`
+      `Ambiguous match on coc ${cocId} for des: ${deMatches.join(', ')}`
     )
   } else {
     return deMatches[0].id
