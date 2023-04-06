@@ -92,8 +92,10 @@ const MappingTable = ({
             const removeRowFn = removeRow?.[tableType] || removeRowError
             const removeCocRowFn = removeRow[tableTypes.COC] || removeRowError
             const addCocRowFn = addRow[tableTypes.COC] || addRowError
+            // Rank target options by first source option
+            const suggestionId = rowMapping?.[sourceKey]?.[0]
             const rankedTgtOpts = suggestions
-              ? rankOpts(uniqueTgtOpts, suggestions[id])
+              ? rankOpts(uniqueTgtOpts, suggestions[suggestionId])
               : uniqueTgtOpts
             const rowProps = {
               key: id,
