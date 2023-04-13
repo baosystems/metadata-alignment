@@ -115,7 +115,8 @@ const MappingTable = ({
                     rankedSuggestions={suggestions}
                     deCocMap={deCocMap}
                     addCocRow={{
-                      [tableTypes.COC]: () => addCocRowFn(idx),
+                      [tableTypes.COC]: (rowContent) =>
+                        addCocRowFn(idx, rowContent),
                     }}
                     removeCocRow={{
                       [tableTypes.COC]: (cocIdx) => removeCocRowFn(idx, cocIdx),

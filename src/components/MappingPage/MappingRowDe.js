@@ -27,6 +27,14 @@ const MappingRowDe = ({
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
 
   const handleSourceChange = (selected) => {
+    if (selected.length === 1 && mapping.cocMappings.length === 0) {
+      // If there is only a single source DE and no COC mappings, then
+      // the source COCs need to be added as new rows
+      const selectedDeCocs = getCocs(selected, deCocMap.source)
+      for (const coc of selectedDeCocs) {
+        addCocRow[tableTypes.COC]({ sourceCocs: [coc.id], targetCocs: [] })
+      }
+    }
     if (selected.length === 0) {
       for (const { sourceCocs } of setMapping.cocSetters) {
         sourceCocs([])
