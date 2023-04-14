@@ -260,9 +260,9 @@ export const useMappingState = (
     [rowStateMap]
   )
 
-  const addCocRow = (deRowIdx) => {
+  const addCocRow = (deRowIdx, rowContent) => {
     const { sourceKey, targetKey } = tableTypeKeys[tableTypes.COC]
-    const emptyRow = { [sourceKey]: [], [targetKey]: [] }
+    const emptyRow = rowContent || { [sourceKey]: [], [targetKey]: [] }
     const deRow = deCocMappings[deRowIdx]
     deRow.cocMappings = [emptyRow, ...deRow.cocMappings]
     setDeCocMappingsInternal(replaceInArray(deCocMappings, deRowIdx, deRow))
@@ -288,7 +288,8 @@ export const useMappingState = (
     aocMappings,
     addRow: {
       [tableTypes.DE]: () => addRowOfType(tableTypes.DE),
-      [tableTypes.COC]: (deRowIdx) => addCocRow(deRowIdx),
+      [tableTypes.COC]: (deRowIdx, rowContent) =>
+        addCocRow(deRowIdx, rowContent),
       [tableTypes.AOC]: () => addRowOfType(tableTypes.AOC),
       [tableTypes.OU]: () => addRowOfType(tableTypes.OU),
     },

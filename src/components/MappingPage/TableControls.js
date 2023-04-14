@@ -13,7 +13,7 @@ const TableControls = ({ tableType, addRow, ...paginationProps }) => {
         className="dataTablePager"
       />
       <div className="tableActions">
-        <Button primary small onClick={addRow}>
+        <Button primary small onClick={() => addRow()}>
           Add {tableType} row
         </Button>
       </div>
