@@ -18,6 +18,7 @@ const ManagePage = () => {
   const { loading, error, data, refetch: refresh } = useMappings()
   return (
     <div className="managePage">
+      <div className="appVersion">v{process.env.REACT_APP_VERSION}</div>
       <DataTable>
         <DataTableHead>
           <DataTableRow>

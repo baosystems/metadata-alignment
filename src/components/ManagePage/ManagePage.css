@@ -2,6 +2,14 @@
   margin: 66px;
 }
 
+.appVersion {
+  position: absolute;
+  right: 43px;
+  top: 52px;
+  font-size: 14px;
+  color: grey;
+}
+
 .rowControls {
   display: flex;
   gap: 16px;
@@ -19,6 +27,6 @@
   gap: 16px;
 }
 
-.cancel-confirm{
-  margin-right: 10px
+.cancel-confirm {
+  margin-right: 10px;
 }
