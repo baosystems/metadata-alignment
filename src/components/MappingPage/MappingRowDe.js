@@ -39,7 +39,7 @@ const MappingRowDe = ({
       console.log("Addin' rows")
       initialiseCocRows(mapping.sourceDes)
     }
-  }, [])
+  }, []) //eslint-disable-line
 
   const handleSourceChange = (selected) => {
     if (selected.length === 1 && mapping.cocMappings.length === 0) {
