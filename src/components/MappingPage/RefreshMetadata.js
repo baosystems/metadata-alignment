@@ -36,7 +36,6 @@ const RefreshMetadata = ({
   const { show } = useAlert((msg) => msg, { success: true })
   const { show: showError } = useAlert((msg) => msg, { critical: true })
   const engine = useDataEngine()
-
   useEffect(() => {
     if (updatedSourceDs && updatedTargetDs) {
       const sourcesMatch = dataSetsEquivalent(updatedSourceDs, sourceDs)
@@ -107,8 +106,11 @@ const RefreshMetadata = ({
   ) => {
     const config = { baseUrl: updateAddress }
     const dsIds = dsMeta.map(({ id }) => id)
+    const currentWithProxy =
+      process.env.NODE_ENV === 'development' &&
+      updateAddress === 'http://localhost:8080'
     config.dsLocation =
-      baseAddress === updateAddress
+      baseAddress === updateAddress || currentWithProxy
         ? dsLocations.currentServer
         : dsLocations.externalServer
     try {

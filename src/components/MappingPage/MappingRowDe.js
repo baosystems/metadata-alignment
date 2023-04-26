@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { idNameArray } from './sharedPropTypes'
 import { DataTableRow, DataTableCell, Button } from '@dhis2/ui'
@@ -26,14 +26,26 @@ const MappingRowDe = ({
   const tgtCount = mapping?.targetDes?.length || 0
   const sourceAndTarget = srcCount > 0 && tgtCount > 0
 
+  const initialiseCocRows = (deUids) => {
+    const selectedDeCocs = getCocs(deUids, deCocMap.source)
+    for (const coc of selectedDeCocs) {
+      addCocRow[tableTypes.COC]({ sourceCocs: [coc.id], targetCocs: [] })
+    }
+  }
+
+  // On first render, auto add COC rows for DE rows with source selected but no COC rows
+  useEffect(() => {
+    if (mapping.sourceDes.length > 0 && mapping.cocMappings.length === 0) {
+      console.log("Addin' rows")
+      initialiseCocRows(mapping.sourceDes)
+    }
+  }, [])
+
   const handleSourceChange = (selected) => {
     if (selected.length === 1 && mapping.cocMappings.length === 0) {
       // If there is only a single source DE and no COC mappings, then
       // the source COCs need to be added as new rows
-      const selectedDeCocs = getCocs(selected, deCocMap.source)
-      for (const coc of selectedDeCocs) {
-        addCocRow[tableTypes.COC]({ sourceCocs: [coc.id], targetCocs: [] })
-      }
+      initialiseCocRows(selected)
     }
     if (selected.length === 0) {
       for (const { sourceCocs } of setMapping.cocSetters) {
