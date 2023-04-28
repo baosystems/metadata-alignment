@@ -1,45 +1,56 @@
-This project was bootstrapped with [DHIS2 Application Platform](https://github.com/dhis2/app-platform).
+# Dataset Alignment
 
-## Available Scripts
+The Dataset alignment app speeds up the process of aligning metadata between data sets to support data transfer. By using a fuzzy matching algorithm, the app is able to suggest mappings between the source and target data sets, meaning the majority of the mapping can be automated, saving large amounts of time.
 
-In the project directory, you can run:
+_(Developed by BAO Systems)_
 
-### `yarn start`
+## Installation
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Github release: [here](https://github.com/baosystems/metadata-alignment/releases/) OR  
+App platform release: _Pending approval_
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## User Guide
 
-### `yarn test`
+After installing, the app can be accessed via the DHIS2 app menu like any other native DHIS2 application.
 
-Launches the test runner and runs all available tests found in `/src`.<br />
+### Creating a new mapping
 
-See the section about [running tests](https://platform.dhis2.nu/#/scripts/test) for more information.
+1. To create a new mapping, first navigate to the 'Create new mapping' tab:  
+   ![createNewMapping](./docs/img/createNewMapping.png)
+1. Next, select where the source and target data sets are located:  
+   ![dsLocations](./docs/img/dsLocations.png) - For 'Current server' selections, select the desired data set - For 'External server' selections, the required [CORS whitelist](https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/configuring-the-system/system-settings.html?h=cors+whitelist+2.39#system_access_settings:~:text=12%20or%2014.-,CORS%20whitelist,-Whitelists%20a) and [server settings](<https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/working-with-your-account/personal-access-tokens.html?h=personal+access+token+2.39#server-configuration:~:text=%2C%0A%20%20%20%20%7D%2C%0A%7D)%3B-,Server%20configuration,-%C2%B6>) must be enabled to allow personal access token connections, then a personal access token must be created on the external server. If this is not possible, then use the 'Upload' method  
+   ![configureConnections](./docs/img/configureConnections.png)
+1. Once a source and target data set has been selected, click 'Configure mapping' to create a new mapping
+1. Once the mapping has been generated, make sure to click the save button so the configuration is saved  
+   ![saveMapping](./docs/img/saveMapping.png)
 
-### `yarn build`
+### Configuring a mapping
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+On the edit mapping page there are a number of buttons:
 
-The build is minified and the filenames include the hashes.<br />
-A deployable `.zip` file can be found in `build/bundle`!
+- **Update suggestions**: This will cause the app to re-run it's suggestion algorithm on the mapping, based on the match threshold (0.5 by default which is run automatically for new mappings). Higher values will increase the number of suggestions (will suggest values that are more different)
+- **Sync**: This will apply any changes to the source and target data sets to the mapping
+- **Download**: This will download the mappings as CSV files which can be used to transfer the data via SQL, or scripts using the API
+- **Save**: This will save the mapping so it can be accessed later
+- **Export**: This will send the mapping to the Analytics platform if the user is connected
 
-See the section about [building](https://platform.dhis2.nu/#/scripts/build) for more information.
+Each metadata type (DEs, AOCs and OUs) have their own mapping tables, which can be viewed by clicking the arrow on the left hand side:  
+![expandTables](./docs/img/expandTables.png)
 
-### `yarn deploy`
+When these tables are expanded, you will see a list of rows, one for each of the metadata items on the source. There may also be a value in the target column on the right if the app has made a suggestion or one has been manually populated.  
+![deMapping](./docs/img/deMapping.png)  
+Mapping items can be added or removed using the small grey 'x' on the item itself. Clicking clear will remove all the items in the field, and the red 'X' will delete the row entirely.
 
-Deploys the built app in the `build` folder to a running DHIS2 instance.<br />
-This command will prompt you to enter a server URL as well as the username and password of a DHIS2 user with the App Management authority.<br/>
-You must run `yarn build` before running `yarn deploy`.<br />
+To generate more suggestions you can increase the threshold value then click 'Update suggestions'
 
-See the section about [deploying](https://platform.dhis2.nu/#/scripts/deploy) for more information.
+Once all the desired fields have been mapped, make sure to click the save button so your changes are kept.
 
-## Learn More
+## Demo
 
-You can learn more about the platform in the [DHIS2 Application Platform Documentation](https://platform.dhis2.nu/).
+[Video](https://github.com/baosystems/metadata-alignment/releases/download/v1.10.1/DataSetAlignement.mp4)
 
-You can learn more about the runtime in the [DHIS2 Application Runtime Documentation](https://runtime.dhis2.nu/).
+## Acknowledgements
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+BAO Systems happily acknowledges the invaluable contributions of JHPIEGO in driving the testing and features of the application and funding a large portion of the app's development.
+
+_This project was bootstrapped with the [DHIS2 Application Platform](https://github.com/dhis2/app-platform)._
