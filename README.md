@@ -56,6 +56,6 @@ Once all the desired fields have been mapped, make sure to click the save button
 
 ## Acknowledgements
 
-BAO Systems happily acknowledges the invaluable contributions of JHPIEGO in driving the testing and features of the application and funding a large portion of the app's development.
+_This app is developed by BAO Systems and is made possible by the U.S. Agency for International Development (USAID) and MOMENTUM Country and Global Leadership, led by Jhpiego and partners, and does not reflect the views of USAID or the United States Government._
 
-_This project was bootstrapped with the [DHIS2 Application Platform](https://github.com/dhis2/app-platform)._
+This project was bootstrapped with the [DHIS2 Application Platform](https://github.com/dhis2/app-platform).
