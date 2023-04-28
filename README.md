@@ -18,8 +18,10 @@ After installing, the app can be accessed via the DHIS2 app menu like any other 
 1. To create a new mapping, first navigate to the 'Create new mapping' tab:  
    ![createNewMapping](./docs/img/createNewMapping.png)
 1. Next, select where the source and target data sets are located:  
-   ![dsLocations](./docs/img/dsLocations.png) - For 'Current server' selections, select the desired data set - For 'External server' selections, the required [CORS whitelist](https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/configuring-the-system/system-settings.html?h=cors+whitelist+2.39#system_access_settings:~:text=12%20or%2014.-,CORS%20whitelist,-Whitelists%20a) and [server settings](<https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/working-with-your-account/personal-access-tokens.html?h=personal+access+token+2.39#server-configuration:~:text=%2C%0A%20%20%20%20%7D%2C%0A%7D)%3B-,Server%20configuration,-%C2%B6>) must be enabled to allow personal access token connections, then a personal access token must be created on the external server. If this is not possible, then use the 'Upload' method  
-   ![configureConnections](./docs/img/configureConnections.png)
+   ![dsLocations](./docs/img/dsLocations.png)
+   - For 'Current server' selections, select the desired data set
+   - For 'External server' selections, the required [CORS whitelist](https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/configuring-the-system/system-settings.html?h=cors+whitelist+2.39#system_access_settings:~:text=12%20or%2014.-,CORS%20whitelist,-Whitelists%20a) and [server settings](<https://docs.dhis2.org/en/use/user-guides/dhis-core-version-239/working-with-your-account/personal-access-tokens.html?h=personal+access+token+2.39#server-configuration:~:text=%2C%0A%20%20%20%20%7D%2C%0A%7D)%3B-,Server%20configuration,-%C2%B6>) must be enabled to allow personal access token connections, then a personal access token must be created on the external server. If this is not possible, then use the 'Upload' method  
+     ![configureConnections](./docs/img/configureConnections.png)
 1. Once a source and target data set has been selected, click 'Configure mapping' to create a new mapping
 1. Once the mapping has been generated, make sure to click the save button so the configuration is saved  
    ![saveMapping](./docs/img/saveMapping.png)
