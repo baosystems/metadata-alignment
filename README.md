@@ -43,6 +43,9 @@ When these tables are expanded, you will see a list of rows, one for each of the
 ![deMapping](./docs/img/deMapping.png)  
 Mapping items can be added or removed using the small grey 'x' on the item itself. Clicking clear will remove all the items in the field, and the red 'X' will delete the row entirely.
 
+For each data element mapping, there is also a corresponding list of COC mappings, these can be found by clicking the arrow on the left hand side of the data element mapping row. This table only becomes populated when both a source and target data element have been selected:  
+![cocMapping](./docs/img/cocMapping.png)
+
 To generate more suggestions you can increase the threshold value then click 'Update suggestions'
 
 Once all the desired fields have been mapped, make sure to click the save button so your changes are kept.
