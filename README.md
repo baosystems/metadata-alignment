@@ -58,4 +58,7 @@ Once all the desired fields have been mapped, make sure to click the save button
 
 _This app is developed by BAO Systems and is made possible by the U.S. Agency for International Development (USAID) and MOMENTUM Country and Global Leadership, led by Jhpiego and partners, and does not reflect the views of USAID or the United States Government._
 
+![baoSystems](./docs/img/BAOSystemsLogo.png)
+![usaidAndMomentum](./docs/img/USAIDMomentumLogo.png)
+
 This project was bootstrapped with the [DHIS2 Application Platform](https://github.com/dhis2/app-platform).
