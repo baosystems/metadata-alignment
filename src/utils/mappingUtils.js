@@ -179,13 +179,19 @@ const getCocSuggestionParams = (idx, sourceDe, config) => ({
   suggestions: config.suggestions, // Because the same object has the DE and COC suggestions
   sourceItems: sourceDe.categoryCombo.categoryOptionCombos,
   matchThreshold: config.matchThreshold,
-  setValues: config.setValues[idx].cocSetters,
+  setValues: config.setValues?.[idx]?.cocSetters,
   tableType: tableTypes.COC,
 })
 
 const populateCocSuggestions = (mapping, deRowIdx, notify, config) => {
   const sourceDeUid = mapping.sourceDes[0]
   const sourceDe = config.sourceItems.find(({ id }) => id === sourceDeUid)
+  if (!sourceDe) {
+    console.error(
+      `Could not find source DE ${sourceDeUid} in available data elements, skipping COC suggestions`
+    )
+    return
+  }
   populateSuggestions(
     mapping.cocMappings,
     getCocSuggestionParams(deRowIdx, sourceDe, config),
@@ -218,6 +224,11 @@ export function populateSuggestions(currentMapping, config, notify) {
         sourceItems,
       })
       if (suggestedMapping.length > 0) {
+        const setValue = setValues?.[idx]?.[targetKey]
+        if (!setValue) {
+          console.error('Unable to set value, setting function not found')
+          continue
+        }
         setValues[idx][targetKey](suggestedMapping)
         if (tableType === tableTypes.DE) {
           populateCocSuggestions(mapping, idx, notify, config)
