@@ -175,13 +175,29 @@ export function autoFill(config) {
   }
 }
 
-const getCocSuggestionParams = (idx, config) => ({
+const getCocSuggestionParams = (idx, sourceDe, config) => ({
   suggestions: config.suggestions, // Because the same object has the DE and COC suggestions
-  sourceItems: config.sourceItems[idx].categoryCombo.categoryOptionCombos,
+  sourceItems: sourceDe.categoryCombo.categoryOptionCombos,
   matchThreshold: config.matchThreshold,
-  setValues: config.setValues[idx].cocSetters,
+  setValues: config.setValues?.[idx]?.cocSetters,
   tableType: tableTypes.COC,
 })
+
+const populateCocSuggestions = (mapping, deRowIdx, notify, config) => {
+  const sourceDeUid = mapping.sourceDes[0]
+  const sourceDe = config.sourceItems.find(({ id }) => id === sourceDeUid)
+  if (!sourceDe) {
+    console.error(
+      `Could not find source DE ${sourceDeUid} in available data elements, skipping COC suggestions`
+    )
+    return
+  }
+  populateSuggestions(
+    mapping.cocMappings,
+    getCocSuggestionParams(deRowIdx, sourceDe, config),
+    notify
+  )
+}
 
 export function populateSuggestions(currentMapping, config, notify) {
   const { showSuccess, hideInfo } = notify
@@ -192,15 +208,14 @@ export function populateSuggestions(currentMapping, config, notify) {
     return // Cannot populate without suggestions
   }
   for (const [idx, mapping] of currentMapping.entries()) {
+    if (mapping[sourceKey].length < 1) {
+      continue
+    }
     if (mapping[targetKey].length > 0) {
       // Do not autofill if there's a target value there already
       if (tableType === tableTypes.DE) {
         // But still check COCs for rows with DE target values
-        populateSuggestions(
-          mapping.cocMappings,
-          getCocSuggestionParams(idx, config),
-          notify
-        )
+        populateCocSuggestions(mapping, idx, notify, config)
       }
     } else {
       const suggestedMapping = autoFill({
@@ -209,13 +224,14 @@ export function populateSuggestions(currentMapping, config, notify) {
         sourceItems,
       })
       if (suggestedMapping.length > 0) {
+        const setValue = setValues?.[idx]?.[targetKey]
+        if (!setValue) {
+          console.error('Unable to set value, setting function not found')
+          continue
+        }
         setValues[idx][targetKey](suggestedMapping)
         if (tableType === tableTypes.DE) {
-          populateSuggestions(
-            mapping.cocMappings,
-            getCocSuggestionParams(idx, config),
-            notify
-          )
+          populateCocSuggestions(mapping, idx, notify, config)
         }
       }
     }
