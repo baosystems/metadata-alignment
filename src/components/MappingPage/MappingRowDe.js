@@ -36,7 +36,6 @@ const MappingRowDe = ({
   // On first render, auto add COC rows for DE rows with source selected but no COC rows
   useEffect(() => {
     if (mapping.sourceDes.length > 0 && mapping.cocMappings.length === 0) {
-      console.log("Addin' rows")
       initialiseCocRows(mapping.sourceDes)
     }
   }, []) //eslint-disable-line

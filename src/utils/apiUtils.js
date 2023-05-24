@@ -162,11 +162,22 @@ const pipelineDetails = {
   },
 }
 
+function trimName(srcDsName, tgtDsName, suffix) {
+  const limit = 70 - suffix.length - 4
+  const halfLimit = Math.floor(limit / 2)
+  const srcExtra = Math.max(0, halfLimit - tgtDsName.length)
+  const tgtExtra = Math.max(0, halfLimit - srcDsName.length)
+  return `${srcDsName.slice(0, halfLimit + srcExtra)}-${tgtDsName.slice(
+    0,
+    halfLimit + tgtExtra
+  )} (${suffix})`
+}
+
 export const getPipelineNameAndDesc = (mapConfig, mappingType) => {
   const { sourceDs, targetDs } = mapConfig
-  const details = pipelineDetails[mappingType]
-  const name = `${sourceDs?.[0]?.name} - ${targetDs?.[0]?.name} ${details.nameSuffix} Mapping`
-  const description = `${details.descPrefix} Mapping Between
+  const { nameSuffix, descPrefix } = pipelineDetails[mappingType]
+  const name = trimName(sourceDs?.[0]?.name, targetDs?.[0]?.name, nameSuffix)
+  const description = `${descPrefix} Mapping Between
      ${sourceDs?.[0]?.name} and ${targetDs?.[0]?.name} Data Sets`
   return { name, description }
 }

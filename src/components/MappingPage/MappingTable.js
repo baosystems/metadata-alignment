@@ -26,7 +26,7 @@ const MappingTable = ({
   removeRow,
   suggestions,
   deCocMap,
-  urlParams,
+  headers,
   tableType,
 }) => {
   const { pageData, page, pageSize, ...pagerProps } = usePager(mappings)
@@ -72,14 +72,10 @@ const MappingTable = ({
           <DataTableRow>
             {hasSubMaps && <DataTableColumnHeader />}
             <DataTableColumnHeader>
-              Source
-              {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
-                ` (${urlParams.sourceUrl})`}
+              {tableType !== tableTypes.COC && headers.source}
             </DataTableColumnHeader>
             <DataTableColumnHeader>
-              Target
-              {[tableTypes.DE, tableTypes.AOC].includes(tableType) &&
-                ` (${urlParams.targetUrl})`}
+              {tableType !== tableTypes.COC && headers.target}
             </DataTableColumnHeader>
             <DataTableColumnHeader></DataTableColumnHeader>
           </DataTableRow>
@@ -156,6 +152,10 @@ MappingTable.propTypes = {
         score: PropTypes.number.isRequired,
       })
     ),
+  }),
+  headers: PropTypes.shape({
+    source: PropTypes.string,
+    target: PropTypes.string,
   }),
   urlParams: PropTypes.shape({
     sourceUrl: PropTypes.string,

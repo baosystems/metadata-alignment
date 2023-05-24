@@ -73,6 +73,11 @@ async function exportData(
       const { name, description } = getPipelineNameAndDesc(config, metaType)
 
       const mapping = state[`${metaType}Mappings`]
+      if (!mapping || mapping.length === 0) {
+        console.log(`Skipping ${metaType} because no mappings are configured`)
+        continue
+      }
+
       const file = getFileFromMapping(mapping, config, metaType)
 
       try {
