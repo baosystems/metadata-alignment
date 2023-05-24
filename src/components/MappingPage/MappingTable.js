@@ -157,10 +157,6 @@ MappingTable.propTypes = {
     source: PropTypes.string,
     target: PropTypes.string,
   }),
-  urlParams: PropTypes.shape({
-    sourceUrl: PropTypes.string,
-    targetUrl: PropTypes.string,
-  }),
   tableType: PropTypes.oneOf(Object.values(tableTypes)),
 }
 
