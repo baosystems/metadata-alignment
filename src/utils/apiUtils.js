@@ -162,15 +162,25 @@ const pipelineDetails = {
   },
 }
 
+/**
+ * The AP CSV pipelines uses the file name to generate the table name. Because the table
+ * name has a max length of 70 characters, the uploaded file name cannot be longer than 70
+ * @param {String} srcDsName Source data set names
+ * @param {String} tgtDsName Target data set names
+ * @param {String} suffix Mapping type, eg OU, AOC or DE COC
+ * @returns String name with these three fields
+ */
 function trimName(srcDsName, tgtDsName, suffix) {
-  const limit = 70 - suffix.length - 4
+  const maxNameLength = 70
+  const suffixText = ` (${suffix})`
+  const limit = maxNameLength - suffixText.length
   const halfLimit = Math.floor(limit / 2)
   const srcExtra = Math.max(0, halfLimit - tgtDsName.length)
   const tgtExtra = Math.max(0, halfLimit - srcDsName.length)
   return `${srcDsName.slice(0, halfLimit + srcExtra)}-${tgtDsName.slice(
     0,
     halfLimit + tgtExtra
-  )} (${suffix})`
+  )}${suffixText}`
 }
 
 export const getPipelineNameAndDesc = (mapConfig, mappingType) => {
