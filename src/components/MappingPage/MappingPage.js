@@ -149,11 +149,18 @@ const MappingPage = () => {
     )
   }
 
+  const sourceDsNames = sourceDs.map(({ name }) => name).join(', ')
+  const targetDsNames = targetDs.map(({ name }) => name).join(', ')
+  const headers = {
+    source: `Source: ${sourceDsNames} (${sourceUrl})`,
+    target: `Target: ${targetDsNames} (${targetUrl})`,
+  }
+
   const expandableContentDe = (
     <MappingTable
       sourceOpts={sourceDes}
       targetOpts={targetDes}
-      urlParams={{ sourceUrl, targetUrl }}
+      headers={headers}
       mappings={mappingState.deCocMappings}
       setMappings={mappingState.setDeCocMappings}
       suggestions={suggestions[tableTypes.DE]}
