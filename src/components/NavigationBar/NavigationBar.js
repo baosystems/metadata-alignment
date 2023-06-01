@@ -38,6 +38,7 @@ const TopBar = ({ config, title }) => {
             )
         )}
       </div>
+      <div className="appVersion">v{process.env.REACT_APP_VERSION}</div>
     </>
   )
 }

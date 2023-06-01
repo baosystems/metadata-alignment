@@ -14,6 +14,7 @@ const PatDsSelect = ({
   selectedDs,
   setSelectedDs,
   config,
+  fixedUrl,
   setConfig,
   previousSelectedDsIds,
   onCancel,
@@ -92,6 +93,7 @@ const PatDsSelect = ({
       <UrlInput
         label="External server url"
         value={targetUrl}
+        disabled={fixedUrl}
         onChange={setUrl}
         validUrl={validUrl}
         setValidUrl={setValidUrl}
@@ -125,6 +127,7 @@ const PatDsSelect = ({
 PatDsSelect.propTypes = {
   selectedDs: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedDs: PropTypes.func.isRequired,
+  fixedUrl: PropTypes.bool,
   config: PropTypes.shape({
     dsLocation: PropTypes.string.isRequired,
     baseUrl: PropTypes.string,

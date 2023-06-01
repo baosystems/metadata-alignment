@@ -14,6 +14,7 @@ import {
 const UploadDsSelect = ({
   selectedDs,
   setSelectedDs,
+  fixedUrl,
   config,
   setConfig,
   previousSelectedDsIds,
@@ -99,6 +100,7 @@ const UploadDsSelect = ({
             label="External server url"
             value={targetUrl}
             onChange={setUrl}
+            disabled={fixedUrl}
             validUrl={validUrl}
             setValidUrl={setValidUrl}
           />
@@ -125,6 +127,7 @@ const UploadDsSelect = ({
 UploadDsSelect.propTypes = {
   selectedDs: PropTypes.array.isRequired,
   setSelectedDs: PropTypes.func.isRequired,
+  fixedUrl: PropTypes.bool,
   config: PropTypes.shape({
     dsLocation: PropTypes.string.isRequired,
     baseUrl: PropTypes.string,

@@ -42,6 +42,7 @@ ExternalServerDsSelect.propTypes = {
     dsLocation: PropTypes.string.isRequired,
     baseUrl: PropTypes.string,
   }).isRequired,
+  fixedUrl: PropTypes.bool,
   setConfig: PropTypes.func.isRequired,
   method: PropTypes.string,
   setMethod: PropTypes.func,

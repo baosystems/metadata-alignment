@@ -61,6 +61,7 @@ const ConnectionHelper = ({
         ) : (
           <ExternalServerDsSelect
             selectedDs={selectedDs}
+            fixedUrl={true}
             setSelectedDs={setSelectedDs}
             config={config}
             setConfig={setConfig}

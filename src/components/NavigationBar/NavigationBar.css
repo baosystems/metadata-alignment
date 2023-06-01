@@ -4,6 +4,13 @@
   font-size: var(--td14);
 }
 
+.appVersion {
+  margin-top: -8px;
+  margin-left: 50px;
+  font-size: 14px;
+  color: grey;
+}
+
 .barItem {
   border: 1px solid #d5dde5;
   background-color: #fff;

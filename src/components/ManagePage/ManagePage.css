@@ -2,14 +2,6 @@
   margin: 66px;
 }
 
-.appVersion {
-  position: absolute;
-  right: 29px;
-  top: 52px;
-  font-size: 14px;
-  color: grey;
-}
-
 .rowControls {
   display: flex;
   gap: 16px;

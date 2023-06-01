@@ -106,13 +106,11 @@ const RefreshMetadata = ({
   ) => {
     const config = { baseUrl: updateAddress }
     const dsIds = dsMeta.map(({ id }) => id)
-    const currentWithProxy =
-      process.env.NODE_ENV === 'development' &&
-      updateAddress === 'http://localhost:8080'
-    config.dsLocation =
-      baseAddress === updateAddress || currentWithProxy
-        ? dsLocations.currentServer
-        : dsLocations.externalServer
+
+    const localAdresses = [baseAddress, 'http://localhost:8080']
+    config.dsLocation = localAdresses.includes(updateAddress)
+      ? dsLocations.currentServer
+      : dsLocations.externalServer
     try {
       const updatedDataSetMeta = await requestDsData(engine, dsIds, config, pat)
       if (destination === mappingDestinations.SOURCE) {
