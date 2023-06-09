@@ -175,6 +175,7 @@ const MappingPage = () => {
     <MappingTable
       sourceOpts={sourceAocs}
       targetOpts={targetAocs}
+      headers={headers}
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.aocMappings}
       setMappings={mappingState.setAocMappings}
@@ -189,6 +190,7 @@ const MappingPage = () => {
     <OuMappingTable
       sourceOpts={sourceOus}
       targetOpts={targetOus}
+      headers={headers}
       urlParams={{ sourceUrl, targetUrl }}
       mappings={mappingState.ouMappings}
       setMappings={mappingState.setOuMappings}

@@ -72,10 +72,10 @@ const MappingTable = ({
           <DataTableRow>
             {hasSubMaps && <DataTableColumnHeader />}
             <DataTableColumnHeader>
-              {tableType !== tableTypes.COC && headers.source}
+              {tableType !== tableTypes.COC && headers?.source}
             </DataTableColumnHeader>
             <DataTableColumnHeader>
-              {tableType !== tableTypes.COC && headers.target}
+              {tableType !== tableTypes.COC && headers?.target}
             </DataTableColumnHeader>
             <DataTableColumnHeader></DataTableColumnHeader>
           </DataTableRow>
