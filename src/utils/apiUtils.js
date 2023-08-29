@@ -258,7 +258,7 @@ export const loginToAP = (username, password) => {
 
   return fetch(AP_BASE_URL + AP_AUTH_PATH, {
     headers: headers,
-    method: 'POST',
+    method: 'GET',
   })
     .then((res) => {
       return res.json()
@@ -268,6 +268,9 @@ export const loginToAP = (username, password) => {
       sessionStorage.setItem('username', username)
       return data
     })
+    .catch((error) => {
+      throw error
+    })
 }
 
 const AP_BASE_URL =
@@ -275,5 +278,5 @@ const AP_BASE_URL =
     ? 'https://test.manager.baosystems.com'
     : 'https://manager.baosystems.com'
 
-const AP_AUTH_PATH = '/api/system/authentication'
+const AP_AUTH_PATH = '/api/manager/info'
 const AP_CSV_UPLOAD_PATH = '/api/dataPipelines/csvUpload'
