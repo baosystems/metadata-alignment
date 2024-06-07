@@ -1,16 +1,29 @@
 import Fuse from 'fuse.js'
 
+function chunkArray(array, chunkSize) {
+  let results = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+      results.push(array.slice(i, i + chunkSize));
+  }
+  return results;
+}
+
 self.onmessage = (event) => {
   if (event.data.type === 'suggestions') {
     const { source, target, mappingType } = event.data.input
-
     let result = []
     if (mappingType === 'deCoc') {
       result = createSimilarityMatrixDeCocs(source, target)
     } else {
       result = createSimilarityMatrix(source, target)
     }
-    self.postMessage(JSON.stringify(result))
+    const entries = Object.entries(result)
+    const chunkSize = mappingType === 'deCoc' ? 10 : 500
+    const chunks = chunkArray(entries, chunkSize)
+    for (const chunk of chunks) {
+      self.postMessage(JSON.stringify(Object.fromEntries(chunk)))
+    }
+    self.postMessage(`COMPLETE ${mappingType}`)
   }
 }
 
@@ -20,10 +33,13 @@ function createSimilarityMatrixDeCocs(sourceDes, targetDes) {
   const targetCocs = idNmArrayFromMap(idNmMap.targetCocsMap)
   const srcDeIdNmMap = idNmMap.sourceDesMap
   const srcCocIdNmMap = idNmMap.sourceCocsMap
-  return {
-    ...makeRankedSuggestions(sourceDes, targetDes, srcDeIdNmMap),
-    ...makeRankedSuggestions(sourceCocs, targetCocs, srcCocIdNmMap),
+  const deSuggestions = makeRankedSuggestions(sourceDes, targetDes, srcDeIdNmMap)
+  const cocSuggestions = makeRankedSuggestions(sourceCocs, targetCocs, srcCocIdNmMap)
+  const result = {
+    ...deSuggestions,
+    ...cocSuggestions,
   }
+  return result
 }
 
 function createSimilarityMatrix(source, target) {
