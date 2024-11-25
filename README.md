@@ -7,7 +7,7 @@ _(Developed by BAO Systems)_
 ## Installation
 
 Github release: [here](https://github.com/baosystems/metadata-alignment/releases/) OR  
-App platform release: _Pending approval_
+App platform release: [here](https://apps.dhis2.org/app/239b58bb-0e3a-4183-b9b4-29956328c2a1)
 
 ## User Guide
 
